@@ -1,0 +1,7 @@
+glibc|glibc-2.12.1|glibc-2.12.1-gcc_fix-1.patch
+glibc|glibc-2.12.1|glibc-2.12.1-makefile_fix-1.patch
+gcc2|gcc-4.6.0|gcc-4.6.0-startfiles_fix-1.patch
+expect|expect-5.44.1.15|expect-5.44.1.15-no_tk-1.patch
+dejagnu|dejagnu-1.5|dejagnu-1.5-consolidated-1.patch
+bash|bash-4.1|bash-4.1-fixes-2.patch
+perl|perl-5.12.1|perl-5.12.1-libc-1.patch

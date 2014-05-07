@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sh Configure -des -Dprefix=$TOOLBOX \
+                  -Dstatic_ext='Data/Dumper Fcntl IO'
+
+make perl utilities ext/Errno/pm_to_blib
+
+cp -v perl pod/pod2man $TOOLBOX/bin
+mkdir -pv $TOOLBOX/lib/perl5/5.12.1
+cp -Rv lib/* $TOOLBOX/lib/perl5/5.12.1

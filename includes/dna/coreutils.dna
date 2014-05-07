@@ -1,0 +1,9 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX --enable-install-program=hostname
+
+make
+
+make install
+
+cp -v src/su $TOOLBOX/bin/su-tools

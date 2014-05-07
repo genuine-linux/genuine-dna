@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sed -i -e '/"m4.h"/a\
+#include <sys/stat.h>' src/path.c
+
+./configure --prefix=$TOOLBOX
+
+make
+
+make install

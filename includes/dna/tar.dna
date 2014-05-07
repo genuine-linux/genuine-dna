@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sed -i /SIGPIPE/d src/tar.c
+
+./configure --prefix=$TOOLBOX
+
+make
+
+make install

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -d "../binutils-build" ]; then
+	rm -rf ../binutils-build;
+fi
+
+mkdir -v ../binutils-build
+cd ../binutils-build
+
+../$DNA_PACKAGE_VERSION/configure \
+    --target=$GENUINE_TGT \
+    --prefix=$TOOLBOX \
+    --disable-nls --disable-werror
+
+make
+
+case $(uname -m) in
+  x86_64) mkdir -v $TOOLBOX/lib && ln -sv lib $TOOLBOX/lib64 ;;
+esac
+
+make install

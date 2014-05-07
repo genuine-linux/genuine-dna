@@ -1,0 +1,9 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX
+
+echo '#define YYENABLE_NLS 1' >> lib/config.h
+
+make
+
+make install

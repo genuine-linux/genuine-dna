@@ -1,0 +1,33 @@
+#!/bin/bash
+
+tar -jxf $SRC_DIR/mpfr-3.0.0.tar.bz2
+mv -v mpfr-3.0.0 mpfr
+tar -jxf $SRC_DIR/gmp-5.0.1.tar.bz2
+mv -v gmp-5.0.1 gmp
+tar -zxf $SRC_DIR/mpc-0.8.2.tar.gz
+mv -v mpc-0.8.2 mpc
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+../$DNA_PACKAGE_VERSION/configure \
+    --target=$GENUINE_TGT \
+    --prefix=$TOOLBOX \
+    --disable-nls --disable-shared --disable-multilib \
+    --disable-decimal-float --disable-threads \
+    --disable-libmudflap --disable-libssp \
+    --disable-libgomp --enable-languages=c \
+    --disable-libquadmath \
+    --with-gmp-include=$(pwd)/gmp --with-gmp-lib=$(pwd)/gmp/.libs \
+    --without-ppl --without-cloog
+
+make
+
+make install
+
+ln -vs libgcc.a `$GENUINE_TGT-gcc -print-libgcc-file-name | \
+    sed 's/libgcc/&_eh/'`

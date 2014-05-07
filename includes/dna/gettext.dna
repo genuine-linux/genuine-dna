@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd gettext-tools
+./configure --prefix=$TOOLBOX --disable-shared
+
+make -C gnulib-lib
+make -C src msgfmt
+
+cp -v src/msgfmt $TOOLBOX/bin

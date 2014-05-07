@@ -1,0 +1,163 @@
+#!/bin/bash
+
+# DNA Build ToolBox
+
+# Create Initial Directory and Links
+function create_toolbox {
+        echo "$WARN Creating $TOOLBOX_DIR";
+        mkdir -p $TOOLBOX_DIR;
+        echo "$WARN Linking $TOOLBOX_DIR to $TOOLBOX";
+        ln -s $TOOLBOX_DIR /;
+}
+
+mkdir -p $LOG_DIR $TMP_DIR; 
+
+# Check for previous builds
+CHECK_DONE=$(ls $LOG_DIR | grep '.done');
+
+if [ -z "$CHECK_DONE" ]; then
+	# If any previous build was found ...
+	echo "$INFO Any previous DNA build was found";
+ 
+	# Clean TMP and LOG before start
+	echo "$WARN Cleaning tmp and log before start.";
+	rm -rf $TMP_DIR/* $LOG_DIR/*
+
+	if [ -L "$TOOLBOX" ]; then
+		echo "$WARN Deleting $TOOLBOX";
+		rm -rf $TOOLBOX;
+	fi;
+
+	if [ ! -d "$TOOLBOX_DIR" ]; then
+		create_toolbox;
+	else
+		echo "$WARN Deleting $TOOLBOX_DIR";
+		rm -rf $TOOLBOX_DIR;
+		create_toolbox;
+	fi;
+else
+	echo "$INFO Previous DNA builds were found.";
+	echo "$INFO Trying to recover from last session.";
+	echo "$WARN Cleaning tmp before start.";
+	rm -rf $TMP_DIR/*
+fi;
+
+echo "";
+echo "$INFO Starting ToolBox build in $TOOLBOX";
+echo "";
+
+# Build DNA ToolBox Packages
+HAVE_PACKAGES=$(echo "$DNA_PACKAGES_LST" | grep -v ^#)
+for DNA_PACKAGE in $HAVE_PACKAGES; do
+	# DNA_PACKAGE_NAME DNA_PACKAGE_VERSION SRC_PACKAGE_NAME
+	DNA_PACKAGE_NAME=$(echo "$DNA_PACKAGE" | awk -F"|" '{print $1}');
+	DNA_PACKAGE_VERSION=$(echo "$DNA_PACKAGE" | awk -F"|" '{print $2}');
+	DNA_PACKAGE_URL=$(echo "$DNA_PACKAGE" | awk -F"|" '{print $3}');
+	SRC_PACKAGE_NAME=$(echo "$DNA_PACKAGE" | awk -F"|" '{print $4}');
+
+	export DNA_PACKAGE_NAME DNA_PACKAGE_VERSION SRC_PACKAGE_NAME
+	
+	if [ -f "$LOG_DIR/$DNA_PACKAGE_NAME.done" ]; then
+		echo "$WARN Package $DNA_PACKAGE_NAME has been already installed";
+	else
+		echo "$INFO Starting package $DNA_PACKAGE_VERSION install.";
+
+		# Download Source Package Tarball if necessary
+		if [ ! -f "$SRC_DIR/$SRC_PACKAGE_NAME" ]; then
+			echo "$WARN Package $DNA_PACKAGE_NAME will be downloaded ...";
+			echo ""
+			wget -P $SRC_DIR/ $DNA_PACKAGE_URL/$SRC_PACKAGE_NAME;
+		else
+			echo "$WARN Package $DNA_PACKAGE_NAME has been already downloaded.";
+		fi;
+			
+	
+		# Extract Source Package
+		echo "$INFO Extract source package $DNA_PACKAGE_NAME ...";
+		$EXTRACT "$SRC_DIR/$SRC_PACKAGE_NAME" "$DNA_PACKAGE_VERSION";
+
+		# Build Source Package Followin Rules.
+		echo "";
+		echo "$INFO Build $DNA_PACKAGE_VERSION";
+	
+		# Get into package source directory
+		echo "$INFO Entering $DNA_PACKAGE_VERSION build directory.";
+		cd $TMP_DIR/$DNA_PACKAGE_VERSION
+
+		# Apply Package Patches if they exists.
+		HAVE_PATCHES=$(echo "$DNA_PATCHES_LST" | grep ^$DNA_PACKAGE_NAME);
+		if [ -n "$HAVE_PATCHES" ]; then
+			echo ""
+			echo "$WARN Applying $DNA_PACKAGE_VERSION patches.";
+			for DNA_PATCH in $HAVE_PATCHES; do
+			        # DNA_PACKAGE_NAME DNA_PACKAGE_VERSION SRC_PACKAGE_NAME
+       			 	DNA_PATCH_NAME=$(echo "$DNA_PATCH" | awk -F"|" '{print $1}');
+       		 		DNA_PATCH_VERSION=$(echo "$DNA_PATCH" | awk -F"|" '{print $2}');
+       		 		SRC_PATCH_NAME=$(echo "$DNA_PATCH" | awk -F"|" '{print $3}');
+				echo "$INFO Found patch: $SRC_PATCH_NAME";
+				echo "$INFO Checking matching package version: $DNA_PATCH_VERSION";
+				if [ "$DNA_PATCH_NAME" == "$DNA_PACKAGE_NAME" ] & [ "$DNA_PATCH_VERSION" == "$DNA_PACKAGE_VERSION" ]; then
+					echo "$INFO Package and patch version matchs.";
+					echo "$WARN Applying $DNA_PATCH_VERSION to sources.";
+					patch -Np1 -i $SRC_DIR/$SRC_PATCH_NAME
+					echo ""
+				else
+					echo ""
+					echo "$ERROR Package and patch version does not match.";
+					echo "$WARN Patch $SRC_PATCH_NAME was not applied.";
+					echo ""
+				fi;
+			done;
+		else
+			echo "$WARN Package $DNA_PACKAGE_VERSION does not have patches.";
+			echo "";
+		fi;
+
+		# Copy Rules for building sources
+		echo "$INFO Copying $DNA_PACKAGE_NAME.dna file to $DNA_PACKAGE_VERSION build directory.";
+		cp $DNA_RULES/$DNA_PACKAGE_NAME.dna $TMP_DIR/$DNA_PACKAGE_VERSION/$DNA_PACKAGE_NAME.dna
+
+		# Clear Package Build Log File
+		echo "$WARN Clearing $DNA_PACKAGE_NAME.log file.";
+		> $LOG_DIR/$DNA_PACKAGE_NAME.log
+
+		# Exec Rules File
+		echo "$INFO Starting $DNA_PACKAGE_VERSION build.";
+		chmod +x ./$DNA_PACKAGE_NAME.dna
+		echo ""
+
+		./$DNA_PACKAGE_NAME.dna 2>&1 | tee -a $LOG_DIR/$DNA_PACKAGE_NAME.log
+		if [[ $? -eq 0 ]]; then
+			echo "$INFO Build was done sucessfully.";
+			touch $LOG_DIR/$DNA_PACKAGE_NAME.done;
+		else
+			echo "$ERROR While building package $DNA_PACKAGE_NAME";
+			touch $LOG_DIR/$DNA_PACKAGE_NAME.error
+			exit 1;
+		fi;
+	fi;
+
+	echo ""
+
+	unset DNA_PACKAGE_NAME DNA_PACKAGE_VERSION SRC_PACKAGE_NAME
+done;
+
+echo "$INFO We are done building all packages.";
+echo ""
+
+echo "$INFO Stripping installed binaries and libraries.";
+echo ""
+strip --strip-debug $TOOLBOX/lib/*
+strip --strip-unneeded $TOOLBOX/sbin/* $TOOLBOX/bin/*
+echo ""
+
+echo "$INFO Deleting unnecesary man,info.";
+rm -rf $TOOLBOX/share/man $TOOLBOX/share/info
+echo "";
+
+echo "$INFO Changing ownership.";
+chown -R root:root $TOOLBOX_DIR
+echo "";
+
+echo "$INFO Done.";
+echo "";

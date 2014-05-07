@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ -d "../binutils-build" ]; then
+	rm -rf ../binutils-build;
+fi
+
+mkdir -v ../binutils-build
+cd ../binutils-build
+
+CC="$GENUINE_TGT-gcc -B$TOOLBOX/lib/" \
+   AR=$GENUINE_TGT-ar RANLIB=$GENUINE_TGT-ranlib \
+   ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+   --target=$GENUINE_TGT --host=$GENUINE_TGT --build=$GENUINE_TGT \
+   --disable-nls --with-lib-path=$TOOLBOX/lib \
+   --disable-werror
+
+make
+
+make install
+
+make -C ld clean
+make -C ld LIB_PATH=/usr/lib:/lib
+cp -v ld/ld-new $TOOLBOX/bin

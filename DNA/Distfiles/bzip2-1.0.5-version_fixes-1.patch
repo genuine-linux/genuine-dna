@@ -1,0 +1,122 @@
+Submitted By:            Matt Burgess <matthew_at_linuxfromscratch_dot_org>
+Date:                    2010-05-17
+Initial Package Version: 1.0.5 
+Upstream Status:         Submitted - no response
+Origin:                  Jeremy Huntwork (LightCube OS)
+Description:             Updates some incorrect hard-coded version numbers
+
+diff -Naur bzip2-1.0.5-orig/bzip2.1 bzip2-1.0.5-new/bzip2.1
+--- bzip2-1.0.5-orig/bzip2.1	2007-01-02 21:00:55.000000000 -0500
++++ bzip2-1.0.5-new/bzip2.1	2010-04-01 21:18:21.455881607 -0400
+@@ -1,7 +1,7 @@
+ .PU
+ .TH bzip2 1
+ .SH NAME
+-bzip2, bunzip2 \- a block-sorting file compressor, v1.0.4
++bzip2, bunzip2 \- a block-sorting file compressor, v1.0.5
+ .br
+ bzcat \- decompresses files to stdout
+ .br
+@@ -405,7 +405,7 @@
+ tries hard to detect I/O errors and exit cleanly, but the details of
+ what the problem is sometimes seem rather misleading.
+ 
+-This manual page pertains to version 1.0.4 of
++This manual page pertains to version 1.0.5 of
+ .I bzip2.  
+ Compressed data created by this version is entirely forwards and
+ backwards compatible with the previous public releases, versions
+diff -Naur bzip2-1.0.5-orig/bzip2.1.preformatted bzip2-1.0.5-new/bzip2.1.preformatted
+--- bzip2-1.0.5-orig/bzip2.1.preformatted	2007-01-02 21:00:55.000000000 -0500
++++ bzip2-1.0.5-new/bzip2.1.preformatted	2010-04-01 21:18:21.458881689 -0400
+@@ -3,7 +3,7 @@
+ 
+ 
+ NNAAMMEE
+-       bzip2, bunzip2 − a block‐sorting file compressor, v1.0.4
++       bzip2, bunzip2 − a block‐sorting file compressor, v1.0.5
+        bzcat − decompresses files to stdout
+        bzip2recover − recovers data from damaged bzip2 files
+ 
+@@ -348,7 +348,7 @@
+        but  the  details  of  what  the problem is sometimes seem
+        rather misleading.
+ 
+-       This manual page pertains to version 1.0.4 of _b_z_i_p_2_.  Com­
++       This manual page pertains to version 1.0.5 of _b_z_i_p_2_.  Com­
+        pressed  data created by this version is entirely forwards
+        and  backwards  compatible  with   the   previous   public
+        releases,  versions  0.1pl2,  0.9.0,  0.9.5, 1.0.0, 1.0.1, 
+diff -Naur bzip2-1.0.5-orig/bzip2.txt bzip2-1.0.5-new/bzip2.txt
+--- bzip2-1.0.5-orig/bzip2.txt	2007-01-02 22:06:05.000000000 -0500
++++ bzip2-1.0.5-new/bzip2.txt	2010-04-01 21:18:21.460881610 -0400
+@@ -1,6 +1,6 @@
+ 
+ NAME
+-       bzip2, bunzip2 - a block-sorting file compressor, v1.0.4
++       bzip2, bunzip2 - a block-sorting file compressor, v1.0.5
+        bzcat - decompresses files to stdout
+        bzip2recover - recovers data from damaged bzip2 files
+ 
+@@ -345,7 +345,7 @@
+        but  the  details  of  what  the problem is sometimes seem
+        rather misleading.
+ 
+-       This manual page pertains to version 1.0.4 of bzip2.  Com-
++       This manual page pertains to version 1.0.5 of bzip2.  Com-
+        pressed  data created by this version is entirely forwards
+        and  backwards  compatible  with   the   previous   public
+        releases,  versions  0.1pl2,  0.9.0,  0.9.5, 1.0.0, 1.0.1,
+diff -Naur bzip2-1.0.5-orig/Makefile-libbz2_so bzip2-1.0.5-new/Makefile-libbz2_so
+--- bzip2-1.0.5-orig/Makefile-libbz2_so	2007-12-09 08:00:50.000000000 -0500
++++ bzip2-1.0.5-new/Makefile-libbz2_so	2010-04-01 21:18:21.461882051 -0400
+@@ -1,6 +1,6 @@
+ 
+ # This Makefile builds a shared version of the library, 
+-# libbz2.so.1.0.4, with soname libbz2.so.1.0,
++# libbz2.so.1.0.5, with soname libbz2.so.1.0,
+ # at least on x86-Linux (RedHat 7.2), 
+ # with gcc-2.96 20000731 (Red Hat Linux 7.1 2.96-98).  
+ # Please see the README file for some important info 
+@@ -35,13 +35,13 @@
+       bzlib.o
+ 
+ all: $(OBJS)
+-	$(CC) -shared -Wl,-soname -Wl,libbz2.so.1.0 -o libbz2.so.1.0.4 $(OBJS)
+-	$(CC) $(CFLAGS) -o bzip2-shared bzip2.c libbz2.so.1.0.4
++	$(CC) -shared -Wl,-soname -Wl,libbz2.so.1.0 -o libbz2.so.1.0.5 $(OBJS)
++	$(CC) $(CFLAGS) -o bzip2-shared bzip2.c libbz2.so.1.0.5
+ 	rm -f libbz2.so.1.0
+-	ln -s libbz2.so.1.0.4 libbz2.so.1.0
++	ln -s libbz2.so.1.0.5 libbz2.so.1.0
+ 
+ clean: 
+-	rm -f $(OBJS) bzip2.o libbz2.so.1.0.4 libbz2.so.1.0 bzip2-shared
++	rm -f $(OBJS) bzip2.o libbz2.so.1.0.5 libbz2.so.1.0 bzip2-shared
+ 
+ blocksort.o: blocksort.c
+ 	$(CC) $(CFLAGS) -c blocksort.c
+diff -Naur bzip2-1.0.5-orig/manual.html bzip2-1.0.5-new/manual.html
+--- bzip2-1.0.5-orig/manual.html	2008-02-14 07:40:32.000000000 -0500
++++ bzip2-1.0.5-new/manual.html	2010-04-01 21:18:21.473881300 -0400
+@@ -266,7 +266,7 @@
+ <div class="itemizedlist"><ul type="bullet">
+ <li style="list-style-type: disc"><p><code class="computeroutput">bzip2</code>,
+   <code class="computeroutput">bunzip2</code> - a block-sorting file
+-  compressor, v1.0.4</p></li>
++  compressor, v1.0.5</p></li>
+ <li style="list-style-type: disc"><p><code class="computeroutput">bzcat</code> -
+    decompresses files to stdout</p></li>
+ <li style="list-style-type: disc"><p><code class="computeroutput">bzip2recover</code> -
+diff -Naur bzip2-1.0.5-orig/manual.xml bzip2-1.0.5-new/manual.xml
+--- bzip2-1.0.5-orig/manual.xml	2007-12-09 07:36:32.000000000 -0500
++++ bzip2-1.0.5-new/manual.xml	2010-04-01 21:18:21.487881389 -0400
+@@ -139,7 +139,7 @@
+ 
+  <listitem><para><computeroutput>bzip2</computeroutput>,
+   <computeroutput>bunzip2</computeroutput> - a block-sorting file
+-  compressor, v1.0.4</para></listitem>
++  compressor, v1.0.5</para></listitem>
+ 
+  <listitem><para><computeroutput>bzcat</computeroutput> -
+    decompresses files to stdout</para></listitem>
