@@ -1,4 +1,4 @@
-genuine-dna
+Genuine DNA
 ===========
 
-Genuine GNU/Linux DNA for bootstraping a system
+Genuine GNU/Linux DNA Tools for bootstraping a system
