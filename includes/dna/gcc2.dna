@@ -31,7 +31,7 @@ tar -jxf $SRC_DIR/mpfr-3.1.2.tar.bz2
 mv -v mpfr-3.1.2 mpfr
 
 tar -jxf $SRC_DIR/gmp-6.0.0a.tar.bz2
-mv -v gmp-6.0.0a gmp
+mv -v gmp-6.0.0 gmp
 
 tar -zxf $SRC_DIR/mpc-1.0.2.tar.gz
 mv -v mpc-1.0.2 mpc
