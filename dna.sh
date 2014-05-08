@@ -38,7 +38,7 @@ export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX PATH EXTRACT INFO WARN BLD ERROR
 # DNA Help
 function dnahelp {
 	echo "";
-	echo "./genuine.sh dna_build";
+	echo "./dna.sh build";
 	echo "";
 }
 
@@ -57,7 +57,7 @@ echo "";
 # DNA Options
 
 case "$OPTIONS" in
-	dna_build) bash $INC_DIR/dna.build;
+	build) bash $INC_DIR/dna.build;
 	;;
 	*) dnahelp; exit;
 	;;
