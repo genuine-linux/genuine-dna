@@ -1,11 +1,16 @@
 #!/bin/bash
 
-tar -jxf $SRC_DIR/mpfr-3.0.0.tar.bz2
-mv -v mpfr-3.0.0 mpfr
-tar -jxf $SRC_DIR/gmp-5.0.1.tar.bz2
-mv -v gmp-5.0.1 gmp
-tar -zxf $SRC_DIR/mpc-0.8.2.tar.gz
-mv -v mpc-0.8.2 mpc
+wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.bz2
+tar -jxf $SRC_DIR/mpfr-3.1.2.tar.bz2
+mv -v mpfr-3.1.2 mpfr
+
+wget https://gmplib.org/download/gmp/gmp-6.0.0a.tar.bz2
+tar -jxf $SRC_DIR/gmp-6.0.0a.tar.bz2
+mv -v gmp-6.0.0a gmp
+
+wget ftp://ftp.gnu.org/gnu/mpc/mpc-1.0.2.tar.gz
+tar -zxf $SRC_DIR/mpc-1.0.2.tar.gz
+mv -v mpc-1.0.2 mpc
 
 if [ -d "../gcc-build" ]; then
         rm -rf ../gcc-build;
