@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Download Source Package Tarball if necessary
+if [ ! -f "$SRC_DIR/$SRC_PACKAGE_NAME" ]; then
+	echo "$WARN Package $DNA_PACKAGE_NAME will be downloaded ...";
+	echo ""
+	wget -P $SRC_DIR/ $DNA_PACKAGE_URL/$SRC_PACKAGE_NAME;
+else
+        echo "$WARN Package $DNA_PACKAGE_NAME has been already downloaded.";
+fi;
+
 wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.bz2
 tar -jxf $SRC_DIR/mpfr-3.1.2.tar.bz2
 mv -v mpfr-3.1.2 mpfr
