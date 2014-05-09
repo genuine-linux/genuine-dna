@@ -8,10 +8,11 @@ mpfr|mpfr-3.1.2|http://www.mpfr.org/mpfr-current/|mpfr-3.1.2.tar.bz2
 mpc|mpc-1.0.2|ftp://ftp.gnu.org/gnu/mpc/|mpc-1.0.2.tar.gz
 isl|isl-0.13|http://isl.gforge.inria.fr/|isl-0.13.tar.bz2
 cloog|cloog-0.18.2|http://www.bastoul.net/cloog/pages/download/|cloog-0.18.2.tar.gz
-binutils-cross|binutils-2.24|http://ftp.gnu.org/gnu/binutils/|binutils-2.24.tar.bz2
+binutils-cross-step0|binutils-2.24|http://ftp.gnu.org/gnu/binutils/|binutils-2.24.tar.bz2
 gcc-cross-step0|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
 glibc|glibc-2.19|http://ftp.gnu.org/gnu/glibc/|glibc-2.19.tar.bz2
-binutils|binutils-2.4|http://ftp.gnu.org/gnu/|binutils-2.24.tar.bz2
+libstdc|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
+binutils-cross-step1|binutils-2.4|http://ftp.gnu.org/gnu/|binutils-2.24.tar.bz2
 gcc-cross-step1|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
 
 tcl|tcl8.6.1|http://prdownloads.sourceforge.net/tcl/|tcl8.6.1-src.tar.gz
