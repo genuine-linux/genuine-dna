@@ -52,7 +52,7 @@ diff -Naur sysvinit-2.88dsf.orig/src/Makefile sysvinit-2.88dsf/src/Makefile
  
  # Additional libs for GNU libc.
 -ifneq ($(wildcard /usr/lib*/libcrypt.a),)
-+ifneq ($(wildcard /tools/lib*/libcrypt.a),)
++ifneq ($(wildcard /dnatools/lib*/libcrypt.a),)
    SULOGINLIBS	+= -lcrypt
  endif
  
@@ -76,7 +76,7 @@ diff -Naur sysvinit-2.88dsf.orig/src/paths.h sysvinit-2.88dsf/src/paths.h
  #define SECURETTY	"/etc/securetty"	/* List of root terminals */
  #define SDALLOW		"/etc/shutdown.allow"	/* Users allowed to shutdown */
 -#define INITTAB		"/etc/inittab"		/* Location of inittab */
-+#define INITTAB		"/tools/etc/inittab"		/* Location of inittab */
++#define INITTAB		"/dnatools/etc/inittab"		/* Location of inittab */
  #define INIT		"/sbin/init"		/* Location of init itself. */
  #define NOLOGIN		"/etc/nologin"		/* Stop user logging in. */
  #define FASTBOOT	"/fastboot"		/* Enable fast boot. */

@@ -80,25 +80,25 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
 	if [ -f "$LOG_DIR/$DNA_PACKAGE_NAME.done" ]; then
 		echo "$WARN Package $DNA_PACKAGE_NAME has been already installed";
 	else
-		echo "$INFO Starting package $DNA_PACKAGE_VERSION install.";
+		echo "$INFO Starting package $DNA_PACKAGE_NAME install.";
 
 		# Download Source Package Tarball if necessary
 		if [ ! -f "$SRC_DIR/$SRC_PACKAGE_NAME" ]; then
-			echo "$WARN Package $DNA_PACKAGE_NAME will be downloaded ...";
+			echo "$WARN Package $DNA_PACKAGE_VERSION will be downloaded ...";
 			echo ""
 			wget -P $SRC_DIR/ $DNA_PACKAGE_URL/$SRC_PACKAGE_NAME;
 		else
-			echo "$WARN Package $DNA_PACKAGE_NAME has been already downloaded.";
+			echo "$WARN Package $DNA_PACKAGE_VERSION has been already downloaded.";
 		fi;
 			
 	
 		# Extract Source Package
-		echo "$INFO Extract source package $DNA_PACKAGE_NAME ...";
+		echo "$INFO Extract source package $DNA_PACKAGE_VERSION ...";
 		$EXTRACT "$SRC_DIR/$SRC_PACKAGE_NAME" "$DNA_PACKAGE_VERSION";
 
 		# Build Source Package Followin Rules.
 		echo "";
-		echo "$INFO Build $DNA_PACKAGE_VERSION";
+		echo "$INFO Build $DNA_PACKAGE_NAME";
 	
 		# Get into package source directory
 		echo "$INFO Entering $DNA_PACKAGE_VERSION build directory.";
@@ -108,7 +108,7 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
 		HAVE_PATCHES=$(echo "$DNA_PATCHES_LST" | grep ^$DNA_PACKAGE_NAME);
 		if [ -n "$HAVE_PATCHES" ]; then
 			echo ""
-			echo "$WARN Applying $DNA_PACKAGE_VERSION patches.";
+			echo "$WARN Applying $DNA_PACKAGE_NAME patches.";
 			for DNA_PATCH in $HAVE_PATCHES; do
 			        # DNA_PACKAGE_NAME DNA_PACKAGE_VERSION SRC_PACKAGE_NAME
        			 	DNA_PATCH_NAME=$(echo "$DNA_PATCH" | awk -F"|" '{print $1}');
@@ -129,7 +129,7 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
 				fi;
 			done;
 		else
-			echo "$WARN Package $DNA_PACKAGE_VERSION does not have patches.";
+			echo "$WARN Package $DNA_PACKAGE_NAME does not have patches.";
 			echo "";
 		fi;
 

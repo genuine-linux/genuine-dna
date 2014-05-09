@@ -5,7 +5,7 @@ Origin: Idea originally developed by Ryan Oliver and Greg Schafer for
         the Pure LFS project.
 Upstream Status: Not Applied - CLFS Specific
 Description: The specs patch changes the location of the dynamic linker as
-             well as the link spec to /tools/lib{,32,64}.
+             well as the link spec to /dnatools/lib{,32,64}.
 
 diff -Naur gcc-4.8.1.orig/gcc/config/aarch64/aarch64-linux.h gcc-4.8.1/gcc/config/aarch64/aarch64-linux.h
 --- gcc-4.8.1.orig/gcc/config/aarch64/aarch64-linux.h	2013-01-10 20:38:27.000000000 +0000
@@ -15,7 +15,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/aarch64/aarch64-linux.h gcc-4.8.1/gcc/confi
  #define GCC_AARCH64_LINUX_H
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux-aarch64.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux-aarch64.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux-aarch64.so.1"
  
  #define LINUX_TARGET_LINK_SPEC  "%{h*}		\
     %{static:-Bstatic}				\
@@ -28,8 +28,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/alpha/linux-elf.h gcc-4.8.1/gcc/config/alph
  
 -#define GLIBC_DYNAMIC_LINKER	"/lib/ld-linux.so.2"
 -#define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
-+#define GLIBC_DYNAMIC_LINKER	"/tools/lib/ld-linux.so.2"
-+#define UCLIBC_DYNAMIC_LINKER "/tools/lib/ld-uClibc.so.0"
++#define GLIBC_DYNAMIC_LINKER	"/dnatools/lib/ld-linux.so.2"
++#define UCLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-uClibc.so.0"
  #if DEFAULT_LIBC == LIBC_UCLIBC
  #define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
  #elif DEFAULT_LIBC == LIBC_GLIBC
@@ -42,8 +42,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/arm/linux-eabi.h gcc-4.8.1/gcc/config/arm/l
  #undef  GLIBC_DYNAMIC_LINKER
 -#define GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-linux.so.3"
 -#define GLIBC_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-linux-armhf.so.3"
-+#define GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "/tools/lib/ld-linux.so.3"
-+#define GLIBC_DYNAMIC_LINKER_HARD_FLOAT "/tools/lib/ld-linux-armhf.so.3"
++#define GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "/dnatools/lib/ld-linux.so.3"
++#define GLIBC_DYNAMIC_LINKER_HARD_FLOAT "/dnatools/lib/ld-linux-armhf.so.3"
  #define GLIBC_DYNAMIC_LINKER_DEFAULT GLIBC_DYNAMIC_LINKER_SOFT_FLOAT
  
  #define GLIBC_DYNAMIC_LINKER \
@@ -55,7 +55,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/arm/linux-elf.h gcc-4.8.1/gcc/config/arm/li
  #define LIBGCC_SPEC "%{mfloat-abi=soft*:-lfloat} -lgcc"
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux.so.2"
  
  #define LINUX_TARGET_LINK_SPEC  "%{h*} \
     %{static:-Bstatic} \
@@ -67,7 +67,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/c6x/uclinux-elf.h gcc-4.8.1/gcc/config/c6x/
    "%{!shared:crt1%O%s} crti%O%s %{shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
  
 -#define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKER "/tools/lib/ld-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-uClibc.so.0"
  
  #undef LINK_SPEC
  #define LINK_SPEC ENDIAN_LINK_SPEC \
@@ -79,7 +79,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/cris/linux.h gcc-4.8.1/gcc/config/cris/linu
  #define CRIS_DEFAULT_CPU_VERSION CRIS_CPU_NG
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef CRIS_LINK_SUBTARGET_SPEC
  #define CRIS_LINK_SUBTARGET_SPEC \
@@ -91,10 +91,10 @@ diff -Naur gcc-4.8.1.orig/gcc/config/freebsd-spec.h gcc-4.8.1/gcc/config/freebsd
  
  #if FBSD_MAJOR < 6
 -#define FBSD_DYNAMIC_LINKER "/usr/libexec/ld-elf.so.1"
-+#define FBSD_DYNAMIC_LINKER "/tools/lib/ld-elf.so.1"
++#define FBSD_DYNAMIC_LINKER "/dnatools/lib/ld-elf.so.1"
  #else
 -#define FBSD_DYNAMIC_LINKER "/libexec/ld-elf.so.1"
-+#define FBSD_DYNAMIC_LINKER "/tools/lib/ld-elf.so.1"
++#define FBSD_DYNAMIC_LINKER "/dnatools/lib/ld-elf.so.1"
  #endif
  
  /* NOTE: The freebsd-spec.h header is included also for various
@@ -106,7 +106,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/frv/linux.h gcc-4.8.1/gcc/config/frv/linux.
    "%{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef LINK_SPEC
  #define LINK_SPEC "\
@@ -118,7 +118,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/i386/gnu.h gcc-4.8.1/gcc/config/i386/gnu.h
  
  #undef GNU_USER_DYNAMIC_LINKER
 -#define GNU_USER_DYNAMIC_LINKER "/lib/ld.so"
-+#define GNU_USER_DYNAMIC_LINKER "/tools/lib/ld.so"
++#define GNU_USER_DYNAMIC_LINKER "/dnatools/lib/ld.so"
  
  #undef	STARTFILE_SPEC
  #if defined HAVE_LD_PIE
@@ -130,7 +130,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/i386/kfreebsd-gnu.h gcc-4.8.1/gcc/config/i3
  
  #define GNU_USER_LINK_EMULATION "elf_i386_fbsd"
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
 diff -Naur gcc-4.8.1.orig/gcc/config/i386/kfreebsd-gnu64.h gcc-4.8.1/gcc/config/i386/kfreebsd-gnu64.h
 --- gcc-4.8.1.orig/gcc/config/i386/kfreebsd-gnu64.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/i386/kfreebsd-gnu64.h	2013-06-02 18:35:46.520851155 +0000
@@ -141,9 +141,9 @@ diff -Naur gcc-4.8.1.orig/gcc/config/i386/kfreebsd-gnu64.h gcc-4.8.1/gcc/config/
 -#define GLIBC_DYNAMIC_LINKER32 "/lib/ld.so.1"
 -#define GLIBC_DYNAMIC_LINKER64 "/lib/ld-kfreebsd-x86-64.so.1"
 -#define GLIBC_DYNAMIC_LINKERX32 "/lib/ld-kfreebsd-x32.so.1"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib/ld-kfreebsd-x86-64.so.1"
-+#define GLIBC_DYNAMIC_LINKERX32 "/tools/lib/ld-kfreebsd-x32.so.1"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib/ld-kfreebsd-x86-64.so.1"
++#define GLIBC_DYNAMIC_LINKERX32 "/dnatools/lib/ld-kfreebsd-x32.so.1"
 diff -Naur gcc-4.8.1.orig/gcc/config/i386/linux.h gcc-4.8.1/gcc/config/i386/linux.h
 --- gcc-4.8.1.orig/gcc/config/i386/linux.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/i386/linux.h	2013-06-02 18:35:33.470893926 +0000
@@ -152,7 +152,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/i386/linux.h gcc-4.8.1/gcc/config/i386/linu
  
  #define GNU_USER_LINK_EMULATION "elf_i386"
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux.so.2"
 diff -Naur gcc-4.8.1.orig/gcc/config/i386/linux64.h gcc-4.8.1/gcc/config/i386/linux64.h
 --- gcc-4.8.1.orig/gcc/config/i386/linux64.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/i386/linux64.h	2013-06-02 18:36:06.977450771 +0000
@@ -163,9 +163,9 @@ diff -Naur gcc-4.8.1.orig/gcc/config/i386/linux64.h gcc-4.8.1/gcc/config/i386/li
 -#define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
 -#define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
 -#define GLIBC_DYNAMIC_LINKERX32 "/libx32/ld-linux-x32.so.2"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld-linux-x86-64.so.2"
-+#define GLIBC_DYNAMIC_LINKERX32 "/tools/libx32/ld-linux-x32.so.2"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld-linux-x86-64.so.2"
++#define GLIBC_DYNAMIC_LINKERX32 "/dnatools/libx32/ld-linux-x32.so.2"
 diff -Naur gcc-4.8.1.orig/gcc/config/ia64/linux.h gcc-4.8.1/gcc/config/ia64/linux.h
 --- gcc-4.8.1.orig/gcc/config/ia64/linux.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/ia64/linux.h	2013-06-02 18:36:19.327410170 +0000
@@ -174,7 +174,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/ia64/linux.h gcc-4.8.1/gcc/config/ia64/linu
     linux.h file.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux-ia64.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux-ia64.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux-ia64.so.2"
  
  #undef LINK_SPEC
  #define LINK_SPEC "\
@@ -186,7 +186,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/knetbsd-gnu.h gcc-4.8.1/gcc/config/knetbsd-
  
  #undef GNU_USER_DYNAMIC_LINKER
 -#define GNU_USER_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GNU_USER_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GNU_USER_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
 diff -Naur gcc-4.8.1.orig/gcc/config/kopensolaris-gnu.h gcc-4.8.1/gcc/config/kopensolaris-gnu.h
 --- gcc-4.8.1.orig/gcc/config/kopensolaris-gnu.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/kopensolaris-gnu.h	2013-06-02 18:43:36.355976960 +0000
@@ -195,7 +195,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/kopensolaris-gnu.h gcc-4.8.1/gcc/config/kop
  
  #undef GNU_USER_DYNAMIC_LINKER
 -#define GNU_USER_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GNU_USER_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GNU_USER_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
 diff -Naur gcc-4.8.1.orig/gcc/config/linux.h gcc-4.8.1/gcc/config/linux.h
 --- gcc-4.8.1.orig/gcc/config/linux.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/linux.h	2013-06-02 18:37:10.180576851 +0000
@@ -207,10 +207,10 @@ diff -Naur gcc-4.8.1.orig/gcc/config/linux.h gcc-4.8.1/gcc/config/linux.h
 -#define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
 -#define UCLIBC_DYNAMIC_LINKER64 "/lib/ld64-uClibc.so.0"
 -#define UCLIBC_DYNAMIC_LINKERX32 "/lib/ldx32-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKER "/tools/lib/ld-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKER32 "/tools/lib/ld-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKER64 "/tools/lib/ld64-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKERX32 "/tools/lib/ldx32-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKER64 "/dnatools/lib/ld64-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKERX32 "/dnatools/lib/ldx32-uClibc.so.0"
  #define BIONIC_DYNAMIC_LINKER "/system/bin/linker"
  #define BIONIC_DYNAMIC_LINKER32 "/system/bin/linker"
  #define BIONIC_DYNAMIC_LINKER64 "/system/bin/linker64"
@@ -222,7 +222,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/m32r/linux.h gcc-4.8.1/gcc/config/m32r/linu
     done.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux.so.2"
  
  #undef	LINK_SPEC
  #if TARGET_LITTLE_ENDIAN
@@ -234,7 +234,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/m68k/linux.h gcc-4.8.1/gcc/config/m68k/linu
     done.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef LINK_SPEC
  #define LINK_SPEC "-m m68kelf %{shared} \
@@ -246,7 +246,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/microblaze/linux.h gcc-4.8.1/gcc/config/mic
  #define TLS_NEEDS_GOT 1
  
 -#define DYNAMIC_LINKER "/lib/ld.so.1"
-+#define DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  #undef  SUBTARGET_EXTRA_SPECS
  #define SUBTARGET_EXTRA_SPECS \
    { "dynamic_linker", DYNAMIC_LINKER }
@@ -258,7 +258,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/mips/linux.h gcc-4.8.1/gcc/config/mips/linu
  <http://www.gnu.org/licenses/>.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
 diff -Naur gcc-4.8.1.orig/gcc/config/mips/linux64.h gcc-4.8.1/gcc/config/mips/linux64.h
 --- gcc-4.8.1.orig/gcc/config/mips/linux64.h	2013-01-10 20:38:27.000000000 +0000
 +++ gcc-4.8.1/gcc/config/mips/linux64.h	2013-06-02 18:37:51.027109674 +0000
@@ -270,10 +270,10 @@ diff -Naur gcc-4.8.1.orig/gcc/config/mips/linux64.h gcc-4.8.1/gcc/config/mips/li
 -#define GLIBC_DYNAMIC_LINKER64 "/lib64/ld.so.1"
 -#define GLIBC_DYNAMIC_LINKERN32 "/lib32/ld.so.1"
 -#define UCLIBC_DYNAMIC_LINKERN32 "/lib32/ld-uClibc.so.0"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKERN32 "/tools/lib32/ld.so.1"
-+#define UCLIBC_DYNAMIC_LINKERN32 "/tools/lib32/ld-uClibc.so.0"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld.so.1"
++#define GLIBC_DYNAMIC_LINKERN32 "/dnatools/lib32/ld.so.1"
++#define UCLIBC_DYNAMIC_LINKERN32 "/dnatools/lib32/ld-uClibc.so.0"
  #define BIONIC_DYNAMIC_LINKERN32 "/system/bin/linker32"
  #define GNU_USER_DYNAMIC_LINKERN32 \
    CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKERN32, UCLIBC_DYNAMIC_LINKERN32, \
@@ -285,7 +285,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/mn10300/linux.h gcc-4.8.1/gcc/config/mn1030
  #define ASM_SPEC ""
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef  LINK_SPEC
  #define LINK_SPEC "%{mrelax:--relax} %{shared:-shared} \
@@ -297,7 +297,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/pa/pa-linux.h gcc-4.8.1/gcc/config/pa/pa-li
     linux.h file.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef LINK_SPEC
  #define LINK_SPEC "\
@@ -310,8 +310,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/rs6000/freebsd64.h gcc-4.8.1/gcc/config/rs6
  
 -#define FREEBSD_DYNAMIC_LINKER32 "/libexec/ld-elf32.so.1"
 -#define FREEBSD_DYNAMIC_LINKER64 "/libexec/ld-elf.so.1"
-+#define FREEBSD_DYNAMIC_LINKER32 "/tools/lib/ld-elf32.so.1"
-+#define FREEBSD_DYNAMIC_LINKER64 "/tools/lib64/ld-elf.so.1"
++#define FREEBSD_DYNAMIC_LINKER32 "/dnatools/lib/ld-elf32.so.1"
++#define FREEBSD_DYNAMIC_LINKER64 "/dnatools/lib64/ld-elf.so.1"
  
  #define LINK_OS_FREEBSD_SPEC_DEF32 "\
    %{p:%nconsider using `-pg' instead of `-p' with gprof(1)} \
@@ -326,10 +326,10 @@ diff -Naur gcc-4.8.1.orig/gcc/config/rs6000/linux64.h gcc-4.8.1/gcc/config/rs600
 -#define GLIBC_DYNAMIC_LINKER64 "/lib64/ld64.so.1"
 -#define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
 -#define UCLIBC_DYNAMIC_LINKER64 "/lib/ld64-uClibc.so.0"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld64.so.1"
-+#define UCLIBC_DYNAMIC_LINKER32 "/tools/lib/ld-uClibc.so.0"
-+#define UCLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld64-uClibc.so.0"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld64.so.1"
++#define UCLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld-uClibc.so.0"
++#define UCLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld64-uClibc.so.0"
  #if DEFAULT_LIBC == LIBC_UCLIBC
  #define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
  #elif DEFAULT_LIBC == LIBC_GLIBC
@@ -342,8 +342,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/rs6000/sysv4.h gcc-4.8.1/gcc/config/rs6000/
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 -#define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
-+#define UCLIBC_DYNAMIC_LINKER "/tools/lib/ld-uClibc.so.0"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
++#define UCLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-uClibc.so.0"
  #if DEFAULT_LIBC == LIBC_UCLIBC
  #define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
  #elif !defined (DEFAULT_LIBC) || DEFAULT_LIBC == LIBC_GLIBC
@@ -352,7 +352,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/rs6000/sysv4.h gcc-4.8.1/gcc/config/rs6000/
  %{!shared: %{!static: \
    %{rdynamic:-export-dynamic} \
 -  -dynamic-linker /usr/libexec/ld.elf_so}}"
-+  -dynamic-linker /tools/lib/ld.elf_so}}"
++  -dynamic-linker /dnatools/lib/ld.elf_so}}"
  
  #define CPP_OS_NETBSD_SPEC "\
  -D__powerpc__ -D__NetBSD__ -D__KPRINTF_ATTRIBUTE__"
@@ -365,8 +365,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/s390/linux.h gcc-4.8.1/gcc/config/s390/linu
  
 -#define GLIBC_DYNAMIC_LINKER32 "/lib/ld.so.1"
 -#define GLIBC_DYNAMIC_LINKER64 "/lib/ld64.so.1"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld64.so.1"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld64.so.1"
  
  #undef  LINK_SPEC
  #define LINK_SPEC \
@@ -378,7 +378,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/sh/linux.h gcc-4.8.1/gcc/config/sh/linux.h
  #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux.so.2"
  
  #undef SUBTARGET_LINK_EMUL_SUFFIX
  #define SUBTARGET_LINK_EMUL_SUFFIX "_linux"
@@ -390,7 +390,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/sparc/linux.h gcc-4.8.1/gcc/config/sparc/li
     done.  */
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld-linux.so.2"
  
  #undef  LINK_SPEC
  #define LINK_SPEC "-m elf32_sparc %{shared:-shared} \
@@ -403,8 +403,8 @@ diff -Naur gcc-4.8.1.orig/gcc/config/sparc/linux64.h gcc-4.8.1/gcc/config/sparc/
  
 -#define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
 -#define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER32 "/tools/lib/ld-linux.so.2"
-+#define GLIBC_DYNAMIC_LINKER64 "/tools/lib64/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER32 "/dnatools/lib/ld-linux.so.2"
++#define GLIBC_DYNAMIC_LINKER64 "/dnatools/lib64/ld-linux.so.2"
  
  #ifdef SPARC_BI_ARCH
  
@@ -413,7 +413,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/sparc/linux64.h gcc-4.8.1/gcc/config/sparc/
  
  #undef LINK_SPEC
 -#define LINK_SPEC "-m elf64_sparc -Y P,%R/usr/lib64 %{shared:-shared} \
-+#define LINK_SPEC "-m elf64_sparc -Y P,%R/tools/lib64 %{shared:-shared} \
++#define LINK_SPEC "-m elf64_sparc -Y P,%R/dnatools/lib64 %{shared:-shared} \
    %{!shared: \
      %{!static: \
        %{rdynamic:-export-dynamic} \
@@ -425,7 +425,7 @@ diff -Naur gcc-4.8.1.orig/gcc/config/xtensa/linux.h gcc-4.8.1/gcc/config/xtensa/
    %{mno-longcalls:--no-longcalls}"
  
 -#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/tools/lib/ld.so.1"
++#define GLIBC_DYNAMIC_LINKER "/dnatools/lib/ld.so.1"
  
  #undef LINK_SPEC
  #define LINK_SPEC \

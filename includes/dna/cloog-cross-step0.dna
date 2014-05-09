@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sh autogen.sh
+
 LDFLAGS="-Wl,-rpath,$CROSSTOOLBOX/lib" \
     ./configure --prefix=$CROSSTOOLBOX --disable-static \
     --with-gmp-prefix=$CROSSTOOLBOX --with-isl-prefix=$CROSSTOOLBOX

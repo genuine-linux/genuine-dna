@@ -15,7 +15,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/Makefile bootscripts-cross-lfs-2.
  
 -install-minimal: create-dirs create-service-dir udev_device_dirs udev_device_links
 +install-minimal: create-dirs create-service-dir
- 	sed -e 's|/bin:/usr/bin:/sbin:/usr/sbin|/tools/bin:/tools/sbin:/bin:/sbin|g' clfs/init.d/functions > clfs/init.d/functions.minimal
+ 	sed -e 's|/bin:/usr/bin:/sbin:/usr/sbin|/dnatools/bin:/dnatools/sbin:/bin:/sbin|g' clfs/init.d/functions > clfs/init.d/functions.minimal
  	install -m ${MODE} clfs/init.d/checkfs       		${EXTDIR}/rc.d/init.d/
  	install -m ${MODE} clfs/init.d/cleanfs       		${EXTDIR}/rc.d/init.d/
 @@ -170,7 +169,6 @@
@@ -34,7 +34,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/checkfs bootscripts-c
  #########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -46,14 +46,14 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/cleanfs bootscripts-c
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  # Function to create files/directory on boot.
  create_files() {
  	# Read in the configuration file.
 -	exec 9>&0 < /etc/sysconfig/createfiles
-+	exec 9>&0 < /tools/etc/sysconfig/createfiles
++	exec 9>&0 < /dnatools/etc/sysconfig/createfiles
  		while read name type perm usr grp dtype maj min junk
  		do
  
@@ -63,8 +63,8 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/cleanfs bootscripts-c
                  boot_mesg "" ${NORMAL}
 -		if [ -e /etc/sysconfig/createfiles ]; then
 -			if egrep -qv '^(#|$)' /etc/sysconfig/createfiles 2>/dev/null; then
-+		if [ -e /tools/etc/sysconfig/createfiles ]; then
-+			if egrep -qv '^(#|$)' /tools/etc/sysconfig/createfiles 2>/dev/null; then
++		if [ -e /dnatools/etc/sysconfig/createfiles ]; then
++			if egrep -qv '^(#|$)' /dnatools/etc/sysconfig/createfiles 2>/dev/null; then
  				boot_mesg "Creating files and directories..."
  				create_files
  				evaluate_retval
@@ -76,15 +76,15 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/consolelog bootscript
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  # set the default loglevel
  LOGLEVEL=7
 -if [ -r /etc/sysconfig/console ]; then
 -	. /etc/sysconfig/console
-+if [ -r /tools/etc/sysconfig/console ]; then
-+	. /tools/etc/sysconfig/console
++if [ -r /dnatools/etc/sysconfig/console ]; then
++	. /dnatools/etc/sysconfig/console
  fi
  
  case "${1}" in
@@ -96,17 +96,17 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/functions bootscripts
  ########################################################################
  
 -if [ -e /etc/sysconfig/lcd ]; then
-+if [ -e /tools/etc/sysconfig/lcd ]; then
++if [ -e /dnatools/etc/sysconfig/lcd ]; then
  	if [ -e /dev/lcd ]; then
 -		source /etc/sysconfig/lcd
-+		source /tools/etc/sysconfig/lcd
++		source /dnatools/etc/sysconfig/lcd
  	fi
  fi
  
 -if [ -e /etc/sysconfig/bootscripts ]; then
 -	source /etc/sysconfig/bootscripts
-+if [ -e /tools/etc/sysconfig/bootscripts ]; then
-+	source /tools/etc/sysconfig/bootscripts
++if [ -e /dnatools/etc/sysconfig/bootscripts ]; then
++	source /dnatools/etc/sysconfig/bootscripts
  fi
  
  ## Environmental setup
@@ -118,17 +118,17 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/functions.minimal boo
  ########################################################################
  
 -if [ -e /etc/sysconfig/lcd ]; then
-+if [ -e /tools/etc/sysconfig/lcd ]; then
++if [ -e /dnatools/etc/sysconfig/lcd ]; then
  	if [ -e /dev/lcd ]; then
 -		source /etc/sysconfig/lcd
-+		source /tools/etc/sysconfig/lcd
++		source /dnatools/etc/sysconfig/lcd
  	fi
  fi
  
 -if [ -e /etc/sysconfig/bootscripts ]; then
 -	source /etc/sysconfig/bootscripts
-+if [ -e /tools/etc/sysconfig/bootscripts ]; then
-+	source /tools/etc/sysconfig/bootscripts
++if [ -e /dnatools/etc/sysconfig/bootscripts ]; then
++	source /dnatools/etc/sysconfig/bootscripts
  fi
  
  ## Environmental setup
@@ -140,7 +140,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/halt bootscripts-cros
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -152,13 +152,13 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/i18n bootscripts-cros
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
 -if [ -f /etc/sysconfig/i18n ]; then
 -	. /etc/sysconfig/i18n
-+if [ -f /tools/etc/sysconfig/i18n ]; then
-+	. /tools/etc/sysconfig/i18n
++if [ -f /dnatools/etc/sysconfig/i18n ]; then
++	. /dnatools/etc/sysconfig/i18n
  fi
  
  case "${1}" in
@@ -170,10 +170,10 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/localnet bootscripts-
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
 -. /etc/sysconfig/network
-+. /tools/etc/sysconfig/network
++. /dnatools/etc/sysconfig/network
  
  case "${1}" in
  	start)
@@ -185,7 +185,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/modules bootscripts-c
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  # Assure that the kernel has module support.
@@ -195,8 +195,8 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/modules bootscripts-c
  		# valid entries
 -		[ -r /etc/sysconfig/modules ] &&
 -			egrep -qv '^($|#)' /etc/sysconfig/modules ||
-+		[ -r /tools/etc/sysconfig/modules ] &&
-+			egrep -qv '^($|#)' /tools/etc/sysconfig/modules ||
++		[ -r /dnatools/etc/sysconfig/modules ] &&
++			egrep -qv '^($|#)' /dnatools/etc/sysconfig/modules ||
  			exit 0
  
  		boot_mesg -n "Loading modules:" ${INFO}
@@ -205,7 +205,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/modules bootscripts-c
  				failedmod="${failedmod} ${module}"
  			fi
 -		done < /etc/sysconfig/modules
-+		done < /tools/etc/sysconfig/modules
++		done < /dnatools/etc/sysconfig/modules
  
  		boot_mesg "" ${NORMAL}
  		# Print a message about successfully loaded
@@ -217,7 +217,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/mountfs bootscripts-c
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -229,7 +229,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/mountkernfs bootscrip
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -241,10 +241,10 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/network bootscripts-c
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
 -. /etc/sysconfig/network
-+. /tools/etc/sysconfig/network
++. /dnatools/etc/sysconfig/network
  
  case "${1}" in
  	start)
@@ -253,7 +253,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/network bootscripts-c
  esac
  
 -# End /etc/rc.d/init.d/network
-+# End /tools/etc/rc.d/init.d/network
++# End /dnatools/etc/rc.d/init.d/network
 diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/paneld bootscripts-cross-lfs-2.1-pre1/clfs/init.d/paneld
 --- bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/paneld	2014-04-12 13:37:45.000000000 -0400
 +++ bootscripts-cross-lfs-2.1-pre1/clfs/init.d/paneld	2014-04-13 15:53:20.000000000 -0400
@@ -262,7 +262,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/paneld bootscripts-cr
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . $rc_functions
  
  case "$1" in
@@ -274,7 +274,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/rc bootscripts-cross-
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  # This sets a few default terminal options.
@@ -286,7 +286,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/reboot bootscripts-cr
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -298,7 +298,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/rsyslog bootscripts-c
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -310,7 +310,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/sendsignals bootscrip
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -322,10 +322,10 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/setclock bootscripts-
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
 -. /etc/sysconfig/clock
-+. /tools/etc/sysconfig/clock
++. /dnatools/etc/sysconfig/clock
  
  CLOCKPARAMS=
  
@@ -337,7 +337,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/setlcd bootscripts-cr
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . $rc_functions
  
  case "$1" in
@@ -349,7 +349,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/swap bootscripts-cros
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -361,7 +361,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/sysctl bootscripts-cr
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -373,7 +373,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/template bootscripts-
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "${1}" in
@@ -385,7 +385,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/udev bootscripts-cros
  ########################################################################
  
 -. /etc/sysconfig/rc
-+. /tools/etc/sysconfig/rc
++. /dnatools/etc/sysconfig/rc
  . ${rc_functions}
  
  case "$1" in
@@ -394,7 +394,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/udev bootscripts-cros
  	# start udevd
  	boot_mesg "\nStarting udevd..."
 -	/sbin/udevd --daemon
-+	/tools/sbin/udevd --daemon
++	/dnatools/sbin/udevd --daemon
  	evaluate_retval
  
  	# start coldplugging
@@ -404,12 +404,12 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/udev bootscripts-cros
  	# configure all devices
 -	/sbin/udevadm trigger --action=add --type=subsystems
 -	/sbin/udevadm trigger --action=add --type=devices
-+	/tools/sbin/udevadm trigger --action=add --type=subsystems
-+	/tools/sbin/udevadm trigger --action=add --type=devices
++	/dnatools/sbin/udevadm trigger --action=add --type=subsystems
++	/dnatools/sbin/udevadm trigger --action=add --type=devices
  	
  	# this replaces the old loop, exits after all devices are done
 -	/sbin/udevadm settle
-+	/tools/sbin/udevadm settle
++	/dnatools/sbin/udevadm settle
  
  	echo_ok
  	;;
@@ -417,21 +417,21 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/init.d/udev bootscripts-cros
      stop)
  	boot_mesg "Stopping udevd..."
 -	killproc /sbin/udevd
-+	killproc /tools/sbin/udevd
++	killproc /dnatools/sbin/udevd
  	;;
  
      restart)
  	boot_mesg "Restarting udevd..."
 -	killproc /sbin/udevd
 -	loadproc /sbin/udevd --daemon
-+	killproc /tools/sbin/udevd
-+	loadproc /tools/sbin/udevd --daemon
++	killproc /dnatools/sbin/udevd
++	loadproc /dnatools/sbin/udevd --daemon
  	evaluate_retval
  	;;
  
      status)
 -	statusproc /sbin/udevd
-+	statusproc /tools/sbin/udevd
++	statusproc /dnatools/sbin/udevd
  	;;
  
      *)
@@ -443,7 +443,7 @@ diff -Naur bootscripts-cross-lfs-2.1-pre1.orig/clfs/sysconfig/rc bootscripts-cro
  ########################################################################
  
 -rc_base=/etc/rc.d
-+rc_base=/tools/etc/rc.d
++rc_base=/dnatools/etc/rc.d
  rc_functions=${rc_base}/init.d/functions
  network_devices=/etc/sysconfig/network-devices
  

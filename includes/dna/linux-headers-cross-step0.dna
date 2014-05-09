@@ -2,10 +2,12 @@
 
 make mrproper
 
+KARCH="x86";
+
 case $(uname -m) in
-	i?86) KARCH=x86; export KARCH;
+	i?86) KARCH="x86"; export KARCH;
 	;;
-	x86_64) KARCH=x86_64; export KARCH;
+	x86_64) KARCH="x86_64"; export KARCH;
 	;;
 esac
 

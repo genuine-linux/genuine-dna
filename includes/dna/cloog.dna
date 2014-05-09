@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sh autogen.sh
+
 case $(uname -m) in
 	x86_64) CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
     --build=${GENUINE_HOST} --host=${GENUINE_TGT} \

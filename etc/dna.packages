@@ -11,7 +11,7 @@ ncurses-cross-step0|ncurses-5.9|ftp://ftp.gnu.org/gnu/ncurses/|ncurses-5.9.tar.g
 gmp-cross-step0|gmp-6.0.0|https://gmplib.org/download/gmp/|gmp-6.0.0a.tar.bz2
 mpfr-cross-step0|mpfr-3.1.2|http://www.mpfr.org/mpfr-current/|mpfr-3.1.2.tar.bz2
 mpc-cross-step0|mpc-1.0.2|ftp://ftp.gnu.org/gnu/mpc/|mpc-1.0.2.tar.gz
-isl-cross-step0|isl-0.13|http://isl.gforge.inria.fr/|isl-0.13.tar.bz2
+isl-cross-step0|isl-0.12|http://isl.gforge.inria.fr/|isl-0.12.tar.bz2
 cloog-cross-step0|cloog-0.18.2|http://www.bastoul.net/cloog/pages/download/|cloog-0.18.2.tar.gz
 binutils-cross-step0|binutils-2.24|http://ftp.gnu.org/gnu/binutils/|binutils-2.24.tar.bz2
 gcc-cross-step0|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
@@ -27,7 +27,7 @@ gcc-cross-step1|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
 gmp|gmp-6.0.0|https://gmplib.org/download/gmp/|gmp-6.0.0a.tar.bz2
 mpfr|mpfr-3.1.2|http://www.mpfr.org/mpfr-current/|mpfr-3.1.2.tar.bz2
 mpc|mpc-1.0.2|ftp://ftp.gnu.org/gnu/mpc/|mpc-1.0.2.tar.gz
-isl|isl-0.13|http://isl.gforge.inria.fr/|isl-0.13.tar.bz2
+isl|isl-0.12|http://isl.gforge.inria.fr/|isl-0.12.tar.bz2
 cloog|cloog-0.18.2|http://www.bastoul.net/cloog/pages/download/|cloog-0.18.2.tar.gz
 zlib|zlib-1.2.8|http://zlib.net/|zlib-1.2.8.tar.gz
 binutils|binutils-2.24|http://ftp.gnu.org/gnu/binutils/|binutils-2.24.tar.bz2
