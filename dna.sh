@@ -22,7 +22,7 @@ DNA_PATCHES_LST=$(cat $CFG_DIR/dna.patches);
 
 # DNA ToolBox
 TOOLBOX="/dnatools";
-CROSSTOOLBOX="$TOOLBOX/dnacrosstools";
+CROSSTOOLBOX="/dnacrosstools";
 
 PATH=$TOOLBOX/bin:/bin:/usr/bin
 
