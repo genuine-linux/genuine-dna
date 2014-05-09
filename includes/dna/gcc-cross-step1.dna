@@ -5,7 +5,7 @@ if [ -d "../gcc-build" ]; then
 fi
 
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
-  `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
+  `dirname $($GENUINE_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
 
 case `uname -m` in
   i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' gcc/Makefile.in ;;
@@ -15,8 +15,8 @@ for file in \
  $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
 do
   cp -uv $file $file.orig
-  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'$CROSSTOOLBOX'&@g' \
-      -e 's@/usr@'$CROSSTOOLBOX'@g' $file.orig > $file
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$CROSSTOOLBOX"'&@g' \
+      -e 's@/usr@'"$CROSSTOOLBOX"'@g' $file.orig > $file
   echo '
 #undef STANDARD_STARTFILE_PREFIX_1
 #undef STANDARD_STARTFILE_PREFIX_2
