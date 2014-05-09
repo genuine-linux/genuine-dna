@@ -42,6 +42,7 @@ export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO W
 function dnahelp {
 	echo "";
 	echo "./dna.sh build";
+	echo "         clean";
 	echo "";
 }
 
@@ -78,6 +79,8 @@ echo "";
 
 case "$OPTIONS" in
 	build) bash $INC_DIR/dna.build;
+	;;
+	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $DISTFILES/*.tar.*; exit;
 	;;
 	*) dnahelp; exit;
 	;;
