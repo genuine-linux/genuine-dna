@@ -15,12 +15,12 @@ for file in \
  $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
 do
   cp -uv $file $file.orig
-  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'$TOOLBOX'&@g' \
-      -e 's@/usr@'$TOOLBOX'@g' $file.orig > $file
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'$CROSSTOOLBOX'&@g' \
+      -e 's@/usr@'$CROSSTOOLBOX'@g' $file.orig > $file
   echo '
 #undef STANDARD_STARTFILE_PREFIX_1
 #undef STANDARD_STARTFILE_PREFIX_2
-#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"
+#define STANDARD_STARTFILE_PREFIX_1 "$CROSSTOOLBOX/lib/"
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
@@ -31,8 +31,8 @@ cd ../gcc-build
 AR=ar LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
     ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
     --build=${GENUINE_HOST} --target=${GENUINE_TGT} --host=${GENUINE_HOST} \
-    --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX \
-    --with-native-system-header-dir=$TOOLBOX/include \
+    --with-sysroot=${SYS_DIR} --with-local-prefix=$CROSSTOOLBOX \
+    --with-native-system-header-dir=$CROSSTOOLBOX/include \
     --disable-nls --enable-shared --disable-static \
     --enable-languages=c,c++ --enable-__cxa_atexit --enable-c99 \
     --enable-long-long --enable-threads=posix --with-mpc=$TOOLBOX \
@@ -45,5 +45,5 @@ make AS_FOR_TARGET="${GENUINE_TGT}-as" \
 
 make install
 
-ln -sv gcc /tools/bin/cc
+ln -sv gcc $CROSSTOOLBOX/bin/cc
 

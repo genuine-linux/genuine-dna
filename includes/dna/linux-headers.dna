@@ -3,7 +3,7 @@
 make mrproper
 
 make ARCH=$(uname -m) headers_check
-make ARCH=$(uname -m) INSTALL_HDR_PATH=$TOOLBOX headers_install
+make ARCH=$(uname -m) INSTALL_HDR_PATH=$CROSSTOOLBOX headers_install
 
-cp -rv dest/include/* $TOOLBOX/include
+cp -rv dest/include/* $CROSSTOOLBOX/include
 

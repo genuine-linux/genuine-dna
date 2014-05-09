@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Genuine DNA 2011
+# Genuine DNA 2009-2014
 
 OPTIONS="$1";
 
@@ -13,6 +13,7 @@ SYS_DIR="$DNA_DIR/system"; # Future Genuine GNU/Linux system directory.
 CFG_DIR="$DNA_DIR/etc"; # Config files directory.
 LOG_DIR="$DNA_DIR/log"; # Log package build directory.
 TOOLBOX_DIR="$SYS_DIR/dnatools"; # DNA Build tools directory.
+CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
 DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
 
 # Package & Patches Files
@@ -21,6 +22,8 @@ DNA_PATCHES_LST=$(cat $CFG_DIR/dna.patches);
 
 # DNA ToolBox
 TOOLBOX="/dnatools";
+CROSSTOOLBOX="$TOOLBOX/dnacrosstools";
+
 PATH=$TOOLBOX/bin:/bin:/usr/bin
 
 # DNA Utils
@@ -33,7 +36,7 @@ BLD=" ** [bld]";
 ERROR=" !! [ERR]";
 
 export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR CFG_DIR TOOLBOX_DIR DNA_RULES
-export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX PATH EXTRACT INFO WARN BLD ERROR
+export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO WARN BLD ERROR
 
 # DNA Help
 function dnahelp {
@@ -111,6 +114,6 @@ bash $INC_DIR/umount.sh $SYS_DIR;
 echo "";
 
 unset DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR CFG_DIR TOOLBOX_DIR DNA_RULES
-unset DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX PATH EXTRACT INFO WARN BLD ERROR
+unset DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO WARN BLD ERROR
 
 exit

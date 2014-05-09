@@ -10,6 +10,13 @@ function create_toolbox {
         ln -s $TOOLBOX_DIR /;
 }
 
+function create_crosstoolbox {
+        echo "$WARN Creating $CROSSTOOLBOX_DIR";
+        mkdir -p $CROSSTOOLBOX_DIR;
+        echo "$WARN Linking $CROSSTOOLBOX_DIR to $CROSSTOOLBOX";
+        ln -s $CROSSTOOLBOX_DIR /;
+}
+
 mkdir -p $LOG_DIR $TMP_DIR; 
 
 # Check for previous builds
@@ -28,6 +35,11 @@ if [ -z "$CHECK_DONE" ]; then
 		rm -rf $TOOLBOX;
 	fi;
 
+        if [ -L "$CROSSTOOLBOX" ]; then
+                echo "$WARN Deleting $CROSSTOOLBOX";
+                rm -rf $CROSSTOOLBOX;
+        fi;
+
 	if [ ! -d "$TOOLBOX_DIR" ]; then
 		create_toolbox;
 	else
@@ -35,6 +47,14 @@ if [ -z "$CHECK_DONE" ]; then
 		rm -rf $TOOLBOX_DIR;
 		create_toolbox;
 	fi;
+
+        if [ ! -d "$CROSSTOOLBOX_DIR" ]; then
+                create_crosstoolbox;
+        else
+                echo "$WARN Deleting $CROSSTOOLBOX_DIR";
+                rm -rf $CROSSTOOLBOX_DIR;
+                create_crosstoolbox;
+        fi;
 else
 	echo "$INFO Previous DNA builds were found.";
 	echo "$INFO Trying to recover from last session.";
@@ -147,16 +167,16 @@ echo ""
 
 echo "$INFO Stripping installed binaries and libraries.";
 echo ""
-strip --strip-debug $TOOLBOX/lib/*
-strip --strip-unneeded $TOOLBOX/sbin/* $TOOLBOX/bin/*
+strip --strip-debug $TOOLBOX/lib/* $CROSSTOOLBOX/lib/*
+strip --strip-unneeded $TOOLBOX/sbin/* $TOOLBOX/bin/* $CROSSTOOLBOX/sbin/* $CROSSTOOLBOX/bin/*
 echo ""
 
 echo "$INFO Deleting unnecesary man,info.";
-rm -rf $TOOLBOX/share/man $TOOLBOX/share/info
+rm -rf $TOOLBOX/share/man $TOOLBOX/share/info $CROSSTOOLBOX/share/man $CROSSTOOLBOX/share/info
 echo "";
 
 echo "$INFO Changing ownership.";
-chown -R root:root $TOOLBOX_DIR
+chown -R root:root $TOOLBOX_DIR $CROSSTOOLBOX_DIR
 echo "";
 
 echo "$INFO Done.";

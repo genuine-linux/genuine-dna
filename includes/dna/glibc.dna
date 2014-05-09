@@ -22,10 +22,10 @@ case $(uname -m) in
 	echo "slibdir=$TOOLBOX/lib64" >> configparms;
         BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
     AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
-    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
-    --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$TOOLBOX/lib64 \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$CROSSTOOLBOX \
+    --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$CROSSTOOLBOX/lib64 \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
-    --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
+    --with-binutils=$TOOLBOX/bin --with-headers=$CROSSTOOLBOX/include \
     --enable-obsolete-rpc --cache-file=config.cache \
     libc_cv_forced_unwind=yes                     \
     libc_cv_ctors_header=yes                      \
@@ -34,10 +34,10 @@ case $(uname -m) in
 	i?86) BUILD=$BUILD32;
 	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
     AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
-    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$CROSSTOOLBOX \
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
-    --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
+    --with-binutils=$TOOLBOX/bin --with-headers=$CROSSTOOLBOX/include \
     --enable-obsolete-rpc --cache-file=config.cache  \
     libc_cv_forced_unwind=yes                     \
     libc_cv_ctors_header=yes                      \
