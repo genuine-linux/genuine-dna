@@ -4,6 +4,11 @@ if [ -d "../glibc-build" ]; then
         rm -rf ../glibc-build;
 fi
 
+if [ ! -r /usr/include/rpc/types.h ]; then
+  su -c 'mkdir -pv /usr/include/rpc'
+  su -c 'cp -v sunrpc/rpc/*.h /usr/include/rpc'
+fi
+
 cp -v timezone/Makefile timezone/Makefile.orig
 sed 's/\\$$(pwd)/`pwd`/' timezone/Makefile.orig > timezone/Makefile
 
@@ -21,16 +26,22 @@ case $(uname -m) in
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$TOOLBOX/lib64 \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
     --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
-    --enable-obsolete-rpc --cache-file=config.cache;
+    --enable-obsolete-rpc --cache-file=config.cache \
+    libc_cv_forced_unwind=yes                     \
+    libc_cv_ctors_header=yes                      \
+    libc_cv_c_cleanup=yes;
 	;;
-	*86) BUILD=$BUILD32;
+	i?86) BUILD=$BUILD32;
 	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
     AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
     ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
     --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
-    --enable-obsolete-rpc --cache-file=config.cache;
+    --enable-obsolete-rpc --cache-file=config.cache  \
+    libc_cv_forced_unwind=yes                     \
+    libc_cv_ctors_header=yes                      \
+    libc_cv_c_cleanup=yes;
 	;;
 esac
 

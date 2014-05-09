@@ -4,10 +4,23 @@ if [ -d "../gcc-build" ]; then
         rm -rf ../gcc-build;
 fi
 
-echo -en '\n#undef STANDARD_STARTFILE_PREFIX_1\n#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"\n' >> gcc/config/linux.h
-echo -en '\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> gcc/config/linux.h
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
+do
+  cp -uv $file $file.orig
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'$TOOLBOX'&@g' \
+      -e 's@/usr@/'$TOOLBOX'@g' $file.orig > $file
+  echo '
+#undef STANDARD_STARTFILE_PREFIX_1
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"
+#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
+  touch $file.orig
+done
 
 touch $TOOLBOX/include/limits.h
+
+sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
 
 mkdir -v ../gcc-build
 cd ../gcc-build
@@ -25,8 +38,10 @@ AR=ar LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
     --disable-target-zlib --with-system-zlib --with-isl=$TOOLBOX \
     --enable-languages=c --enable-checking=release
 
-make all-gcc all-target-libgcc
+make
 
-make install-gcc install-target-libgcc
+make install
+
+ln -sv libgcc.a `$GENUINE_TGT-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`
 
 cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $TOOLBOX/include

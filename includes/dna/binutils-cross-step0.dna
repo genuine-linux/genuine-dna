@@ -7,20 +7,18 @@ fi
 mkdir -v ../binutils-build
 cd ../binutils-build
 
-
 case $(uname -m) in
   x86_64) AR=ar AS=as ../$DNA_PACKAGE_VERSION/configure \
     --prefix=$TOOLBOX --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
     --with-sysroot=$SYS_DIR --with-lib-path=$TOOLBOX/lib:$TOOLBOX/lib64 \
-    --disable-nls --disable-static --enable-64-bit-bfd;
+    --disable-nls --disable-static --enable-64-bit-bfd --disable-werror;
 	;;
-  *86) AR=ar AS=as ../$DNA_PACKAGE_VERSION/configure \
+  i?86) AR=ar AS=as ../$DNA_PACKAGE_VERSION/configure \
     --prefix=$TOOLBOX --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
     --with-sysroot=$SYS_DIR --with-lib-path=$TOOLBOX/lib \
-    --disable-nls --disable-static;
+    --disable-nls --disable-static --disable-werror;
 	;;
 esac
-
 
 make
 
