@@ -1,0 +1,9 @@
+#!/bin/bash
+
+LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
+./configure --prefix=$TOOLBOX --disable-static \
+    --with-gmp=$TOOLBOX --with-mpfr=$TOOLBOX
+
+make
+
+make install

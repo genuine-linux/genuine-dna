@@ -2,6 +2,6 @@
 
 make mrproper
 
-make headers_check
-make INSTALL_HDR_PATH=dest headers_install
-cp -rv dest/include/* $TOOLBOX/include
+make ARCH=$(uname -m) headers_check
+make ARCH=$(uname -m) INSTALL_HDR_PATH=$TOOLBOX headers_install
+

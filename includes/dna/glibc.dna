@@ -4,39 +4,37 @@ if [ -d "../glibc-build" ]; then
         rm -rf ../glibc-build;
 fi
 
+cp -v timezone/Makefile timezone/Makefile.orig
+sed 's/\\$$(pwd)/`pwd`/' timezone/Makefile.orig > timezone/Makefile
+
 mkdir -v ../glibc-build
 cd ../glibc-build
 
-case `uname -m` in
-  i?86) echo "CFLAGS += -march=i486 -mtune=native" > configparms ;;
-esac
+echo "libc_cv_ssp=no" > config.cache
 
-../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
-    --host=$GENUINE_TGT --build=$(../$DNA_PACKAGE_VERSION/scripts/config.guess) \
-    --disable-profile --enable-add-ons \
-    --enable-kernel=2.6.38.8 --with-headers=$TOOLBOX/include \
-    libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes
+case $(uname -m) in
+	x86_64) BUILD=$BUILD64;
+	echo "slibdir=$TOOLBOX/lib64" >> configparms;
+        BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
+    AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$TOOLBOX/lib64 \
+    --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
+    --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
+    --enable-obsolete-rpc --cache-file=config.cache;
+	;;
+	*86) BUILD=$BUILD32;
+	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
+    AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
+    --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
+    --with-binutils=$TOOLBOX/bin --with-headers=$TOOLBOX/include \
+    --enable-obsolete-rpc --cache-file=config.cache;
+	;;
+esac
 
 make
 
 make install
 
-# Adjust the new toolbox
-
-echo ""
-SPECS=`dirname $($GENUINE_TGT-gcc -print-libgcc-file-name)`/specs
-$GENUINE_TGT-gcc -dumpspecs | sed \
-  -e 's@/lib\(64\)\?/ld@'$TOOLBOX'&@g' \
-  -e "/^\*cpp:$/{n;s,$, -isystem $TOOLBOX/include,}" > $SPECS 
-echo "$WARN New specs file is: $SPECS"
-unset SPECS
-
-echo ""
-echo "$WARN If everything is working fine you shold see:";
-echo "$WARN [Requesting program interpreter: $TOOLBOX/lib/ld-linux.so.2]";
-
-echo 'main(){}' > dummy.c
-$GENUINE_TGT-gcc -B$TOOLBOX/lib dummy.c
-readelf -l a.out | grep ": $TOOLBOX"
-
-rm dummy.c a.out

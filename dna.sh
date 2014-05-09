@@ -12,7 +12,7 @@ TMP_DIR="$DNA_DIR/tmp"; # Temp directory used for extract sources.
 SYS_DIR="$DNA_DIR/system"; # Future Genuine GNU/Linux system directory.
 CFG_DIR="$DNA_DIR/etc"; # Config files directory.
 LOG_DIR="$DNA_DIR/log"; # Log package build directory.
-TOOLBOX_DIR="$SYS_DIR/toolbox"; # Build tools directory.
+TOOLBOX_DIR="$SYS_DIR/dnatools"; # DNA Build tools directory.
 DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
 
 # Package & Patches Files
@@ -20,7 +20,7 @@ DNA_PACKAGES_LST=$(cat $CFG_DIR/dna.packages);
 DNA_PATCHES_LST=$(cat $CFG_DIR/dna.patches);
 
 # DNA ToolBox
-TOOLBOX="/toolbox";
+TOOLBOX="/dnatools";
 PATH=$TOOLBOX/bin:/bin:/usr/bin
 
 # DNA Utils
@@ -43,15 +43,32 @@ function dnahelp {
 }
 
 # DNA SetEnv
+
+ARCH=$(uname -m);
+
 set +h;
 umask 022;
+
 LC_ALL=POSIX
-GENUINE_TGT=$(uname -m)-genuine-linux-gnu
-export LC_ALL GENUINE_TGT
+
+GENUINE_HOST=$(echo ${MACHTYPE} | sed -e 's/-[^-]*/-genuine/')
+GENUINE_TGT=$GENUINE_HOST
+
+export LC_ALL GENUINE_TGT GENUINE_HOST
+
+case "$ARCH" in
+	x86) BUILD32="-m32"
+	export BUILD32;
+	;;
+	x86_64) BUILD64="-m64";
+	export BUILD64;
+	;;
+esac
 
 # DNA Intro
+
 echo "";
-echo "$INFO Genuine DNA (2011-2014)";
+echo "$INFO Genuine DNA (2009-2014)";
 echo "";
 
 # DNA Options

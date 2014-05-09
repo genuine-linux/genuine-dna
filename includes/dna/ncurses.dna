@@ -1,8 +1,10 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX --with-shared \
-    --without-debug --without-ada --enable-overwrite
+./configure --prefix=$TOOLBOX --without-shared \
+    --without-debug --without-ada
 
-make
+make -C include
+make -C progs tic
 
-make install
+install -v -m755 progs/tic /cross-tools/bin
+

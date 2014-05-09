@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+echo -en '\n#undef STANDARD_STARTFILE_PREFIX_1\n#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"\n' >> gcc/config/linux.h
+echo -en '\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> gcc/config/linux.h
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+AR=ar LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --target=${GENUINE_TGT} --host=${GENUINE_HOST} \
+    --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX \
+    --with-native-system-header-dir=$TOOLBOX/include \
+    --disable-nls --enable-shared --disable-static \
+    --enable-languages=c,c++ --enable-__cxa_atexit --enable-c99 \
+    --enable-long-long --enable-threads=posix --with-mpc=$TOOLBOX \
+    --with-mpfr=$TOOLBOX --with-gmp=$TOOLBOX --with-cloog=$TOOLBOX \
+    --with-isl=$TOOLBOX --with-system-zlib --enable-checking=release \
+    --enable-libstdcxx-time
+
+make AS_FOR_TARGET="${GENUINE_TGT}-as" \
+    LD_FOR_TARGET="${GENUINE_TGT}-ld"
+
+make install
+

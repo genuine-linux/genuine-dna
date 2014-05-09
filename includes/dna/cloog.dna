@@ -1,0 +1,12 @@
+#!/bin/bash
+
+LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
+    ./configure --prefix=$TOOLBOX --disable-static \
+    --with-gmp-prefix=$TOOLBOX --with-isl-prefix=$TOOLBOX
+
+cp -v Makefile Makefile.orig
+sed '/cmake/d' Makefile.orig > Makefile
+
+make
+
+make install
