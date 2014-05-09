@@ -17,8 +17,8 @@ CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
 DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
 
 # Package & Patches Files
-DNA_PACKAGES_LST=$(cat $CFG_DIR/dna.packages);
-DNA_PATCHES_LST=$(cat $CFG_DIR/dna.patches);
+DNA_PACKAGES_LST=$(grep -v ^# $CFG_DIR/dna.packages);
+DNA_PATCHES_LST=$(grep -v ^# $CFG_DIR/dna.patches);
 
 # DNA ToolBox
 TOOLBOX="/dnatools";
