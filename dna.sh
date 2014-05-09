@@ -80,7 +80,7 @@ echo "";
 case "$OPTIONS" in
 	build) bash $INC_DIR/dna.build;
 	;;
-	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $DISTFILES/*.tar.*; exit;
+	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*.tar.*; exit;
 	;;
 	*) dnahelp; exit;
 	;;
