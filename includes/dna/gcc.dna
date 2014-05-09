@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
+do
+  cp -uv $file $file.orig
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$TOOLBOX"'&@g' \
+      -e 's@/usr@/'"$TOOLBOX"'@g' $file.orig > $file
+  echo '
+#undef STANDARD_STARTFILE_PREFIX_1
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"
+#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
+  touch $file.orig
+done
+
+touch $TOOLBOX/include/limits.h
+
+sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
+
+sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+CC="${CC} ${BUILD}" CXX="${CXX} ${BUILD}" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
+    --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX --enable-long-long \
+    --enable-c99 --enable-shared --enable-threads=posix --disable-nls \
+    --enable-__cxa_atexit --enable-languages=c,c++ --disable-libstdcxx-pch \
+    --with-system-zlib --with-native-system-header-dir=$TOOLBOX/include \
+    --disable-libssp --enable-libstdcxx-time --enable-checking=release
+
+cp -v Makefile Makefile.orig
+sed "/^HOST_\(GMP\|ISL\|CLOOG\)\(LIBS\|INC\)/s:/tools:/cross-tools:g" \
+    Makefile.orig > Makefile
+
+make AS_FOR_TARGET="${AS}" \
+    LD_FOR_TARGET="${LD}"
+
+make install
+

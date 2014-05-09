@@ -1,5 +1,13 @@
 #!/bin/bash
 
-make
+cp -v Makefile Makefile.orig
+
+case $(uname -m) in
+	x86_64) sed -e 's@^\(all:.*\) test@\1@g' \
+    -e 's@/lib\(/\| \|$\)@/lib64\1@g' Makefile.orig > Makefile;
+	;;
+esac
+
+make CC="${CC} ${BUILD}" AR="${AR}" RANLIB="${RANLIB}"
 
 make PREFIX=$TOOLBOX install

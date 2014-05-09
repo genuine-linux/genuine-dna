@@ -3,10 +3,11 @@
 case $(uname -m) in
 	x86_64) CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
     --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
-    --libdir=$TOOLBOX/lib64;
+    --libdir=$TOOLBOX/lib64 --enable-shared;
 	;;
         i?86) CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
-    --build=${GENUINE_HOST} --host=${GENUINE_TGT};
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --enable-shared;
 	;;
 esac
 

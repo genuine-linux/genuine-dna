@@ -1,0 +1,18 @@
+#!/bin/bash
+
+case $(uname -m) in
+	x86_64) CC_FOR_BUILD=gcc CC="${CC} \
+    ${BUILD}" CXX="${CXX} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --libdir=$TOOLBOX/lib64 --enable-cxx;
+	;;
+        i?86) CC_FOR_BUILD=gcc CC="${CC} \
+    ${BUILD}" CXX="${CXX} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --enable-cxx;
+	;;
+esac
+
+make
+
+make install

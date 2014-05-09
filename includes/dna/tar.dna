@@ -1,8 +1,20 @@
 #!/bin/bash
 
-sed -i /SIGPIPE/d src/tar.c
+cat > config.cache << EOF
+gl_cv_func_wcwidth_works=yes
+gl_cv_func_btowc_eof=yes
+ac_cv_func_malloc_0_nonnull=yes
+gl_cv_func_mbrtowc_incomplete_state=yes
+gl_cv_func_mbrtowc_nul_retval=yes
+gl_cv_func_mbrtowc_null_arg1=yes
+gl_cv_func_mbrtowc_null_arg2=yes
+gl_cv_func_mbrtowc_retval=yes
+gl_cv_func_wcrtomb_retval=yes
+EOF
 
-./configure --prefix=$TOOLBOX
+CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+	--cache-file=config.cache
 
 make
 

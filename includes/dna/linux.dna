@@ -1,0 +1,21 @@
+#!/bin/bash
+
+make mrproper
+
+make ARCH=$ARCH CROSS_COMPILE=${GENUINE_TGT}- menuconfig
+
+make ARCH=$ARCH CROSS_COMPILE=${GENUINE_TGT}-
+
+make ARCH=$ARCH CROSS_COMPILE=${GENUINE_TGT}- \
+   INSTALL_MOD_PATH=$TOOLBOX modules_install
+
+make ARCH=$ARCH CROSS_COMPILE=${GENUINE_TGT}- \
+   INSTALL_MOD_PATH=$TOOLBOX firmware_install
+
+mkdir -pv $TOOLBOX/boot
+cp -v arch/$ARCH/boot/bzImage $TOOLBOX/boot/vmlinuz-genuine-3.14.2
+
+cp -v System.map $TOOLBOX/boot/System.map-3.14.2
+
+cp -v .config $TOOLBOX/boot/config-3.14.2
+

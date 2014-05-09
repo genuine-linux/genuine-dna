@@ -1,0 +1,18 @@
+#!/bin/bash
+
+case $(uname -m) in
+	x86_64) CC="${CC} ${BUILD}" PKG_CONFIG= ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --libdir='${prefix}'/lib64 --disable-makeinstall-chown \
+    --disable-makeinstall-setuid;
+	;;
+	i?86) CC="${CC} ${BUILD}" PKG_CONFIG= ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --disable-makeinstall-chown \
+    --disable-makeinstall-setuid;
+	;;
+esac
+
+make
+
+make install

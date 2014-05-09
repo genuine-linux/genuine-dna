@@ -8,12 +8,12 @@ for file in \
  $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
 do
   cp -uv $file $file.orig
-  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$CROSSTOOLBOX"'&@g' \
-      -e 's@/usr@/'"$CROSSTOOLBOX"'@g' $file.orig > $file
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$TOOLBOX"'&@g' \
+      -e 's@/usr@/'"$TOOLBOX"'@g' $file.orig > $file
   echo '
 #undef STANDARD_STARTFILE_PREFIX_1
 #undef STANDARD_STARTFILE_PREFIX_2
-#define STANDARD_STARTFILE_PREFIX_1 "$CROSSTOOLBOX/lib/"
+#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
@@ -25,23 +25,23 @@ sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
 mkdir -v ../gcc-build
 cd ../gcc-build
 
-AR=ar LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
-    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+AR=ar LDFLAGS="-Wl,-rpath,$CROSSTOOLBOX/lib" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$CROSSTOOLBOX \
     --build=${GENUINE_HOST} --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
-    --with-sysroot=${SYS_DIR} --with-local-prefix=$CROSSTOOLBOX \
-    --with-native-system-header-dir=$CROSSTOOLBOX/include --disable-nls \
-    --disable-shared --with-mpfr=$TOOLBOX --with-gmp=$TOOLBOX \
-    --with-cloog=$TOOLBOX --with-mpc=$TOOLBOX --without-headers \
+    --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX \
+    --with-native-system-header-dir=$TOOLBOX/include --disable-nls \
+    --disable-shared --with-mpfr=$CROSSTOOLBOX --with-gmp=$CROSSTOOLBOX \
+    --with-cloog=$CROSSTOOLBOX --with-mpc=$CROSSTOOLBOX --without-headers \
     --with-newlib --disable-decimal-float --disable-libgomp --disable-libmudflap \
     --disable-libssp --disable-libatomic --disable-libitm \
     --disable-libsanitizer --disable-libquadmath --disable-threads \
-    --disable-target-zlib --with-system-zlib --with-isl=$TOOLBOX \
+    --disable-target-zlib --with-system-zlib --with-isl=$CROSSTOOLBOX \
     --enable-languages=c --enable-checking=release
 
-make
+make all-gcc all-target-libgcc
 
-make install
+make install-gcc install-target-libgcc
 
 ln -sv libgcc.a `$GENUINE_TGT-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`
 
-cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $CROSSTOOLBOX/include
+cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $TOOLBOX/include

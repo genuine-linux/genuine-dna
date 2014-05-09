@@ -1,0 +1,25 @@
+#!/bin/bash
+
+case $(uname -m) in
+	x86_64) BLKID_CFLAGS="-I$TOOLBOX/include" BLKID_LIBS="-L$TOOLBOX/lib64 -lblkid" \
+    KMOD_CFLAGS="-I$TOOLBOX/include/" KMOD_LIBS="-L$TOOLBOX/lib64 -lkmod" \
+    CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX --build=${GENUINE_HOST} \
+    --host=${GENUINE_TGT} --libdir=$TOOLBOX/lib64 --with-rootlibdir=$TOOLBOX/lib64 \
+    --disable-introspection --disable-gtk-doc-html --disable-gudev \
+    --disable-keymap --with-firmware-path=/lib/firmware --enable-libkmod
+	;;
+        i?86) BLKID_CFLAGS="-I$TOOLBOX/include" BLKID_LIBS="-L$TOOLBOX/lib -lblkid" \
+    KMOD_CFLAGS="-I$TOOLBOX/include/" KMOD_LIBS="-L$TOOLBOX/lib -lkmod" \
+    CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX --build=${GENUINE_HOST} \
+    --host=${GENUINE_TGT} --libdir=$TOOLBOX/lib --with-rootlibdir=$TOOLBOX/lib \
+    --disable-introspection --disable-gtk-doc-html --disable-gudev \
+    --disable-keymap --with-firmware-path=/lib/firmware --enable-libkmod
+	;;
+esac
+
+make
+
+make install
+
+echo "# dummy, so that network is once again on eth*" \
+> $TOOLBOX/etc/udev/rules.d/80-net-name-slot.rules

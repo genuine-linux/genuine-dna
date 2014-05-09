@@ -1,6 +1,11 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX
+echo "gl_cv_func_wcwidth_works=yes" > config.cache
+echo "ac_cv_func_fnmatch_gnu=yes" >> config.cache
+
+CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUNE_TGT} \
+    --cache-file=config.cache
 
 make
 

@@ -1,9 +1,15 @@
 #!/bin/bash
 
 cd gettext-tools
-./configure --prefix=$TOOLBOX --disable-shared
+
+echo "gl_cv_func_wcwidth_works=yes" > config.cache
+
+CC="${CC} ${BUILD}" CXX="${CXX} ${BUILD}" \
+    ./configure --prefix=$TOOLBOX --disable-shared \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --cache-file=config.cache
 
 make -C gnulib-lib
-make -C src msgfmt
+make -C src msgfmt msgmerge xgettext
 
-cp -v src/msgfmt $TOOLBOX/bin
+cp -v src/msgfmt src/msgmerge src/xgettext $TOOLBOX/bin

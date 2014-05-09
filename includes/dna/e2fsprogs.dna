@@ -1,0 +1,28 @@
+#!/bin/bash
+
+case $(uname -m) in
+	x86_64) cp -v configure configure.orig;
+	sed -e "/libdir=.*\/lib/s@/lib@/lib64@g" configure.orig > configure;
+	LDFLAGS64=64
+	export LDFLAGS64
+	;;
+esac
+
+
+mkdir -v e2fsprogs-build
+cd e2fsprogs-build
+
+CC="${CC} ${BUILD}" PKG_CONFIG=true \
+  ../configure --prefix=$TOOLBOX --enable-elf-shlibs \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --disable-libblkid --disable-libuuid --disable-fsck \
+    --disable-uuidd
+
+make LIBUUID="-luuid" STATIC_LIBUUID="-luuid" \
+    LIBBLKID="-lblkid" STATIC_LIBBLKID="-lblkid" \
+    LDFLAGS="-Wl,-rpath,$TOOLBOX/lib${LDFLAGS64}"
+
+make install
+
+make install-libs
+

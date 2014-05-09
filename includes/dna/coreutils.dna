@@ -1,9 +1,14 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX --enable-install-program=hostname
+cat > config.cache << EOF
+fu_cv_sys_stat_statfs2_bsize=yes
+gl_cv_func_working_mkstemp=yes
+EOF
+
+CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUNE_TGT} \
+    --enable-install-program=hostname --cache-file=config.cache
 
 make
 
 make install
-
-cp -v src/su $TOOLBOX/bin/su-tools

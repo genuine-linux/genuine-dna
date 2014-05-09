@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
+
+case $(uname -m) in
+	x86_64) CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --libdir=$TOOLBOX/lib64 --disable-werror \
+    --enable-grub-mkfont=no --with-bootdir=$TOOLBOX/boot
+	;;
+        i?86) CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --disable-werror \
+    --enable-grub-mkfont=no --with-bootdir=$TOOLBOX/boot
+	;;
+esac
+
+make
+
+make install

@@ -15,12 +15,12 @@ for file in \
  $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
 do
   cp -uv $file $file.orig
-  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$CROSSTOOLBOX"'&@g' \
-      -e 's@/usr@'"$CROSSTOOLBOX"'@g' $file.orig > $file
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'"$TOOLBOX"'&@g' \
+      -e 's@/usr@'"$TOOLBOX"'@g' $file.orig > $file
   echo '
 #undef STANDARD_STARTFILE_PREFIX_1
 #undef STANDARD_STARTFILE_PREFIX_2
-#define STANDARD_STARTFILE_PREFIX_1 "$CROSSTOOLBOX/lib/"
+#define STANDARD_STARTFILE_PREFIX_1 "$TOOLBOX/lib/"
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
   touch $file.orig
 done
@@ -28,16 +28,16 @@ done
 mkdir -v ../gcc-build
 cd ../gcc-build
 
-AR=ar LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
-    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+AR=ar LDFLAGS="-Wl,-rpath,$CROSSTOOLBOX/lib" \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$CROSSTOOLBOX \
     --build=${GENUINE_HOST} --target=${GENUINE_TGT} --host=${GENUINE_HOST} \
-    --with-sysroot=${SYS_DIR} --with-local-prefix=$CROSSTOOLBOX \
-    --with-native-system-header-dir=$CROSSTOOLBOX/include \
+    --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX \
+    --with-native-system-header-dir=$TOOLBOX/include \
     --disable-nls --enable-shared --disable-static \
     --enable-languages=c,c++ --enable-__cxa_atexit --enable-c99 \
-    --enable-long-long --enable-threads=posix --with-mpc=$TOOLBOX \
-    --with-mpfr=$TOOLBOX --with-gmp=$TOOLBOX --with-cloog=$TOOLBOX \
-    --with-isl=$TOOLBOX --with-system-zlib --enable-checking=release \
+    --enable-long-long --enable-threads=posix --with-mpc=$CROSSTOOLBOX \
+    --with-mpfr=$CROSSTOOLBOX --with-gmp=$CROSSTOOLBOX --with-cloog=$CROSSTOOLBOX \
+    --with-isl=$CROSSTOOLBOX --with-system-zlib --enable-checking=release \
     --enable-libstdcxx-time
 
 make AS_FOR_TARGET="${GENUINE_TGT}-as" \
@@ -45,5 +45,5 @@ make AS_FOR_TARGET="${GENUINE_TGT}-as" \
 
 make install
 
-ln -sv gcc $CROSSTOOLBOX/bin/cc
+# ln -sv gcc $TOOLBOX/bin/cc
 

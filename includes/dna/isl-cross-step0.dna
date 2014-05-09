@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LDFLAGS="-Wl,-rpath,$TOOLBOX/lib" \
-./configure --prefix=$TOOLBOX --disable-static \
-    --with-gmp-prefix=$TOOLBOX
+LDFLAGS="-Wl,-rpath,$CROSSTOOLBOX/lib" \
+./configure --prefix=$CROSSTOOLBOX --disable-static \
+    --with-gmp-prefix=$CROSSTOOLBOX
 
 make
 

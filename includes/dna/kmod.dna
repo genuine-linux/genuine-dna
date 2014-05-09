@@ -1,0 +1,31 @@
+#!/bin/bash
+
+cp -v libkmod/libkmod.c libkmod/libkmod.c.orig
+sed '/dirname_default_prefix /s@/lib/modules@/tools&@' \
+    libkmod/libkmod.c.orig > libkmod/libkmod.c
+
+case $(uname -m) in
+	x86_64) PKG_CONFIG= liblzma_CFLAGS="-I$TOOLBOX/include" \
+    liblzma_LIBS="-L$TOOLBOX/lib64 -llzma" \
+    zlib_CFLAGS="-I$TOOLBOX/include" zlib_LIBS="-L$TOOLBOX/lib64 -lz" \
+    CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --libdir=$TOOLBOX/lib64 --with-xz --with-zlib
+	;;
+        i?86) PKG_CONFIG= liblzma_CFLAGS="-I$TOOLBOX/include" \
+    liblzma_LIBS="-L$TOOLBOX/lib -llzma" \
+    zlib_CFLAGS="-I$TOOLBOX/include" zlib_LIBS="-L$TOOLBOX/lib -lz" \
+    CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --with-xz --with-zlib
+	;;
+esac
+
+make
+
+make install
+
+ln -sfv kmod $TOOLBOX/bin/lsmod
+for tool in depmod insmod modprobe modinfo rmmod; do
+    ln -sv ../bin/kmod $TOOLBOX/sbin/${tool}
+done

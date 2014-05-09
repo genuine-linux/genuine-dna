@@ -1,7 +1,37 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX
+cat > src/auto/config.cache << "EOF"
+vim_cv_getcwd_broken=no
+vim_cv_memmove_handles_overlap=yes
+vim_cv_stat_ignores_slash=no
+vim_cv_terminfo=yes
+vim_cv_toupper_broken=no
+vim_cv_tty_group=world
+EOF
+
+echo '#define SYS_VIMRC_FILE "/tools/etc/vimrc"' >> src/feature.h
+
+
+CC="${CC} ${BUILD}" CXX="${CXX} ${BUILD}" \
+    ./configure --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+    --prefix=$TOOLBOX --enable-multibyte --enable-gui=no \
+    --disable-gtktest --disable-xim --with-features=normal \
+    --disable-gpm --without-x --disable-netbeans \
+    --with-tlib=ncurses
 
 make
 
 make install
+
+ln -sv vim $TOOLBOX/bin/vi
+
+cat > $TOOLBOX/etc/vimrc << "EOF"
+" Begin $TOOLBOX/etc/vimrc
+
+set nocompatible
+set backspace=2
+set ruler
+syntax on
+
+" End $TOOLBOX/etc/vimrc
+EOF

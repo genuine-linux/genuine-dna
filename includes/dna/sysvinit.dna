@@ -1,0 +1,46 @@
+#!/bin/bash
+
+make -C src clobber
+make -C src CC="${CC} ${BUILD}"
+
+make -C src ROOT=$TOOLBOX install
+
+cat > $TOOLBOX/etc/inittab << "EOF"
+# Begin $TOOLBOX/etc/inittab
+
+id:3:initdefault:
+
+si::sysinit:$TOOLBOX/etc/rc.d/init.d/rc sysinit
+
+l0:0:wait:$TOOLBOX/etc/rc.d/init.d/rc 0
+l1:S1:wait:$TOOLBOX/etc/rc.d/init.d/rc 1
+l2:2:wait:$TOOLBOX/etc/rc.d/init.d/rc 2
+l3:3:wait:$TOOLBOX/etc/rc.d/init.d/rc 3
+l4:4:wait:$TOOLBOX/etc/rc.d/init.d/rc 4
+l5:5:wait:$TOOLBOX/etc/rc.d/init.d/rc 5
+l6:6:wait:$TOOLBOX/etc/rc.d/init.d/rc 6
+
+ca:12345:ctrlaltdel:$TOOLBOX/sbin/shutdown -t1 -a -r now
+
+su:S016:once:$TOOLBOX/sbin/sulogin
+
+EOF
+
+cat >> $TOOLBOX/etc/inittab << "EOF"
+1:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty1 9600
+2:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty2 9600
+3:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty3 9600
+4:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty4 9600
+5:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty5 9600
+6:2345:respawn:$TOOLBOX/sbin/agetty --noclear -I '\033(K' tty6 9600
+
+EOF
+
+cat >> $TOOLBOX/etc/inittab << "EOF"
+c0:12345:respawn:$TOOLBOX/sbin/agetty --noclear 115200 ttyS0 vt100
+
+EOF
+
+cat >> $TOOLBOX/etc/inittab << "EOF"
+# End $TOOLBOX/etc/inittab
+EOF

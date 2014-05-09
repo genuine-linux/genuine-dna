@@ -1,6 +1,7 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX
+PERL=/usr/bin/perl CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT};
 
 make
 

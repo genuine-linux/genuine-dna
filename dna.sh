@@ -58,18 +58,16 @@ LC_ALL=POSIX
 GENUINE_HOST=$(echo ${MACHTYPE} | sed -e 's/-[^-]*/-genuine/')
 GENUINE_TGT=$GENUINE_HOST
 
-export LC_ALL GENUINE_TGT GENUINE_HOST
-
 case "$ARCH" in
-	i?86) BUILD32="-m32"
-	export BUILD32;
+	i?86) BUILD="-m32"
 	;;
-	x86_64) BUILD64="-m64";
-	export BUILD64;
+	x86_64) BUILD="-m64";
 	;;
 esac
 
-# DNA Intro
+export LC_ALL GENUINE_TGT GENUINE_HOST BUILD ARCH
+
+#DNA Intro
 
 echo "";
 echo "$INFO Genuine DNA (2009-2014)";

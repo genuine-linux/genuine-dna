@@ -1,10 +1,10 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX --without-shared \
+./configure --prefix=$CROSSTOOLBOX --without-shared \
     --without-debug --without-ada
 
 make -C include
 make -C progs tic
 
-install -v -m755 progs/tic /cross-tools/bin
+install -v -m755 progs/tic $CROSSTOOLBOX/bin
 

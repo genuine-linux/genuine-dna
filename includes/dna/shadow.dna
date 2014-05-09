@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cp -v src/Makefile.in src/Makefile.in.orig
+sed -e 's/groups$(EXEEXT) //' -e 's/= nologin$(EXEEXT)/= /' \
+    src/Makefile.in.orig > src/Makefile.in
+
+CC="${CC} ${BUILD}" ./configure --prefix=$TOOLBOX \
+    --build=${GENUINE_HOST} --host=${GENUINE_TGT};
+
+cp -v config.h config.h.orig
+sed '/PASSWD_PROGRAM/s@/bin/passwd@${TOOLBOX}&@' config.h.orig > config.h
+
+cp -v src/Makefile src/Makefile.orig
+sed 's/\(^suidu*bins = \).*/\1/' src/Makefile.orig > src/Makefile
+
+make
+
+make install

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+case $(uname -m) in
+	x86_64) CC="${CC} ${BUILD}" CXX="${CXX} ${BUILD}" \
+   ./configure --prefix=$TOOLBOX --with-shared \
+   --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+   --without-debug --without-ada \
+   --enable-overwrite --with-build-cc=gcc \
+   --libdir=$TOOLBOX/lib64
+	;;
+	i?86) CC="${CC} ${BUILD}" CXX="${CXX} ${BUILD}" \
+   ./configure --prefix=$TOOLBOX --with-shared \
+   --build=${GENUINE_HOST} --host=${GENUINE_TGT} \
+   --without-debug --without-ada \
+   --enable-overwrite --with-build-cc=gcc;
+	;;
+esac
+
+make
+
+make install
