@@ -2,8 +2,15 @@
 
 make mrproper
 
-make ARCH=$(uname -m) headers_check
-make ARCH=$(uname -m) INSTALL_HDR_PATH=$TOOLBOX headers_install
+case $(uname -m) in
+	i?86) KARCH=x86; export KARCH;
+	;;
+	x86_64) KARCH=x86_64; export KARCH;
+	;;
+esac
+
+make ARCH=$KARCH headers_check
+make ARCH=$KARCH INSTALL_HDR_PATH=$TOOLBOX headers_install
 
 cp -rv include/* $TOOLBOX/include
 
