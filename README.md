@@ -1,7 +1,7 @@
 Genuine DNA
 ===========
 
-Genuine GNU/Linux DNA Developer Tools for bootstraping a Genuine GNU/Linux system.
+**Genuine GNU/Linux DNA Developer Tools** are designed for bootstrap a **Genuine GNU/Linux Developer System**.
 
 Read more at our [Wiki Pages] (https://github.com/genuine-linux/genuine-dna/wiki).
 
