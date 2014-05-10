@@ -119,7 +119,7 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
 				if [ "$DNA_PATCH_NAME" == "$DNA_PACKAGE_NAME" ] & [ "$DNA_PATCH_VERSION" == "$DNA_PACKAGE_VERSION" ]; then
 					echo "$INF Package and patch version matchs.";
 					echo "$WRN Applying $DNA_PATCH_VERSION to sources.";
-					patch -Np1 -i $SRC_DIR/$SRC_PATCH_NAME
+					patch -Np1 -i $PATCH_DIR/$SRC_PATCH_NAME
 					echo ""
 				else
 					echo ""
