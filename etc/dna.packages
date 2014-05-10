@@ -21,7 +21,7 @@ binutils-cross-step1|binutils-2.4|http://ftp.gnu.org/gnu/|binutils-2.24.tar.bz2
 gcc-cross-step1|gcc-4.9.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.0/|gcc-4.9.0.tar.gz
 ################################################
 #                                              # 
-# Bootstrap Genuine GNU/Linux Temporary System #
+# Bootstrap Genuine GNU/Linux Developer System #
 #                                              # 
 ################################################
 gmp|gmp-6.0.0|https://gmplib.org/download/gmp/|gmp-6.0.0a.tar.bz2
