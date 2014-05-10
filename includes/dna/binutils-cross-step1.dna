@@ -11,8 +11,7 @@ CC="$GENUINE_TGT-gcc -B$TOOLBOX/lib/" \
    AR=$GENUINE_TGT-ar RANLIB=$GENUINE_TGT-ranlib \
    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
    --target=$GENUINE_TGT --host=$GENUINE_TGT --build=$GENUINE_TGT \
-   --disable-nls --with-lib-path=$TOOLBOX/lib \
-   --disable-werror
+   --disable-nls --with-lib-path=$TOOLBOX/lib
 
 make
 

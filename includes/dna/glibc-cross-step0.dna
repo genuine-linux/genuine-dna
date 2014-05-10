@@ -25,10 +25,7 @@ case $(uname -m) in
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$CROSSTOOLBOX/lib64 \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
     --with-binutils=$CROSSTOOLBOX/bin --with-headers=$TOOLBOX/include \
-    --enable-obsolete-rpc --cache-file=config.cache \
-    libc_cv_forced_unwind=yes                     \
-    libc_cv_ctors_header=yes                      \
-    libc_cv_c_cleanup=yes;
+    --enable-obsolete-rpc --cache-file=config.cache;
 	;;
 	i?86) BUILD=$BUILD32;
 	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
@@ -37,10 +34,7 @@ case $(uname -m) in
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
     --with-binutils=$CROSSTOOLBOX/bin --with-headers=$TOOLBOX/include \
-    --enable-obsolete-rpc --cache-file=config.cache  \
-    libc_cv_forced_unwind=yes                     \
-    libc_cv_ctors_header=yes                      \
-    libc_cv_c_cleanup=yes;
+    --enable-obsolete-rpc --cache-file=config.cache;
 	;;
 esac
 

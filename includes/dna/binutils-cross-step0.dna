@@ -11,12 +11,12 @@ case $ARCH in
   x86_64) AR=ar AS=as ../$DNA_PACKAGE_VERSION/configure \
     --prefix=$CROSSTOOLBOX --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
     --with-sysroot=$SYS_DIR --with-lib-path=$TOOLBOX/lib:$TOOLBOX/lib64 \
-    --disable-nls --disable-static --enable-64-bit-bfd --disable-werror;
+    --disable-nls --disable-static --enable-64-bit-bfd;
 	;;
   i?86) AR=ar AS=as ../$DNA_PACKAGE_VERSION/configure \
     --prefix=$CROSSTOOLBOX --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
     --with-sysroot=$SYS_DIR --with-lib-path=$TOOLBOX/lib \
-    --disable-nls --disable-static --disable-werror;
+    --disable-nls --disable-static;
 	;;
 esac
 

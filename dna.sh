@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Genuine DNA 2009-2014
+#########################
+#                       #
+# Genuine DNA 2009-2014 #
+#                       #
+#########################
 
 OPTIONS="$1";
 
@@ -24,19 +28,20 @@ DNA_PATCHES_LST=$(grep -v ^# $CFG_DIR/dna.patches);
 TOOLBOX="/dnatools";
 CROSSTOOLBOX="/dnacrosstools";
 
-PATH=$TOOLBOX/bin:/bin:/usr/bin
+PATH=$TOOLBOX/bin:$CROSSTOOLBOX/bin:/bin:/usr/bin
 
 # DNA Utils
 EXTRACT="$INC_DIR/extract.sh";
 
 # DNA Legend
-INFO=" ** [inf]";
-WARN=" !! [wrn]";
+INF=" ** [inf]";
+WRN=" !! [wrn]";
 BLD=" ** [bld]";
-ERROR=" !! [ERR]";
+ERR=" !! [ERR]";
+DBG=" %% [dbg]";
 
 export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR CFG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES
-export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO WARN BLD ERROR
+export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WRN BLD ERR DBG
 
 # DNA Help
 function dnahelp {
@@ -70,7 +75,7 @@ export LC_ALL GENUINE_TGT GENUINE_HOST BUILD ARCH
 #DNA Intro
 
 echo "";
-echo "$INFO Genuine DNA (2009-2014)";
+echo "$INF Genuine DNA (2009-2014)";
 echo "";
 
 # DNA Options
@@ -85,31 +90,31 @@ case "$OPTIONS" in
 esac
 
 if [ ! -d "$SYS_DIR/usr/DNA" ]; then
-	echo "$INFO Copying DNA to /usr/DNA.";
+	echo "$INF Copying DNA to /usr/DNA.";
 	mkdir -p $SYS_DIR/usr;
 	cp -rf DNA $SYS_DIR/usr/;
 	echo "";
 fi;
 
-echo "$INFO We're done.";
-echo "$INFO Preparing your new Genuine GNU/Linux root tree.";
-echo "$WARN Mounting filesystems.";
+echo "$INF We're done.";
+echo "$INF Preparing your new Genuine GNU/Linux root tree.";
+echo "$WRN Mounting filesystems.";
 echo "";
 bash $INC_DIR/mount.sh $SYS_DIR;
 echo "";
 
-echo "$INFO Now you will be promted to Genuine ToolBox to finish base installation.";
+echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
 echo ""
-echo "$INFO Execute /usr/DNA/Bootstrap/bootstrap_genuine_base.sh & /usr/DNA/Bootstrap/bootstrap_genuine_packages.sh to continue with Genuine GNU/Linux base system installation.";
+echo "$INF Execute /usr/DNA/Bootstrap/bootstrap_genuine_base.sh & /usr/DNA/Bootstrap/bootstrap_genuine_packages.sh to continue with Genuine GNU/Linux base system installation.";
 echo ""
 
 chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
     HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLBOX/bin:$TOOLBOX/sbin \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLBOX/bin:$TOOLBOX/sbin:$CROSSTOOLBOX/bin:$CROSSTOOLBOX/sbin \
     $TOOLBOX/bin/bash --login +h
 
 echo "";
-echo "$WARN Umounting filesystems.";
+echo "$WRN Umounting filesystems.";
 echo "";
 bash $INC_DIR/umount.sh $SYS_DIR;
 echo "";

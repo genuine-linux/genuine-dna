@@ -2,17 +2,17 @@
 
 make mrproper
 
-KARCH="x86";
-
 case $(uname -m) in
-	i?86) KARCH="x86"; export KARCH;
+	i?86) KERNELARCH=x86; export KERNELARCH;
 	;;
-	x86_64) KARCH="x86_64"; export KARCH;
+	x86_64) KERNELARCH=x86_64; export KERNELARCH;
 	;;
 esac
 
-make ARCH=$KARCH headers_check
-make ARCH=$KARCH INSTALL_HDR_PATH=$TOOLBOX headers_install
+echo "$INF Building linux-headers for ($KERNELARCH).";
 
-cp -rv include/* $TOOLBOX/include
+make ARCH=$KERNELARCH headers_check
+make ARCH=$KERNELARCH INSTALL_HDR_PATH=$TOOLBOX headers_install
+
+#cp -rv include/* $TOOLBOX/include
 
