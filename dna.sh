@@ -14,15 +14,14 @@ INC_DIR="$DNA_DIR/includes"; # Includes and tools directory
 SRC_DIR="$DNA_DIR/DNA/Distfiles"; # DNA tree directory
 TMP_DIR="$DNA_DIR/tmp"; # Temp directory used for extract sources.
 SYS_DIR="$DNA_DIR/system"; # Future Genuine GNU/Linux system directory.
-CFG_DIR="$DNA_DIR/etc"; # Config files directory.
 LOG_DIR="$DNA_DIR/log"; # Log package build directory.
 TOOLBOX_DIR="$SYS_DIR/dnatools"; # DNA Build tools directory.
 CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
 DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
 
 # Package & Patches Files
-DNA_PACKAGES_LST=$(grep -v ^# $CFG_DIR/dna.packages);
-DNA_PATCHES_LST=$(grep -v ^# $CFG_DIR/dna.patches);
+DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages);
+DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches);
 
 # DNA ToolBox
 TOOLBOX="/dnatools";
@@ -40,7 +39,7 @@ BLD=" ** [bld]";
 ERR=" !! [ERR]";
 DBG=" %% [dbg]";
 
-export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR CFG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES
+export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES
 export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WRN BLD ERR DBG
 
 # DNA Help
@@ -119,7 +118,7 @@ echo "";
 bash $INC_DIR/umount.sh $SYS_DIR;
 echo "";
 
-unset DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR CFG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES
+unset DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES
 unset DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO WARN BLD ERROR
 
 exit
