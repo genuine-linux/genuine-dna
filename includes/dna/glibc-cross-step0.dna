@@ -19,7 +19,7 @@ echo "libc_cv_ssp=no" > config.cache
 
 case $(uname -m) in
 	x86_64) echo "slibdir=$TOOLBOX/lib64" >> configparms;
-        BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
+        BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD64}" \
     AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
     ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$CROSSTOOLBOX/lib64 \
@@ -28,7 +28,7 @@ case $(uname -m) in
     --enable-obsolete-rpc --cache-file=config.cache;
 	;;
 	i?86) BUILD=$BUILD32;
-	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD}" \
+	BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD32}" \
     AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
     ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
