@@ -6,6 +6,9 @@
 #                       #
 #########################
 
+set +h;
+umask 022;
+
 OPTIONS="$1";
 
 # Directories
@@ -20,17 +23,17 @@ CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
 DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
 PATCH_DIR="$INC_DIR/dna.patch.files"; # Patches for build packages.
 
-# Package & Patches Files
-DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages);
-DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches);
-
 # DNA ToolBox
 TOOLBOX="/dnatools";
 CROSSTOOLBOX="/dnacrosstools";
 
 PATH=$TOOLBOX/bin:$CROSSTOOLBOX/bin:/bin:/usr/bin
 
-# DNA Utils
+# Package & Patches Files
+DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages);
+DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches);
+
+# DNA Utilities
 EXTRACT="$INC_DIR/extract.sh";
 
 # DNA Legend
@@ -40,23 +43,9 @@ BLD=" ** [bld]";
 ERR=" !! [ERR]";
 DBG=" %% [dbg]";
 
-export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES PATCH_DIR
-export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WRN BLD ERR DBG
-
-# DNA Help
-function dnahelp {
-	echo "";
-	echo "./dna.sh build";
-	echo "         clean";
-	echo "";
-}
-
-# DNA SetEnv
+# DNA Set Environment
 
 ARCH=$(uname -m);
-
-set +h;
-umask 022;
 
 LC_ALL=POSIX
 
@@ -67,6 +56,16 @@ BUILD32="-m32"
 BUILD64="-m64";
 
 export LC_ALL GENUINE_TGT GENUINE_HOST BUILD32 BUILD64 ARCH
+export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES PATCH_DIR
+export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WRN BLD ERR DBG
+
+# DNA Help
+function dnahelp {
+	echo "";
+	echo "./dna.sh build";
+	echo "         clean";
+	echo "";
+}
 
 #DNA Intro
 
@@ -94,15 +93,14 @@ fi;
 
 echo "$INF We're done.";
 echo "$INF Preparing your new Genuine GNU/Linux root tree.";
-echo "$WRN Mounting filesystems.";
-echo "";
+echo "$WRN Mounting filesystems."; echo "";
 bash $INC_DIR/mount.sh $SYS_DIR;
 echo "";
 
 echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
-echo ""
+echo "";
 echo "$INF Execute /usr/DNA/Bootstrap/bootstrap_genuine_base.sh & /usr/DNA/Bootstrap/bootstrap_genuine_packages.sh to continue with Genuine GNU/Linux base system installation.";
-echo ""
+echo "";
 
 chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
     HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
