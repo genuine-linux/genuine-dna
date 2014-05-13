@@ -20,7 +20,7 @@ echo "libc_cv_ssp=no" > config.cache
 BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD32}" \
 AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
 ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
-    --host=${GENUINE_TGT} --build=${GENUINE_HOST} \
+    --host=${GENUINE_TGT32} --build=${GENUINE_HOST} \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
     --with-binutils=$CROSSTOOLBOX/bin --with-headers=$TOOLBOX/include \
     --enable-obsolete-rpc --cache-file=config.cache;
