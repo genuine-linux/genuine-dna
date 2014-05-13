@@ -16,3 +16,7 @@ cd ../gcc-build
 make
 
 make install
+
+cd ..
+
+rm -rf gcc-build $DNA_PACKAGE_VERSION

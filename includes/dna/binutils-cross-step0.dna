@@ -23,3 +23,6 @@ esac
 make
 
 make install
+
+cd ..
+rm -rf binutils-build $DNA_PACKAGE_VERSION

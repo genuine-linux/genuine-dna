@@ -20,7 +20,6 @@ echo "libc_cv_ssp=no" > config.cache
 echo "slibdir=$TOOLBOX/lib64" >> configparms;
 BUILD_CC="gcc" CC="${GENUINE_TGT}-gcc ${BUILD64}" \
 AR="${GENUINE_TGT}-ar" RANLIB="${GENUINE_TGT}-ranlib" \
-CFLAGS="-I$TOOLBOX/include/asm" CXXFLAGS="-I$TOOLBOX/include/asm" \
 ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
     --host=${GENUINE_TGT} --build=${GENUINE_HOST} --libdir=$CROSSTOOLBOX/lib64 \
     --disable-profile --with-tls --enable-kernel=2.6.32 --with-__thread \
