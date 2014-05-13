@@ -57,9 +57,9 @@ BUILD32="-m32";
 BUILD64="-m64";
 
 case $(uname -m) in
-        i?86) BUILD=$BUILD32;
+        i?86) BUILD="$BUILD32";
         ;;
-        x86_64) BUILD=$BUILD64;
+        x86_64) BUILD="$BUILD64";
         ;;
 esac
 
