@@ -17,6 +17,11 @@ function create_crosstoolbox {
         ln -s $CROSSTOOLBOX_DIR /;
 }
 
+function clean_tmp {
+	echo "$WRN Cleaning 'tmp' ...";
+	cd $TMP_DIR && rm -rf *;
+}
+
 mkdir -p $LOG_DIR $TMP_DIR; 
 
 # Check for previous builds
@@ -155,6 +160,8 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
 			touch $LOG_DIR/$DNA_PACKAGE_NAME.error
 			exit 1;
 		fi;
+	
+		clean_tmp;
 	fi;
 
 	echo ""
