@@ -37,7 +37,7 @@ DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages);
 DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches);
 
 # DNA Utilities
-EXTRACT="$INC_DIR/extract.sh";
+EXTRACT="$INC_DIR/dna.extract";
 
 # DNA Legend
 INF=" ** [inf]";
@@ -78,7 +78,7 @@ export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WR
 # DNA Help
 function dnahelp {
 	echo "";
-	echo "./dna.sh build";
+	echo "./dna build";
 	echo "         clean";
 	echo "";
 }
@@ -110,7 +110,7 @@ fi;
 echo "$INF We're done.";
 echo "$INF Preparing your new Genuine GNU/Linux root tree.";
 echo "$WRN Mounting filesystems."; echo "";
-bash $INC_DIR/mount.sh $SYS_DIR;
+bash $INC_DIR/dna.mount $SYS_DIR;
 echo "";
 
 echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
@@ -126,7 +126,7 @@ chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
 echo "";
 echo "$WRN Umounting filesystems.";
 echo "";
-bash $INC_DIR/umount.sh $SYS_DIR;
+bash $INC_DIR/dna.umount $SYS_DIR;
 echo "";
 
 unset DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES PATCH_DIR
