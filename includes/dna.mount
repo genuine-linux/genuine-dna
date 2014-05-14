@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "$INF Preparing your new Genuine GNU/Linux root tree.";
+echo "$WRN Mounting filesystems."; echo "";
+
 GENUINE_ROOT="$1";
 
 if [ ! -d "$GENUINE_ROOT/dev" ]; then

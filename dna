@@ -17,7 +17,7 @@ OPTIONS="$1";
 # Directories
 DNA_DIR=$(pwd); # DNA source directory
 INC_DIR="$DNA_DIR/includes"; # Includes and tools directory
-SRC_DIR="$DNA_DIR/DNA/Distfiles"; # DNA tree directory
+SRC_DIR="$DNA_DIR/sources"; # DNA Source Download directory
 TMP_DIR="$DNA_DIR/tmp"; # Temp directory used for extract sources.
 SYS_DIR="$DNA_DIR/system"; # Future Genuine GNU/Linux system directory.
 LOG_DIR="$DNA_DIR/log"; # Log package build directory.
@@ -79,40 +79,72 @@ export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WR
 function dnahelp {
 	echo "";
 	echo "./dna build";
-	echo "         clean";
+	echo "      clean";
+	echo "      debug";
 	echo "";
+}
+
+# DNA DEBUG
+function dna_dbg {
+	echo ""
+	echo "$DBG LC_ALL = $LC_ALL";
+	echo "$DBG GENUINE_TGT = $GENUINE_TGT";
+	echo "$DBG GENUINE_TGT64 = $GENUINE_TGT64";
+	echo "$DBG GENUINE_TGT32 = $GENUINE_TGT32";
+	echo "$DBG BUILD = $BUILD";
+	echo "$DBG BUILD32 = $BUILD32";
+	echo "$DBG BUILD64 = $BUILD64";
+	echo "$DBG GENUINE_HOST = $GENUINE_HOST";
+	echo "$DBG ARCH = $ARCH";	
+	echo "$DBG DNA_DIR = $DNA_DIR";
+	echo "$DBG INC_DIR = $INC_DIR";
+	echo "$DBG SRC_DIR = $SRC_DIR";
+	echo "$DBG TMP_DIR = $TMP_DIR";
+	echo "$DBG SYS_DIR = $SYS_DIR";
+	echo "$DBG LOG_DIR = $LOG_DIR";
+	echo "$DBG TOOLBOX_DIR = $TOOLBOX_DIR";
+	echo "$DBG CROSSTOOLBOX_DIR = $CROSSTOOLBOX_DIR";
+	echo "$DBG DNA_RULES = $DNA_RULES";
+	echo "$DBG PATCH_DIR = $PATCH_DIR";
+	echo "$DBG DNA_PACKAGES_LST = $DNA_PACKAGES_LST";
+	echo "$DBG DNA_PATCHES_LST = $DNA_PATCHES_LST";
+	echo "$DBG CFLAGS = $CFLAGS";
+	echo "$DBG CXXFLAGS = $CXXFLAGS";
+	echo "$DBG TOOLBOX = $TOOLBOX";
+	echo "$DBG CROSSTOOLBOX = $CROSSTOOLBOX";
+	echo "$DBG PATH = $PATH";
+	echo "$DBG EXTRACT = $EXTRACT";
+	echo "$DBG INF = $INF";
+	echo "$DBG WRN = $WRN";
+	echo "$DBG BLD = $BLD";
+	echo "$DBG ERR = $ERR";
+	echo "$DBG DBG = $DBG";
+	echo ""
 }
 
 #DNA Intro
 
 echo "";
-echo "$INF Genuine DNA (2009-2014)";
+echo "$INF Genuine DNA (c) 2009-2014";
+echo ""
+echo "$INF Genuine Developer Tools";
 echo "";
 
 # DNA Options
 
 case "$OPTIONS" in
 	build) bash $INC_DIR/dna.build;
+	       bash $INC_DIR/dna.mount $SYS_DIR;
 	;;
-	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*.tar.*; exit;
+	debug) dna_dbg; exit;
+	;;
+	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
 	;;
 	*) dnahelp; exit;
 	;;
 esac
 
-if [ ! -d "$SYS_DIR/usr/DNA" ]; then
-	echo "$INF Copying DNA to /usr/DNA.";
-	mkdir -p $SYS_DIR/usr;
-	cp -rf DNA $SYS_DIR/usr/;
-	echo "";
-fi;
-
-echo "$INF We're done.";
-echo "$INF Preparing your new Genuine GNU/Linux root tree.";
-echo "$WRN Mounting filesystems."; echo "";
-bash $INC_DIR/dna.mount $SYS_DIR;
 echo "";
-
 echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
 echo "";
 echo "$INF Execute /usr/DNA/Bootstrap/bootstrap_genuine_base.sh & /usr/DNA/Bootstrap/bootstrap_genuine_packages.sh to continue with Genuine GNU/Linux base system installation.";
