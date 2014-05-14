@@ -46,6 +46,3 @@ ln -sv libgcc.a `$GENUINE_TGT-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'
 
 cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $TOOLBOX/include
 
-cd ..
-
-rm -rf gcc-build $DNA_PACKAGE_VERSION

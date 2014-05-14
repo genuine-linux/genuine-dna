@@ -47,5 +47,3 @@ make install
 
 # ln -sv gcc $TOOLBOX/bin/cc
 
-cd ..
-rm -rf gcc-build $DNA_PACKAGE_VERSION

@@ -4,7 +4,7 @@ mkdir -pv ../gcc-build
 cd ../gcc-build
 
 ../$DNA_PACKAGE_VERSION/libstdc++-v3/configure \
-    --host=$GENUINE_TGT                 \
+    -build=${GENUINE_HOST} --target=${GENUINE_TGT} --host=${GENUINE_HOST}                 \
     --prefix=$TOOLBOX             \
     --disable-multilib              \
     --disable-shared                \
@@ -17,6 +17,3 @@ make
 
 make install
 
-cd ..
-
-rm -rf gcc-build $DNA_PACKAGE_VERSION

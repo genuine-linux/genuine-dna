@@ -1,7 +1,8 @@
 #
-ncurses|ncurses-5.9|ncurses-5.9-bash_fix-1.patch
-mpfr|mpfr-3.1.2|mpfr-3.1.2-fixes-2.patch
+ncurses-cross-step0|ncurses-5.9|ncurses-5.9-bash_fix-1.patch
+mpfr-cross-step0|mpfr-3.1.2|mpfr-3.1.2-fixes-2.patch
 gcc-cross-step0|gcc-4.9.0|gcc-4.9.0-specs-1.patch
+libstdc-cross-step0.dna|gcc-4.9.0|gcc-4.9.0-specs-1.patch
 gcc-cross-step1|gcc-4.9.0|gcc-4.9.0-specs-1.patch
 #
 expect|expect-5.44.1.15|expect-5.44.1.15-no_tk-1.patch
