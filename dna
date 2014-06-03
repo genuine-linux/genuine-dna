@@ -80,6 +80,7 @@ function dnahelp {
 	echo "";
 	echo "./dna build";
 	echo "      clean";
+	echo "      cleanall";
 	echo "      debug";
 	echo "";
 }
@@ -138,7 +139,9 @@ case "$OPTIONS" in
 	;;
 	debug) dna_dbg; exit;
 	;;
-	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
+	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
+	;;
+	cleanall) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
 	;;
 	*) dnahelp; exit;
 	;;

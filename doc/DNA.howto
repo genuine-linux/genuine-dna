@@ -3,5 +3,6 @@ DNA HOWTO
 
 ./dna build (Build Genuine Developer System)
       clean (Clean DNA)
+      clean (Clean DNA & Downloaded Source Tarballs)
       debug (Debug DNA Variables)
 
