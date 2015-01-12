@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sh Configure -des -Dprefix=$TOOLBOX \
+                  -Dlibs=-lm
+
+make
+
+cp -v perl cpan/podlators/pod2man $TOOLBOX/bin
+mkdir -pv $TOOLBOX/lib/perl5/5.20.1
+cp -Rv lib/* $TOOLBOX/lib/perl5/5.20.1

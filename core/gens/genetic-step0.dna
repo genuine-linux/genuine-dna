@@ -1,0 +1,12 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX
+
+make
+
+make install
+
+mkdir -pv $TOOLBOX/var/lock
+mkdir -pv $TOOLBOX/var/log/genetic
+mkdir -pv $TOOLBOX/var/cache/genetic
+mkdir -pv $TOOLBOX/var/lib/genetic

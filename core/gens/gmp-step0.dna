@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX --enable-cxx --enable-shared --enable-static
+
+make
+
+make install

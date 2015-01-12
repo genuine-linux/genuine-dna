@@ -1,0 +1,51 @@
+#!/bin/bash
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
+  `dirname $($GENUINE_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
+
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
+do
+  cp -uv $file $file.orig
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@'$TOOLBOX'&@g' \
+      -e 's@/usr@'$TOOLBOX'@g' ${file}.orig > $file
+  echo '
+#undef STANDARD_STARTFILE_PREFIX_1
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_1 "'$TOOLBOX'/lib/"
+#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
+  touch ${file}.orig
+done
+
+sed -i 's/if \((code.*))\)/if (\1 \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+CC=$GENUINE_TGT-gcc                                      \
+CXX=$GENUINE_TGT-g++                                     \
+AR=$GENUINE_TGT-ar                                       \
+RANLIB=$GENUINE_TGT-ranlib                               \
+    ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --with-local-prefix=$TOOLBOX                       \
+    --with-native-system-header-dir=$TOOLBOX/include   \
+    --enable-languages=c,c++                         \
+    --disable-libstdcxx-pch                          \
+    --disable-multilib                               \
+    --disable-bootstrap                              \
+    --disable-libgomp
+
+make
+make install
+
+ln -sv gcc $TOOLBOX/bin/cc
+
+echo 'main(){}' > dummy.c
+cc dummy.c
+readelf -l a.out | grep ': '$TOOLBOX''
+rm -v dummy.c a.out
+

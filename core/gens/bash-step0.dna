@@ -1,0 +1,11 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX \
+   --without-bash-malloc
+
+make
+
+make install
+
+ln -sv bash $TOOLBOX/bin/sh
+

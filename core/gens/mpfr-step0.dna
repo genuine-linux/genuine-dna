@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+./configure --prefix=$TOOLBOX \
+    --with-gmp=$TOOLBOX \
+	--enable-shared \
+	--enable-static
+
+make
+
+make install

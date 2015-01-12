@@ -1,0 +1,23 @@
+#!/bin/bash
+
+./configure --prefix=$TOOLBOX --enable-multibyte --enable-gui=no \
+    --disable-gtktest --disable-xim --with-features=normal \
+    --disable-gpm --without-x --disable-netbeans \
+    --with-tlib=ncurses
+
+make
+
+make install
+
+ln -sv vim $TOOLBOX/bin/vi
+
+cat > $TOOLBOX/etc/vimrc << "EOF"
+" Begin $TOOLBOX/etc/vimrc
+
+set nocompatible
+set backspace=2
+set ruler
+syntax on
+
+" End $TOOLBOX/etc/vimrc
+EOF

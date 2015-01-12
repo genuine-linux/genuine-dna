@@ -6,64 +6,90 @@
 #                       #
 #########################
 
+# Include config file
+. dna.conf
+
+# Capture SIGINT SIGTERM SIGKILL
+trap "echo Oooops!!! \"./dna\" has been killed!!!" SIGINT SIGTERM SIGKILL
+
+while :
+do
+	read user_key_input &
+
+# DNA ToolBox #
+TOOLBOX="/dnatools";
+TOOLBOX_DIR="$SYS_DIR/dnatools"; # DNA Build tools directory.
+
+# Define new PATH and PKG_CONFIG_PATH
+PATH=$TOOLBOX/bin:/bin:/usr/bin
+PKG_CONFIG_PATH=$TOOLBOX
+
+if [ "$CROSSTOOLS" == "YES" ]; then
+	CROSSTOOLBOX="/dnacrosstools";
+	CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
+	PATH=$TOOLBOX/bin:$CROSSTOOLBOX/bin:/bin:/usr/bin
+	PKG_CONFIG_PATH=$CROSSTOOLBOX
+fi;
+
+# Package & Patches Files
+if [ "$CROSSTOOLS" == "YES" ]; then
+	DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages.cross $INC_DIR/dna.packages);
+	DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches.cross $INC_DIR/dna.patches);
+else
+	DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages.step);
+	DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches.step);
+fi
+
+# DNA Utilities
+DNA_LINK="$INC_DIR/dna.link";
+DNA_BUILD="$INC_DIR/dna.build";
+DNA_STRIP="$INC_DIR/dna.strip";
+DNA_CLEAN="$INC_DIR/dna.clean";
+DNA_OWNER="$INC_DIR/dna.owner";
+DNA_USER="$INC_DIR/dna.user";
+DNA_MOUNT="$INC_DIR/dna.mount";
+DNA_UMOUNT="$INC_DIR/dna.umount";
+DNA_EXTRACT="$INC_DIR/dna.extract";
+
+# DNA Legend
+INF=" *** [inf]";
+WRN=" !!! [WRN]";
+BLD=" ### [bld]";
+ERR=" @@@ [ERR]";
+DBG=" %%% [dbg]";
+
+# DNA Set Environment
+
 set +h;
 umask 022;
 
 unset CFLAGS
 unset CXXFLAGS
-
-OPTIONS="$1";
-
-# Directories
-DNA_DIR=$(pwd); # DNA source directory
-INC_DIR="$DNA_DIR/includes"; # Includes and tools directory
-SRC_DIR="$DNA_DIR/sources"; # DNA Source Download directory
-TMP_DIR="$DNA_DIR/tmp"; # Temp directory used for extract sources.
-SYS_DIR="$DNA_DIR/system"; # Future Genuine GNU/Linux system directory.
-LOG_DIR="$DNA_DIR/log"; # Log package build directory.
-TOOLBOX_DIR="$SYS_DIR/dnatools"; # DNA Build tools directory.
-CROSSTOOLBOX_DIR="$SYS_DIR/dnacrosstools"; # DNA Build tools directory.
-DNA_RULES="$INC_DIR/dna"; # Rules for build packages directory.
-PATCH_DIR="$INC_DIR/dna.patch.files"; # Patches for build packages.
-
-# DNA ToolBox
-TOOLBOX="/dnatools";
-CROSSTOOLBOX="/dnacrosstools";
-
-PATH=$TOOLBOX/bin:$CROSSTOOLBOX/bin:/bin:/usr/bin
-
-# Package & Patches Files
-DNA_PACKAGES_LST=$(grep -v ^# $INC_DIR/dna.packages);
-DNA_PATCHES_LST=$(grep -v ^# $INC_DIR/dna.patches);
-
-# DNA Utilities
-EXTRACT="$INC_DIR/dna.extract";
-
-# DNA Legend
-INF=" ** [inf]";
-WRN=" !! [wrn]";
-BLD=" ** [bld]";
-ERR=" !! [ERR]";
-DBG=" %% [dbg]";
-
-# DNA Set Environment
+unset CPPFLAGS
+unset LDFLAGS
 
 ARCH=$(uname -m);
 
 LC_ALL=POSIX
 
-GENUINE_HOST=$(echo ${MACHTYPE} | sed -e 's/-[^-]*/-crossgenuine/')
-
-GENUINE_TGT=""
+GENUINE_TGT="$(uname -m)-pc-linux-gnu"
+GENUINE_HOST=$(echo $MACHTYPE)
 GENUINE_TGT32="i686-pc-linux-gnu"
-GENUINE_TGT64="x86_64-genuine-linux-gnu"
+GENUINE_TGT64="x86_64-pc-linux-gnu"
+
+if [ "$CROSSTOOLS" == "YES" ]; then
+	GENUINE_TGT="$(uname -m)-genuine-linux-gnu"
+	GENUINE_HOST=$(echo $MACHTYPE | sed -e 's/-[^-]*/-genuine/')
+	GENUINE_TGT32="i686-genuine-linux-gnu"
+	GENUINE_TGT64="x86_64-genuine-linux-gnu"
+fi;
 
 BUILD="";
 BUILD32="-m32";
 BUILD64="-m64";
 
 case $(uname -m) in
-        i?86) BUILD="$BUILD32";
+        i?86)   BUILD="$BUILD32";
 		GENUINE_TGT="$GENUINE_TGT32";
         ;;
         x86_64) BUILD="$BUILD64";
@@ -71,9 +97,10 @@ case $(uname -m) in
         ;;
 esac
 
-export LC_ALL GENUINE_TGT GENUINE_TGT64 GENUINE_TGT32 GENUINE_HOST BUILD32 BUILD64 ARCH BUILD
+export LC_ALL GENUINE_TGT GENUINE_TGT64 GENUINE_TGT32 GENUINE_HOST BUILD32 BUILD64 ARCH BUILD 
 export DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES PATCH_DIR
-export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INF WRN BLD ERR DBG
+export DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH DNA_EXTRACT DNA_BUILD DNA_UMOUNT DNA_MOUNT
+export INF WRN BLD ERR DBG CROSSTOOLS SUCMD USER GROUP DNA_LINK DNA_STRIP DNA_CLEAN DNA_OWNER
 
 # DNA Help
 function dnahelp {
@@ -88,6 +115,10 @@ function dnahelp {
 # DNA DEBUG
 function dna_dbg {
 	echo ""
+	echo "$DBG dna.conf -> USER = $USER";
+	echo "$DBG dna.conf -> GROUP = $GROUP";
+	echo "$DBG dna.conf -> SUCMD = $SUCMD";
+	echo "$DBG dna.conf -> CROSTOOLS = $CROSTOOLS";
 	echo "$DBG LC_ALL = $LC_ALL";
 	echo "$DBG GENUINE_TGT = $GENUINE_TGT";
 	echo "$DBG GENUINE_TGT64 = $GENUINE_TGT64";
@@ -114,7 +145,15 @@ function dna_dbg {
 	echo "$DBG TOOLBOX = $TOOLBOX";
 	echo "$DBG CROSSTOOLBOX = $CROSSTOOLBOX";
 	echo "$DBG PATH = $PATH";
-	echo "$DBG EXTRACT = $EXTRACT";
+	echo "$DBG DNA_BUILD = $DNA_BUILD";
+	echo "$DBG DNA_BUILD = $DNA_LINK";
+	echo "$DBG DNA_BUILD = $DNA_CLEAN";
+	echo "$DBG DNA_BUILD = $DNA_OWNER";
+	echo "$DBG DNA_BUILD = $DNA_STRIP";
+	echo "$DBG DNA_USER = $DNA_USER";
+	echo "$DBG DNA_MOUNT = $DNA_MOUNT";
+	echo "$DBG DNA_UMOUNT = $DNA_UMOUNT";
+	echo "$DBG DNA_EXTRACT = $DNA_EXTRACT";
 	echo "$DBG INF = $INF";
 	echo "$DBG WRN = $WRN";
 	echo "$DBG BLD = $BLD";
@@ -126,22 +165,26 @@ function dna_dbg {
 #DNA Intro
 
 echo "";
-echo "$INF Genuine DNA (c) 2009-2014";
+echo "$INF Genuine DNA (c) 2009-2014 [Developer Toolbox]";
 echo ""
-echo "$INF Genuine Developer Tools";
-echo "";
 
 # DNA Options
+OPTIONS="$1";
 
 case "$OPTIONS" in
-	build) bash $INC_DIR/dna.build;
-	       bash $INC_DIR/dna.mount $SYS_DIR;
+	build) bash $DNA_USER;
+	       bash $DNA_LINK;
+	       $SUCMD "bash $DNA_BUILD"; if [[ $? -eq 1 ]]; then exit 1; fi
+	       bash $DNA_STRIP;
+	       bash $DNA_CLEAN;
+	       bash $DNA_OWNER;
+	       bash $DNA_MOUNT $SYS_DIR;
 	;;
 	debug) dna_dbg; exit;
 	;;
-	clean) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
+	clean) rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
 	;;
-	cleanall) rm -rvf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
+	cleanall) rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
 	;;
 	*) dnahelp; exit;
 	;;
@@ -150,21 +193,29 @@ esac
 echo "";
 echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
 echo "";
-echo "$INF Execute /usr/DNA/Bootstrap/bootstrap_genuine_base.sh & /usr/DNA/Bootstrap/bootstrap_genuine_packages.sh to continue with Genuine GNU/Linux base system installation.";
+echo "$INF Please, execute 'dna.bootstrap-*.sh' scripts in order ...";
 echo "";
 
-chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
-    HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLBOX/bin:$TOOLBOX/sbin:$CROSSTOOLBOX/bin:$CROSSTOOLBOX/sbin \
-    $TOOLBOX/bin/bash --login +h
+# Copy Genuine System bootstrap scripts to new system root #
+cp core/dna.bootstrap/dna.bootstrap*.sh system/;
+chmod +x system/dna.bootstrap*.sh;
 
+# Enter new system chroot #
+chmod +x core/dna.chroot;
+./core/dna.chroot;
+
+# At 'exiting chroot' umount all mounted filesystems #
 echo "";
 echo "$WRN Umounting filesystems.";
 echo "";
-bash $INC_DIR/dna.umount $SYS_DIR;
+bash $DNA_UMOUNT $SYS_DIR;
 echo "";
 
+# Unset all used variables #
 unset DNA_DIR INC_DIR SRC_DIR TMP_DIR SYS_DIR LOG_DIR TOOLBOX_DIR CROSSTOOLBOX_DIR DNA_RULES PATCH_DIR
-unset DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH EXTRACT INFO WARN BLD ERROR
+unset DNA_PACKAGES_LST DNA_PATCHES_LST TOOLBOX CROSSTOOLBOX PATH DNA_EXTRACT DNA_BUILD DNA_MOUNT DNA_UMOUNT
+unset INFO WARN BLD ERROR CROSSTOOLS SUCMD USER GROUP DNA_LINK DNA_STRIP DNA_CLEAN DNA_OWNER
 
 exit
+
+done;

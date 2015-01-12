@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ -d "../glibc-build" ]; then
+        rm -rf ../glibc-build;
+fi
+
+if [ ! -r /usr/include/rpc/types.h ]; then
+  su -c 'mkdir -pv /usr/include/rpc'
+  su -c 'cp -v sunrpc/rpc/*.h /usr/include/rpc'
+fi
+
+cp -v timezone/Makefile timezone/Makefile.orig
+sed 's/\\$$(pwd)/`pwd`/' timezone/Makefile.orig > timezone/Makefile
+
+mkdir -v ../glibc-build
+cd ../glibc-build
+
+../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+      --host=$GENUINE_TGT                               \
+      --build=$(../$DNA_PACKAGE_VERSION/scripts/config.guess) \
+      --disable-profile                             \
+      --enable-kernel=2.6.32                        \
+      --with-headers=$TOOLBOX/include                 \
+      libc_cv_forced_unwind=yes                     \
+      libc_cv_ctors_header=yes                      \
+      libc_cv_c_cleanup=yes
+
+make
+
+make install
+
+echo 'main(){}' > dummy.c
+$TOOLBOX/bin/$GENUINE_TGT-gcc dummy.c
+readelf -l a.out | grep ': '$TOOLBOX''
+rm -v dummy.c a.out
+
+cd ..
+rm -rf glibc-build $DNA_PACKAGE_VERSION
+

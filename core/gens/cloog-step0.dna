@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sh autogen.sh
+
+./configure --prefix=$TOOLBOX \
+    --with-gmp-prefix=$TOOLBOX --with-isl-prefix=$TOOLBOX
+
+cp -v Makefile Makefile.orig
+sed '/cmake/d' Makefile.orig > Makefile
+
+make
+
+make install

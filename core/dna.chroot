@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Load config #
+. dna.conf;
+
+# Enter chroot #
+if test ! -z "$CROSSTOOLBOX"; then
+	# CROSSTOOLBOX ENABLED # (default NO)
+	chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
+	    HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
+	    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLBOX/bin:$TOOLBOX/sbin:$TOOLBOX/usr/bin:$TOOLBOX/usr/sbin:$CROSSTOOLBOX/bin:$CROSSTOOLBOX/sbin \
+	    $TOOLBOX/bin/bash --login +h
+else
+	# TOOLBOX #
+	chroot "$SYS_DIR" $TOOLBOX/bin/env -i \
+	    HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
+	    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLBOX/bin:$TOOLBOX/sbin:$TOOLBOX/usr/bin:$TOOLBOX/usr/sbin \
+	    $TOOLBOX/bin/bash --login +h
+fi;
+

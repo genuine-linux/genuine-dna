@@ -1,0 +1,27 @@
+#!/bin/bash
+
+echo "$INF Stripping installed binaries and libraries.";
+echo ""
+
+strip --strip-debug $TOOLBOX/lib/*
+strip --strip-unneeded $TOOLBOX/sbin/* $TOOLBOX/bin/*
+if [ "$CROSSTOOLS" == "YES" ]; then
+	strip --strip-debug $CROSSTOOLBOX/lib/*
+	strip --strip-unneeded $CROSSTOOLBOX/sbin/* $CROSSTOOLBOX/bin/*
+fi
+echo ""
+
+echo "$INF Deleting unnecesary man,info.";
+rm -rf $TOOLBOX/share/man $TOOLBOX/share/info;
+if [ "$CROSSTOOLS" == "YES" ]; then
+	rm -rf $CROSSTOOLBOX/share/man $CROSSTOOLBOX/share/info;
+fi;
+echo "";
+
+echo "$INF Changing ownership.";
+chown -R root:root $TOOLBOX_DIR
+if [ "$CROSSTOOLS" == "YES" ]; then
+	chown -R root:root $CROSSTOOLBOX_DIR;
+fi;
+echo "";
+

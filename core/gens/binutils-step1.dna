@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ -d "../binutils-build" ]; then
+	rm -rf ../binutils-build;
+fi
+
+mkdir -v ../binutils-build
+cd ../binutils-build
+
+CC=$GENUINE_TGT-gcc                \
+AR=$GENUINE_TGT-ar                 \
+RANLIB=$GENUINE_TGT-ranlib         \
+../$DNA_PACKAGE_VERSION/configure \
+    --prefix=$TOOLBOX            \
+    --with-sysroot  \
+    --with-lib-path=$TOOLBOX/lib \
+    --disable-nls   \
+    --enable-shared \
+    --disable-werror;
+
+make
+
+make install
+
+make -C ld clean
+make -C ld LIB_PATH=/usr/lib:/lib
+cp -v ld/ld-new $TOOLBOX/bin
+
+if test -f "ld/ld"; then cp -v ld/ld $TOOLBOX/bin/ld-new2; fi;

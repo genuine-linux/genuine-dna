@@ -1,0 +1,12 @@
+#!/bin/bash
+
+CC=$GENUINE_TGT-gcc           \
+CXX=$GENUINE_TGT-g++           \
+AR=$GENUINE_TGT-ar             \
+RANLIB=$GENUINE_TGT-ranlib     \
+./configure --prefix=$TOOLBOX \
+    --with-gmp-prefix=$TOOLBOX
+
+make
+
+make install

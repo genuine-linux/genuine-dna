@@ -1,0 +1,64 @@
+#!/bin/bash
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+for file in \
+ $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h)
+do
+  cp -uv $file ${file}.orig
+  sed -e 's@/lib\(64\)\?\(32\)\?/ld@/'$TOOLBOX'&@g' \
+      -e 's@/usr@/'$TOOLBOX'@g' ${file}.orig > $file
+  echo '
+#undef STANDARD_STARTFILE_PREFIX_1
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_1 "'$TOOLBOX'/lib/"
+#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
+  touch ${file}.orig
+done
+
+sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
+
+sed -i 's/if \((code.*))\)/if (\1 \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+../$DNA_PACKAGE_VERSION/configure \
+    --target=${GENUINE_TGT}          \
+    --prefix=$TOOLBOX                                  \
+    --with-sysroot=$SYS_DIR                              \
+    --with-newlib                                    \
+    --without-headers                                \
+    --with-local-prefix=$TOOLBOX                      \
+    --with-native-system-header-dir=$TOOLBOX/include   \
+    --disable-nls                                    \
+    --disable-shared                                 \
+    --disable-multilib                               \
+    --disable-decimal-float                          \
+    --disable-threads                                \
+    --disable-libatomic                              \
+    --disable-libgomp                                \
+    --disable-libitm                                 \
+    --disable-libquadmath                            \
+    --disable-libsanitizer                           \
+    --disable-libssp                                 \
+    --disable-libvtv                                 \
+    --disable-libcilkrts                             \
+    --disable-libstdc++-v3                           \
+    --enable-languages=c,c++ \
+    --with-gmp=/usr \
+    --with-mpc=/usr \
+    --with-mpfr=/usr
+
+make
+
+make install
+
+if [ ! -f "$TOOLBOX/include/libiberty.h" ]; then
+	cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $TOOLBOX/include/
+fi;
+
+cd ..
+rm -rf gcc-build $DNA_PACKAGE_VERSION

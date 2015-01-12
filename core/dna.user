@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "$INF Setting up your Genuine GNU/Linux Developer Tools User ($USER).";
+
+grep $USER /etc/passwd >/dev/null;
+
+if [[ $? -eq 1 ]]; then
+	echo "$WRN Adding new user ($USER).";
+	/usr/sbin/groupadd $GROUP;
+	/usr/sbin/useradd -s /bin/bash -g $USER -m -k /dev/null $USER;
+	echo "set +h
+umask 022
+SYS_DIR=$SYS_DIR
+LC_ALL=POSIX
+GENUINE_TGT=$(uname -m)-pc-linux-gnu
+GENUINE_HOST=$MACHTYPE
+PATH=$TOOLBOX/bin:/bin:/usr/bin
+export SYS_DIR LC_ALL GENUINE_TGT GENUINE_HOST PATH" > /home/$USER/.bashrc
+fi;
+
+chown -R $USER:$GROUP $TOOLBOX $SYS_DIR $SRC_DIR /home/$USER;
+

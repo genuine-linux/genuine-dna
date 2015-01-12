@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "$INF Deleting unnecesary man,info.";
+rm -rf $TOOLBOX/share/man $TOOLBOX/share/info;
+if [ "$CROSSTOOLS" == "YES" ]; then
+	rm -rf $CROSSTOOLBOX/share/man $CROSSTOOLBOX/share/info;
+fi;
+echo "";
+

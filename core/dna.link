@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# DNA Link ToolBox
+
+# Create Initial Directory and Links
+function create_toolbox {
+        echo "$WRN Creating $TOOLBOX_DIR";
+        mkdir -p $TOOLBOX_DIR;
+        echo "$WRN Linking $TOOLBOX_DIR to $TOOLBOX";
+        ln -s $TOOLBOX_DIR /;
+	chown -R $USER:$GROUP $TOOLBOX_DIR;
+}
+
+function create_crosstoolbox {
+        echo "$WRN Creating $CROSSTOOLBOX_DIR";
+        mkdir -p $CROSSTOOLBOX_DIR;
+        echo "$WRN Linking $CROSSTOOLBOX_DIR to $CROSSTOOLBOX";
+        ln -s $CROSSTOOLBOX_DIR /; 
+	chown -R $USER:$GROUP $CROSSTOOLBOX_DIR;
+}
+
+mkdir -p $LOG_DIR $TMP_DIR; 
+
+# Check for previous builds
+CHECK_DONE=$(ls $LOG_DIR | grep '.done');
+
+if [ -z "$CHECK_DONE" ]; then
+	# If any previous build was found ...
+	echo "$INF Previous DNA build was found!";
+ 
+	# Clean TMP and LOG before start
+	echo "$WRN Cleaning tmp and log before start.";
+	rm -rf $TMP_DIR/* $LOG_DIR/*
+
+	if [ -L "$TOOLBOX" ]; then
+		echo "$WRN Deleting $TOOLBOX";
+		rm -rf $TOOLBOX;
+	fi;
+
+        if [ -L "$CROSSTOOLBOX" ]; then
+                echo "$WRN Deleting $CROSSTOOLBOX";
+                rm -rf $CROSSTOOLBOX;
+        fi;
+
+	if [ ! -d "$TOOLBOX_DIR" ]; then
+		create_toolbox;
+	else
+		echo "$WRN Deleting $TOOLBOX_DIR";
+		rm -rf $TOOLBOX_DIR;
+		create_toolbox;
+	fi;
+
+        if [ "$CROSSTOOLS" == "YES" ] && [ ! -d "$CROSSTOOLBOX_DIR" ]; then
+                create_crosstoolbox;
+        elif [ "$CROSSTOOLS" == "YES" ]; then
+                echo "$WRN Deleting $CROSSTOOLBOX_DIR";
+                rm -rf $CROSSTOOLBOX_DIR;
+                create_crosstoolbox;
+        fi;
+else
+	echo "$WRN A previous DNA build was found!";
+	echo "$INF Trying to recover from last session.";
+	echo "$WRN Cleaning tmp before start!";
+	rm -rf $TMP_DIR/*
+fi;

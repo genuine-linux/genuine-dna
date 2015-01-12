@@ -1,0 +1,15 @@
+#!/bin/bash
+
+case $(uname -m) in
+	i?86) KERNELARCH=x86; export KERNELARCH;
+	;;
+	x86_64) KERNELARCH=x86_64; export KERNELARCH;
+	;;
+esac
+
+echo "$INF Building linux-headers for ($KERNELARCH).";
+
+make mrproper
+make ARCH=$KERNELARCH headers_check
+make ARCH=$KERNELARCH INSTALL_HDR_PATH=$TOOLBOX headers_install
+

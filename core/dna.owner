@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "$INF Changing ownership.";
+chown -R root:root $TOOLBOX_DIR
+if [ "$CROSSTOOLS" == "YES" ]; then
+	chown -R root:root $CROSSTOOLBOX_DIR;
+fi;
+echo "";
+

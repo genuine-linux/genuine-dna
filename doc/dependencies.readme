@@ -24,7 +24,8 @@ nasm
 libncurses5-dev
 tcl-dev
 libncursesw5-dev
-lib32ncurses5-dev
-lib32ncursesw5-dev
 libpcre3
 libpcre3-dev
+libgmp-dev
+libmpc-dev
+libmpfr-dev

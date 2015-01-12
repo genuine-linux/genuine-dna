@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ -d "../gcc-build" ]; then
+        rm -rf ../gcc-build;
+fi
+
+
+echo -en '\n#undef STANDARD_STARTFILE_PREFIX_1\n#define STANDARD_STARTFILE_PREFIX_1 "'$TOOLBOX'/lib/"\n' >> gcc/config/linux.h
+echo -en '\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> gcc/config/linux.h
+
+touch $TOOLBOX/include/limits.h
+
+mkdir -v ../gcc-build
+cd ../gcc-build
+
+AR=ar LDFLAGS="-Wl,-rpath,$CROSSTOOLBOX/lib" \
+     ../$DNA_PACKAGE_VERSION/configure --prefix=$CROSSTOOLBOX \
+     --build=${GENUINE_HOST} --host=${GENUINE_HOST} --target=${GENUINE_TGT} \
+     --with-sysroot=${SYS_DIR} --with-local-prefix=$TOOLBOX \
+     --with-native-system-header-dir=$TOOLBOX/include --disable-nls \
+     --disable-shared --with-mpfr=$CROSSTOOLBOX --with-gmp=$CROSSTOOLBOX \
+     --with-cloog=$CROSSTOOLBOX --with-mpc=$CROSSTOOLBOX --without-headers \
+     --with-newlib --disable-decimal-float --disable-libgomp --disable-libmudflap \
+     --disable-libssp --disable-libatomic --disable-libitm \
+     --disable-libsanitizer --disable-libquadmath --disable-threads \
+     --disable-target-zlib --with-system-zlib --with-isl=$CROSSTOOLBOX \
+     --enable-languages=c --enable-checking=release
+
+make all-gcc all-target-libgcc
+
+make install-gcc install-target-libgcc
+
+cp -v ../$DNA_PACKAGE_VERSION/include/libiberty.h $TOOLBOX/include
+
+cd ..
+rm -rf gcc-build $DNA_PACKAGE_VERSION

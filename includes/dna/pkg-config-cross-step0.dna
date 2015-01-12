@@ -1,9 +1,0 @@
-#!/bin/bash
-
-./configure --prefix=$CROSSTOOLBOX --host=${GENUINE_TGT} \
-     --with-pc-path=$TOOLBOX/lib64/pkgconfig:$TOOLBOX/share/pkgconfig
-
-make
-
-make install
-
