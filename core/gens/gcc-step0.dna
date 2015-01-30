@@ -48,9 +48,9 @@ cd ../gcc-build
     --disable-libcilkrts                             \
     --disable-libstdc++-v3                           \
     --enable-languages=c,c++ \
-    --with-gmp=/usr \
-    --with-mpc=/usr \
-    --with-mpfr=/usr
+    --with-gmp=$TOOLBOX \
+    --with-mpc=$TOOLBOX \
+    --with-mpfr=$TOOLBOX
 
 make
 

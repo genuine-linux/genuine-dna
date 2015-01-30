@@ -38,9 +38,9 @@ RANLIB=$GENUINE_TGT-ranlib                               \
     --disable-multilib                               \
     --disable-bootstrap                              \
     --disable-libgomp  \
-    --with-gmp=/usr \
-    --with-mpc=/usr \
-    --with-mpfr=/usr
+    --with-gmp=$TOOLBOX \
+    --with-mpc=$TOOLBOX \
+    --with-mpfr=$TOOLBOX
 
 make
 make install

@@ -172,8 +172,8 @@ echo ""
 OPTIONS="$1";
 
 case "$OPTIONS" in
-	build) bash $DNA_USER;
-	       bash $DNA_LINK;
+	build) bash $DNA_LINK;
+	       bash $DNA_USER;
 	       $SUCMD "bash $DNA_BUILD"; if [[ $? -eq 1 ]]; then exit 1; fi
 	       bash $DNA_STRIP;
 	       bash $DNA_CLEAN;
