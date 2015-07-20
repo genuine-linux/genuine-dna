@@ -38,5 +38,5 @@ shadow|shadow-4.2|http://pkg-shadow.alioth.debian.org/releases/|shadow-4.2.tar.x
 sysvinit|sysvinit-2.88dsf|http://download.savannah.gnu.org/releases/sysvinit/|sysvinit-2.88dsf.tar.bz2
 eudev|eudev-1.6|ftp://mirror.ovh.net/gentoo-distfiles/distfiles/|eudev-1.6.tar.gz
 systemd|systemd-218|http://www.freedesktop.org/software/systemd/|systemd-218.tar.xz
-linux|linux-3.16.3|ftp://ftp.kernel.org/pub/linux/kernel/v3.x/|linux-3.16.3.tar.xz
+linux|linux-4.0.8|ftp://ftp.kernel.org/pub/linux/kernel/v4.x/|linux-4.0.8.tar.xz
 grub|grub-2.00|ftp://ftp.gnu.org/gnu/grub/|grub-2.00.tar.gz
