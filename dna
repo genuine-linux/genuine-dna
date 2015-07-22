@@ -193,12 +193,13 @@ esac
 echo "";
 echo "$INF Now you will be promted to Genuine ToolBox to finish base installation.";
 echo "";
-echo "$INF Please, execute 'dna.bootstrap-*.sh' scripts in order ...";
+echo "$INF Please, execute bootstrap shell scripts in order ...";
 echo "";
 
 # Copy Genuine System bootstrap scripts to new system root #
-cp core/dna.bootstrap/dna.bootstrap*.sh system/;
-chmod +x system/dna.bootstrap*.sh;
+cp core/dna.bootstrap/*.sh system/;
+cp core/dna.bootstrap/*_ORDER system/;
+chmod +x system/*.sh;
 
 # Enter new system chroot #
 chmod +x core/dna.chroot;
