@@ -1,7 +1,7 @@
 export LFS="$(pwd)";
 
-if test ! -L "/tools"; then
-  ln -sfv $LFS /tools
+if test ! -L "/dnatools"; then
+  ln -sfv $LFS /dnatools
 fi
 
 mkdir -pv $LFS/{dev,proc,sys,run}
@@ -19,12 +19,12 @@ if [ -h $LFS/dev/shm ]; then
   mkdir -pv $LFS/$(readlink $LFS/dev/shm)
 fi
 
-chroot "$LFS" /tools/bin/env -i \
+chroot "$LFS" /dnatools/bin/env -i \
 	HOME=/root \
 	TERM="$TERM" \
 	PS1='\u:\w\$ ' \
-	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/tools/sbin \
-	/tools/bin/bash --login +h	
+	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/dnatools/bin:/dnatools/sbin \
+	/dnatools/bin/bash --login +h	
 
 umount dev/pts
 umount run
