@@ -37,13 +37,13 @@ make-step0|make-4.0|ftp://ftp.gnu.org/gnu/make/|make-4.0.tar.gz
 autoconf-step0|autoconf-2.69|ftp://ftp.gnu.org/gnu/autoconf/|autoconf-2.69.tar.xz
 automake-step0|automake-1.14.1|ftp://ftp.gnu.org/gnu/automake/|automake-1.14.1.tar.xz
 libtool-step0|libtool-2.4.2|ftp://ftp.gnu.org/gnu/libtool/|libtool-2.4.2.tar.xz
-patch-step0|patch-2.7.1|ftp://ftp.gnu.org/gnu/patch/|patch-2.7.1.tar.gz
+patch-step0|patch-2.7.1|ftp://ftp.gnu.org/gnu/patch/|patch-2.7.1.tar.bz2
 perl-step0|perl-5.20.1|http://www.cpan.org/src/5.0/|perl-5.20.1.tar.gz
 sed-step0|sed-4.2.2|ftp://ftp.gnu.org/gnu/sed/|sed-4.2.2.tar.bz2
 tar-step0|tar-1.28|ftp://ftp.gnu.org/gnu/tar/|tar-1.28.tar.xz
 texinfo-step0|texinfo-5.2|ftp://ftp.gnu.org/gnu/texinfo/|texinfo-5.2.tar.xz
 util-linux-step0|util-linux-2.25.1|https://www.kernel.org/pub/linux/utils/util-linux/v2.25/|util-linux-2.25.1.tar.xz
 nano-step0|nano-2.3.6|ftp://ftp.gnu.org/gnu/nano/|nano-2.3.6.tar.gz
-#vim-step0|vim74|ftp://ftp.vim.org/pub/vim/unix/|vim-7.4.tar.bz2
+vim-step0|vim74|ftp://ftp.vim.org/pub/vim/unix/|vim-7.4.tar.bz2
 xz-utils-step0|xz-5.0.7|http://tukaani.org/xz/|xz-5.0.7.tar.bz2
 strace-step0|strace-4.9|http://downloads.sourceforge.net/project/strace/strace/4.9/|strace-4.9.tar.xz

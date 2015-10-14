@@ -29,6 +29,7 @@ sed|sed-4.2.2|ftp://ftp.gnu.org/gnu/sed/|sed-4.2.2.tar.bz2
 tar|tar-1.28|ftp://ftp.gnu.org/gnu/tar/|tar-1.28.tar.xz
 texinfo|texinfo-5.2|ftp://ftp.gnu.org/gnu/texinfo/|texinfo-5.2.tar.xz
 util-linux|util-linux-2.25.1|https://www.kernel.org/pub/linux/utils/util-linux/v2.25/|util-linux-2.25.1.tar.xz
+nano-step0|nano-2.3.6|ftp://ftp.gnu.org/gnu/nano/|nano-2.3.6.tar.gz
 vim|vim74|ftp://ftp.vim.org/pub/vim/unix/|vim-7.4.tar.bz2
 xz-utils|xz-5.0.7|http://tukaani.org/xz/|xz-5.0.7.tar.bz2
 genetic|genetic-0.4.14|https://github.com/genuine-linux/genetic/tarball/master|genetic-0.4.14.tar.bz2

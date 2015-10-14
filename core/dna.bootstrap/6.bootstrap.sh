@@ -19,20 +19,24 @@ for PKG in $PKG_BUILD_ORDER; do
 if test ! -d "/var/cache/genetic/$PKG_NAME"; then
 	echo "$BST Installing '$PKG_NAME ($PKG_VERSION)' sources";
 
+	cd /;
+
 	genetic -i /SourcePool/$PKG_NAME-$PKG_VERSION.src.gen || exit 1;
 
 	cd /var/tmp/genetic/$PKG_NAME-$PKG_VERSION;
 
 	echo "$BST Building '$PKG_NAME ($PKG_VERSION)' packages";
 
-	genetic --disable-gen-all -b SrcInfo || exit 1;
+	genetic --disable-gen-orig --disable-gen-debug -b SrcInfo || exit 1;
 
 	echo "$BST Installing '$PKG_NAME ($PKG_VERSION)' packages";
 
-	find $PACKAGEPOOL -iname "$PKG_NAME*-$PKG_VERSION*.gen" -exec genetic -i {} \;
+	find $PACKAGEPOOL -iname "$PKG_NAME*-$PKG_VERSION*.x86_64.gen" -exec genetic -i {} \;
+	find $PACKAGEPOOL -iname "$PKG_NAME*-$PKG_VERSION*.x86_64.dev.gen" -exec genetic -i {} \;
+	find $PACKAGEPOOL -iname "$PKG_NAME*-$PKG_VERSION*.x86_64.doc.gen" -exec genetic -i {} \;
 
 	echo "Cleaning /var/tmp/genetic ...";
-	rm -rf /var/tmp/genetic/*
+	cd /; rm -rf /var/tmp/genetic/*
 
 	# Adjust toolchain after reinstalling glibc #
 	if test "$PKG_NAME" == "glibc"; then

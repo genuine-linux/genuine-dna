@@ -47,7 +47,16 @@ cd ../gcc-build
     --disable-libvtv                                 \
     --disable-libcilkrts                             \
     --disable-libstdc++-v3                           \
-    --enable-languages=c,c++
+    --enable-languages=c,c++ \
+    --enable-bootstrap \
+    --enable-threads=posix \
+    --enable-checking=release \
+    --enable-__cxa_atexit \
+    --disable-libunwind-exceptions \
+    --enable-gnu-unique-object \
+    --disable-dssi \
+    --disable-libjava-multilib \
+    --with-tune=generic
 
 make
 

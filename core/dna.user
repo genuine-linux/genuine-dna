@@ -12,7 +12,7 @@ if [[ $? -eq 1 ]]; then
 umask 022
 SYS_DIR=$SYS_DIR
 LC_ALL=POSIX
-GENUINE_TGT=$(uname -m)-pc-linux-gnu
+GENUINE_TGT=$(uname -m)-genuine-linux-gnu
 GENUINE_HOST=$MACHTYPE
 PATH=$TOOLBOX/bin:/bin:/usr/bin
 export SYS_DIR LC_ALL GENUINE_TGT GENUINE_HOST PATH" > /home/$USER/.bashrc
