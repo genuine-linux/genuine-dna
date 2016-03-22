@@ -73,12 +73,12 @@ help2man-1.46.4
 acpid-2.0.23
 pciutils-3.2.1
 openssl-1.0.1i
+lvm2-2.02.111
 mdadm-3.3.2
 xfsprogs-3.2.1
-lvm2-2.02.111
 dash-0.5.7
-gpm-1.20.7
 aalib-1.4rc5
+gpm-1.20.7
 keyutils-1.5.9
 sharutils-4.14
 krb5-1.12.2
@@ -91,6 +91,7 @@ Linux-PAM-1.1.8
 popt-1.16
 Python-2.7.8
 screen-4.2.1
+sharutils-4.14
 sqlite-3.8.6
 sysstat-11.1.1
 tcl-8.6.2

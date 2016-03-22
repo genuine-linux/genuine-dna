@@ -3,19 +3,19 @@
 # Bootstrap Genuine GNU/Linux Developer Tools #
 #                                             # 
 ###############################################
-binutils-step0|binutils-2.25|http://ftp.gnu.org/gnu/binutils/|binutils-2.25.tar.bz2
+binutils-step0|binutils-2.26|http://ftp.gnu.org/gnu/binutils/|binutils-2.26.tar.bz2
 gmp-step0|gmp-6.0.0|https://gmplib.org/download/gmp/|gmp-6.0.0a.tar.xz
-mpfr-step0|mpfr-3.1.3|http://www.mpfr.org/mpfr-current/|mpfr-3.1.3.tar.xz
+mpfr-step0|mpfr-3.1.4|http://www.mpfr.org/mpfr-current/|mpfr-3.1.4.tar.xz
 mpc-step0|mpc-1.0.2|ftp://ftp.gnu.org/gnu/mpc/|mpc-1.0.2.tar.gz
-gcc-step0|gcc-4.9.2|http://ftp.gnu.org/gnu/gcc/gcc-4.9.2/|gcc-4.9.2.tar.bz2
-linux-headers-step0|linux-4.0.8|ftp://ftp.kernel.org/pub/linux/kernel/v4.x/|linux-4.0.8.tar.xz
+gcc-step0|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-5.2.0/|gcc-5.2.0.tar.bz2
+linux-headers-step0|linux-4.4.6|ftp://ftp.kernel.org/pub/linux/kernel/v4.x/|linux-4.4.6.tar.xz
 glibc-step0|glibc-2.20|http://ftp.gnu.org/gnu/glibc/|glibc-2.20.tar.xz
-libstdc-step0|gcc-4.9.2|http://ftp.gnu.org/gnu/gcc/gcc-4.9.1/|gcc-4.9.2.tar.bz2
-binutils-step1|binutils-2.25|http://ftp.gnu.org/gnu/binutils/|binutils-2.25.tar.bz2
+libstdc-step0|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-4.9.1/|gcc-5.2.0.tar.bz2
+binutils-step1|binutils-2.26|http://ftp.gnu.org/gnu/binutils/|binutils-2.26.tar.bz2
 gmp-step1|gmp-6.0.0|https://gmplib.org/download/gmp/|gmp-6.0.0a.tar.xz
-mpfr-step1|mpfr-3.1.3|http://www.mpfr.org/mpfr-current/|mpfr-3.1.3.tar.xz
+mpfr-step1|mpfr-3.1.4|http://www.mpfr.org/mpfr-current/|mpfr-3.1.4.tar.xz
 mpc-step1|mpc-1.0.2|ftp://ftp.gnu.org/gnu/mpc/|mpc-1.0.2.tar.gz
-gcc-step1|gcc-4.9.2|http://ftp.gnu.org/gnu/gcc/gcc-4.9.2/|gcc-4.9.2.tar.bz2
+gcc-step1|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-5.2.0/|gcc-5.2.0.tar.bz2
 tcl-step0|tcl8.6.3|http://downloads.sourceforge.net/project/tcl/Tcl/8.6.3/|tcl8.6.3-src.tar.gz
 expect-step0|expect5.45|http://downloads.sourceforge.net/project/expect/Expect/5.45/|expect5.45.tar.gz
 dejagnu-step0|dejagnu-1.5.1|http://ftp.gnu.org/gnu/dejagnu/|dejagnu-1.5.1.tar.gz
@@ -29,7 +29,7 @@ file-step0|file-5.19|ftp://ftp.astron.com/pub/file/|file-5.19.tar.gz
 findutils-step0|findutils-4.4.2|ftp://ftp.gnu.org/gnu/findutils/|findutils-4.4.2.tar.gz
 gawk-step0|gawk-4.1.1|ftp://ftp.gnu.org/gnu/gawk/|gawk-4.1.1.tar.xz
 gettext-step0|gettext-0.19.2|ftp://ftp.gnu.org/gnu/gettext/|gettext-0.19.2.tar.xz
-flex-step0|flex-2.5.39|ftp://ftp.gnu.org/gnu/flex/|flex-2.5.39.tar.xz
+flex-step0|flex-2.6.0|http://downloads.sourceforge.net/project/flex/|flex-2.6.0.tar.xz
 grep-step0|grep-2.20|ftp://ftp.gnu.org/gnu/grep/|grep-2.20.tar.xz
 gzip-step0|gzip-1.6|ftp://ftp.gnu.org/gnu/gzip/|gzip-1.6.tar.xz
 m4-step0|m4-1.4.17|ftp://ftp.gnu.org/gnu/m4/|m4-1.4.17.tar.xz

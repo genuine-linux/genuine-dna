@@ -1,2 +1,2 @@
-exec /dnatools/bin/bash --login +h
+exec /tools/bin/bash --login +h
 
