@@ -18,5 +18,5 @@ binutils-cross-step0|binutils-2.26|http://ftp.gnu.org/gnu/binutils/|binutils-2.2
 gcc-cross-step0|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-5.2.0/|gcc-5.2.0.tar.bz2
 glibc-cross-step0|glibc-2.20|http://ftp.gnu.org/gnu/glibc/|glibc-2.20.tar.xz
 glibc-cross-step1|glibc-2.20|http://ftp.gnu.org/gnu/glibc/|glibc-2.20.tar.xz
-libstdc-cross-step0|gcc-4.9.1|http://ftp.gnu.org/gnu/gcc/gcc-4.9.1/|gcc-4.9.1.tar.xz
-gcc-cross-step1|gcc-4.9.1|http://ftp.gnu.org/gnu/gcc/gcc-4.9.1/|gcc-4.9.1.tar.xz
+libstdc-cross-step0|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-5.2.0/|gcc-5.2.0.tar.xz
+gcc-cross-step1|gcc-5.2.0|http://ftp.gnu.org/gnu/gcc/gcc-5.2.0/|gcc-5.2.0.tar.xz
