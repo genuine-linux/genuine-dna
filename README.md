@@ -5,6 +5,8 @@ Genuine DNA Devel Tools
 
 # INSTALL
 
+Configure your user in file "dna.conf".
+
 Check your host system:
 
 ```
