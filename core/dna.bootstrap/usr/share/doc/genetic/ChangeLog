@@ -1,0 +1,26 @@
+2019-07-15  list all packages                   <antoniocao000@gmail.com>
+	* list all packages: Added "all|All|ALL" to package list.
+
+2019-07-03  update_desktop_database		<antoniocao000@gmail.com>
+	* update_desktop_database(): Add desktop-file-utils
+	update-desktop-database.
+
+2019-06-27  link target binaries & man pages    <antoniocao000@gmail.com>
+	* Link target binaries & man pages: Link genuine target binaries and
+	man pages to their simplest name.
+
+2019-06-27  colorize    <antoniocao000@gmail.com>
+	* Shell colors: Add more colors to output text.
+
+2019-06-17  build       <antoniocao000@gmail.com>
+	* libgenetic-build (SOURCE): Fixed bug creating "/etc/" files.
+	* libgenetic-build (SOURCE): Add cmake build.
+	* libgenetic-build (SOURCE): Fixed perl Makefile.PL build.
+
+2019-05-22  genetic     <antoniocao000@gmail.com>
+	* genetic (COMPLETE SOURCE): Convert sources to static bash code.
+
+2019-05-06  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* libgenetic-i18n (SOURCE): Add gettext to the code.
+

@@ -7,7 +7,11 @@ CXX=$GENUINE_TGT-g++                                     \
 AR=$GENUINE_TGT-ar                                       \
 RANLIB=$GENUINE_TGT-ranlib                               \
 ./configure --prefix=$TOOLBOX \
-    --with-gmp-prefix=$TOOLBOX --with-isl-prefix=$TOOLBOX
+    --with-gmp-prefix=$TOOLBOX  \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT" \
+	--with-isl-prefix=$TOOLBOX
 
 cp -v Makefile Makefile.orig
 sed '/cmake/d' Makefile.orig > Makefile

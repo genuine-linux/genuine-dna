@@ -1,0 +1,319 @@
+#!/bin/bash
+
+# genetic-19.x.x (libgenetic-package) #
+
+# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# libgenetic-package.la: Package Manager Core Common functions and definitions #
+
+# Packages undefined variables #
+CONFIGURE_OPTIONS="";
+PACKAGES_TO_GENERATE="";
+EXTRACT="";
+TYPE="";
+
+# package_check($package): Check if a package file exists (binary & source) #
+package_check() {
+	# Parameters: $package #
+	package="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'package_check($package)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	# Function
+	if test -z "$package"; then
+		echolog "$ERROR Error! You must select a valid package filename!";
+
+		# Close genetic instance #
+		exit_instance $false;
+	fi;
+
+	# If package does not exist then exit #
+	check_file "$package" || errorcheck $? "package_check: 'Requested file <$package> was not found'";
+
+	echolog_debug_verbose "$DEBUG Loaded package file '$package'.";
+
+	return $true;
+}
+
+# gen_package_type($package): Check package type for uncompress it sucessfully #
+get_package_type() {
+	# Parameters: $package #
+	package="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'get_package_type($package)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	# Function 
+	TYPE=$($ECHO "$package" | $AWK  -F"." '{print $NF}');
+
+	# Case type in
+	case "$TYPE" in
+		xz|XZ|txz|TXZ) EXTRACT="-xf";
+		;;
+		gz|GZ|tgz|TBZ) EXTRACT="zxf";
+		;;
+		bz2|BZ2|tbz|TBZ) EXTRACT="jxf";
+		;;
+		gen|GEN) EXTRACT="jxf"; # genetic packages extension #
+		;;
+		*) echolog "$ERROR Error! Selected '${color_wht}$package${color_reset}' has an unknown file type: '${color_wht}$TYPE${color_reset}'!";
+		   # Close genetic instance #
+		   exit_instance $false;
+		;;
+	esac
+
+	echolog_debug_verbose "$DEBUG Package '$package' format is '$TYPE'.";
+
+	return $true;
+}
+
+# genextract($EXTRACT,$EXTRACT_PACKAGE_PATH,$extractdir): Extract packages from source #
+genextract() {
+	# Parameters: $EXTRACT, $EXTRACT_PACKAGE_PATH, $extractdir #
+	extract="$1"; shift;
+	EXTRACT_PACKAGE_PATH="$1"; shift;
+	extractdir="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'genextract($EXTRACT,$EXTRACT_PACKAGE_PATH,$extractdir)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	# Define '$EXTRACT_PACKAGE' to be extracted #
+	EXTRACT_PACKAGE=$($ECHO $EXTRACT_PACKAGE_PATH | $AWK -F"/" '{print $NF}');
+
+	# work_spinner $CMD $MSG (no log)
+	echolog_debug "$DEBUG Unpack '$EXTRACT_PACKAGE' file into '$extractdir'.";
+
+	start_spinner "Unpacking '${color_wht}$EXTRACT_PACKAGE${color_reset}'";
+	$MKDIR -p $extractdir &>/dev/null;
+	$TAR $extract $EXTRACT_PACKAGE_PATH -C $extractdir/ &>/dev/null;
+	stop_spinner $?;
+
+	return $true;
+}
+
+# check_package_arch($package,$version,$pkgarch): Checks that binary package arch ($pkgarch) matches system's arch ($GENETIC_ARCH). #
+check_package_arch() {
+	# Parameters: $package, $version $arch #
+	package="$1"; shift;
+	version="$1"; shift;
+	pkgarch="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'check_package_arch($package,$version,$pkgarch)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	if test "$GENETIC_ARCH" != "$pkgarch"; then
+		echolog "$ERROR '${color_wht}$package $version${color_reset}' (${color_wht}$pkgarch${color_reset}) arquitecture does not match system arquitecture  '${color_wht}$GENETIC_ARCH${color_reset}'!";
+		echolog "$ERROR '${color_wht}$package $Version${color_reset}' (${color_wht}$pkgarch${color_reset}) can't be installed on this system!";
+
+		# Close genetic instance #
+		exit_instance $false;
+	else
+		echolog_debug "$DEBUG Package '$package $Version' arquitecture is '($pkgarch)'.";
+		return $true;	
+	fi;
+}
+
+# gen_check_package_depends($InfoFile): Check package dependencies from '(Src)Info' file. #
+gen_check_package_depends() {
+	# Parameters: $InfoFile #
+	InfoFile="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'gen_check_package_depends($InfoFile)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	echolog_debug "$DEBUG Check for package dependencies ...";
+
+	# Check for Info file #
+	check_file "$InfoFile" "source $InfoFile" || errorcheck $? "gen_check_package_depends";
+
+	# If package has depends #
+	if test ! -z "$depends"; then
+		# Required dependencies found #
+		echolog_debug "$DEBUG Dependencies found: $depends";
+
+		# Check if each required depend is installed #
+		for depend in $depends; do
+			echolog_debug "$DEBUG Loading '$depend' package info.";
+
+			# Load depend name
+			depend_name=$($ECHO "$depend" | $AWK -F"_" '{print $1}');
+
+			# Load depend version
+			depend_version=$($ECHO "$depend" | $AWK -F"_" '{print $2}');
+
+			# Test minimum needed depend version
+			test_depend_version=$($ECHO $depend_version | $SED 's/.//g');
+			
+			# Check if dependency is installed
+			echolog_debug "$DEBUG Trying to find dependency package '$depend_name $depend_version ($GENETIC_ARCH)' ...";
+
+			# Test if cache files are installed for required package.
+			if test -f "$CACHEDIR/$depend_name/Info"; then
+				echolog_debug "$DEBUG Found dependency package '$depend_name' installed.";
+
+				# Check for the correct version installed #
+				depend_version_installed=$($GREP "^version=" "$CACHEDIR/$depend_name/Info" | $AWK -F"=" '{print $2}');
+				test_depend_version_installed=$($ECHO "$depend_version_installed" | $SED 's/.//g');
+				
+				if [[ $test_depend_version_installed -ge $test_depend_version ]]; then
+					# Required depend is installed #
+					echolog_debug "$DEBUG Required depend '$depend_name ($depend_version_installed)' is installed.";
+					return $true;
+				else
+					# Required depend is NOT installed #
+					stop_spinner 1;
+
+					echolog "$ERROR Error!!! Required depend '${color_wht}$depend_name >= ($depend_version)${color_reset}' is NOT installed!!!";
+
+					# Close genetic instance #
+					exit_instance $false;
+				fi;
+			else
+				# Required depend is NOT installed #
+				stop_spinner 1;
+
+				echolog "$ERROR Error!!! Required depend '${color_wht}$depend_name >= ($depend_version)${color_reset}' is NOT installed!!!";
+				echolog "$ERROR Error! Required package 'Info' or 'SrcInfo' file for '${color_wht}$depend_name${color_reset}' cannot be found!";
+
+				# Close genetic instance #
+				exit_instance $false;
+			fi;
+		done;
+	else
+		echolog_debug "$DEBUG No dependencies are required for this package.";
+		return $true;
+	fi;
+
+	return $true;
+}
+
+# update_info_dir(): Updates /usr/share/info/dir entries #
+update_info_dir() {
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'update_info_dir()'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	if test -d "/usr/share/info"; then
+		echologn_debug "$DEBUG Updating system 'info' index '/usr/share/info/dir'...";
+		pushd /usr/share/info &>/dev/null
+		if test -f "dir"; then rm dir &>/dev/null; fi
+		for f in *; do
+			install-info $f dir &>/dev/null
+		done
+		popd &>/dev/null
+		# Old Method
+		#for info_file in $($FIND /usr/share/info -type f -iname "*.info*"); do
+		#	install-info --dir-file=/usr/share/info/dir $info_file &>/dev/null;
+		#done;
+		echolog_debug_nodate "$FINISHED";
+	fi;
+
+	return $true;
+}
+
+# update_perllocal_pod(): Updates Perl Modules "perllocal.pod" index #
+update_perllocal_pod() {
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'update_perllocal_pod()'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	if test -d "/usr/lib/perl5"; then
+		echologn_debug "$DEBUG Updating system 'perllocal.pod' index ...";
+
+		echolog_debug_nodate "$FINISHED";
+	else
+		echolog_debug "$WARNING Warning! Can't update system 'perllocal.pod' index!";
+		echolog_debug "$WARNING Warning! Directory '/usr/lib/perl5' does not exist! Skipping update!";
+	fi;
+
+	return $true;
+}
+
+# update_desktop_database(): Update desktop-file-utils applications database #
+update_desktop_database() {
+
+        echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+        echolog_debug "$DEBUG Starting 'update_desktop_database()'!";
+        echolog_debug "$DEBUG =====================================================";
+
+	if test ! -d "/usr/share/applications"; then
+		install -dm755 /usr/share/applications &>/dev/null;
+	fi;
+	if test -f "/usr/bin/update-desktop-database"; then
+		update-desktop-database /usr/share/applications &>/dev/null;
+	fi;
+}
+
+# update_fc_cache(): Update XOrg Fonts Cache #
+update_fc_cache() {
+
+        echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+        echolog_debug "$DEBUG Starting 'update_fc_cache()'!";
+        echolog_debug "$DEBUG =====================================================";
+
+	if test -f "/usr/bin/fc-cache"; then
+		fc-cache &>/dev/null;
+	fi;
+}
+
+# package_libtool_finish(): Finish libraries installation #
+package_libtool_finish() {
+
+        echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+        echolog_debug "$DEBUG Starting 'package_libtool_finish()'!";
+        echolog_debug "$DEBUG =====================================================";
+
+        echolog_debug "$DEBUG Executing $LIBTOOL --finish /lib";
+	$LIBTOOL --finish /lib &>/dev/null
+        echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/lib";
+	$LIBTOOL --finish /usr/lib &>/dev/null
+        echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/local/lib";
+	$LIBTOOL --finish /usr/local/lib &>/dev/null
+        echolog_debug "$DEBUG Executing $LIBTOOL --finish /opt/lib";
+	$LIBTOOL --finish /opt/lib &>/dev/null
+
+	return $true;
+}
+
+# package_check_structure($package): Check for a valid package structure #
+package_check_structure() {
+	# Parameters: $package #
+	package="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'package_check($package)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	# Function
+	if test -z "$package"; then
+		echolog "$ERROR Error! You must select a valid package filename!";
+
+		# Close genetic instance #
+		exit_instance $false;
+	fi;
+
+	# If package does not exist then exit #
+	check_file "$package" || errorcheck $? "package_check: 'Requested file <$package> was not found'";
+
+	echolog_debug_verbose "$DEBUG Loaded package file '$package'.";
+
+	return $true;
+}
+

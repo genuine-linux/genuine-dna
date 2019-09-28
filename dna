@@ -2,7 +2,7 @@
 
 #########################
 #                       #
-# Genuine DNA 2009-2014 #
+# Genuine DNA 2009-2019 #
 #                       #
 #########################
 
@@ -72,17 +72,17 @@ ARCH=$(uname -m);
 
 LC_ALL=POSIX
 
-GENUINE_TGT="$(uname -m)-pc-linux-gnu"
-GENUINE_HOST=$(echo $MACHTYPE)
-GENUINE_TGT32="i686-pc-linux-gnu"
-GENUINE_TGT64="x86_64-pc-linux-gnu"
+#GENUINE_TGT="$(uname -m)-pc-linux-gnu"
+#GENUINE_HOST=$(echo $MACHTYPE)
+#GENUINE_TGT32="i686-pc-linux-gnu"
+#GENUINE_TGT64="x86_64-pc-linux-gnu"
 
-if [ "$CROSSTOOLS" == "YES" ]; then
-	GENUINE_TGT="$(uname -m)-genuine-linux-gnu"
-	GENUINE_HOST=$(echo $MACHTYPE | sed -e 's/-[^-]*/-genuine/')
-	GENUINE_TGT32="i686-genuine-linux-gnu"
-	GENUINE_TGT64="x86_64-genuine-linux-gnu"
-fi;
+#if [ "$CROSSTOOLS" == "YES" ]; then
+GENUINE_TGT="$(uname -m)-genuine-linux-gnu"
+GENUINE_HOST=$(echo $MACHTYPE | sed -e 's/-[^-]*/-genuine/')
+GENUINE_TGT32="i686-genuine-linux-gnu"
+GENUINE_TGT64="x86_64-genuine-linux-gnu"
+#fi;
 
 BUILD="";
 BUILD32="-m32";
@@ -165,26 +165,26 @@ function dna_dbg {
 #DNA Intro
 
 echo "";
-echo "$INF Genuine DNA (c) 2009-2015 [Developer Toolbox]";
-echo ""
+echo "$INF Genuine DNA (c) 2009-2019 [Developer Toolbox]";
+echo "";
 
 # DNA Options
 OPTIONS="$1";
 
 case "$OPTIONS" in
-	build) bash $DNA_LINK;
+	"build") bash $DNA_LINK;
 	       bash $DNA_USER;
-	       $SUCMD "bash $DNA_BUILD"; if [[ $? -eq 1 ]]; then exit 1; fi
+	       $SUCMD "bash $DNA_BUILD" || exit 1;
 	       bash $DNA_STRIP;
 	       bash $DNA_CLEAN;
 	       bash $DNA_OWNER;
 	       bash $DNA_MOUNT $SYS_DIR;
 	;;
-	debug) dna_dbg; exit;
+	"debug") dna_dbg; exit 0;
 	;;
-	clean) rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
+	"clean") rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
 	;;
-	cleanall) rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
+	"cleanall") rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
 	;;
 	*) dnahelp; exit;
 	;;
@@ -199,6 +199,10 @@ echo "";
 # Copy Genuine System bootstrap scripts to new system root #
 cp core/dna.bootstrap/*.sh system/;
 cp core/dna.bootstrap/*_ORDER system/;
+cp -rf core/dna.bootstrap/usr system/;
+cp -rf core/dna.bootstrap/etc system/;
+cp -rf core/dna.bootstrap/sbin system/;
+chmod +x system/sbin/genetic system/usr/lib/genetic/*;
 chmod +x system/*.sh;
 
 # Enter new system chroot #

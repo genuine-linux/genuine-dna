@@ -1,7 +1,10 @@
 #!/bin/bash
 
 cd unix
-./configure --prefix=$TOOLBOX
+./configure --prefix=$TOOLBOX \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT"
 
 make
 
@@ -9,8 +12,8 @@ TZ=UTC make test
 
 make install
 
-chmod -v u+w $TOOLBOX/lib/libtcl8.5.so
+chmod -v u+w $TOOLBOX/lib/libtcl8.6.so
 
 make install-private-headers
 
-ln -sv tclsh8.5 $TOOLBOX/bin/tclsh
+ln -sv tclsh8.6 $TOOLBOX/bin/tclsh

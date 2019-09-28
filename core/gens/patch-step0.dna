@@ -1,6 +1,10 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX --enable-static
+./configure --prefix=$TOOLBOX  \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT" \
+	--enable-static
 
 make
 

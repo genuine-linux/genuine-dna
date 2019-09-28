@@ -1,6 +1,11 @@
 #!/bin/bash
 
+sed -i s/mawk// configure
+
 ./configure --prefix=$TOOLBOX \
+	    --host="$GENUINE_TGT" \
+	    --target="$GENUINE_TGT" \
+	    --build="$GENUINE_TGT" \
             --with-shared   \
             --without-debug \
             --without-ada   \
@@ -11,3 +16,4 @@ make
 
 make install
 
+ln -s libncursesw.so $TOOLBOX/lib/libncurses.so

@@ -1,6 +1,10 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX --with-tlib=ncurses \
+./configure --prefix=$TOOLBOX \
+	--host="$GENUINE_TGT" \
+	--target="$GENUINE_TGT" \
+	--build="$GENUINE_TGT" \
+	--with-tlib=ncurses \
     --enable-multibyte --enable-gui=no \
     --disable-gtktest --disable-xim --with-features=normal \
     --disable-gpm --without-x --disable-netbeans

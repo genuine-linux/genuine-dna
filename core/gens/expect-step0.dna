@@ -3,7 +3,11 @@
 cp -v configure configure.orig
 sed 's:/usr/local/bin:/bin:' configure.orig > configure
 
-./configure --prefix=$TOOLBOX --with-tcl=$TOOLBOX/lib \
+./configure --prefix=$TOOLBOX  \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT" \
+	--with-tcl=$TOOLBOX/lib \
   --with-tclinclude=$TOOLBOX/include --with-tk=no
 
 make

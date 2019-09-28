@@ -6,3 +6,6 @@ DNA HOWTO
       clean (Clean DNA & Downloaded Source Tarballs)
       debug (Debug DNA Variables)
 
+Once you get a chroot you can bootstrap your new system:
+
+genetic --bootstrap

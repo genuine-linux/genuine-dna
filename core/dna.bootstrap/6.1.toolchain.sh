@@ -2,18 +2,46 @@
 # Install man-pages
 # Install glibc
 
-echo "Adjusting toolchain ..."
-mv -v /tools/bin/{ld,ld-old}
-mv -v /tools/$(gcc -dumpmachine)/bin/{ld,ld-old}
-mv -v /tools/bin/{ld-new,ld}
-ln -sv /tools/bin/ld /tools/$(gcc -dumpmachine)/bin/ld
+#echo "Adjusting toolchain ..."
+#if [ -f "/dnatools/bin/ld-new" ]; then
+#	mv -v /dnatools/bin/{ld,ld-old}
+#	mv -v /dnatools/$(gcc -dumpmachine)/bin/{ld,ld-old}
+#	mv -v /dnatools/bin/{ld-new,ld}
+#	ln -sv /dnatools/bin/ld /dnatools/$(gcc -dumpmachine)/bin/ld
+#fi
 
-gcc -dumpspecs | sed -e 's@/tools@@g'                   \
+cd /dnatools/bin
+echo -n "Adjust GNU Autotools </bin/perl> to </usr/bin/perl>:"
+for file in autoreconf autoscan automake automake-1.16 autoconf autoheader autom4te autoupdate; do
+	sed 's/\/bin\/perl/\/usr\/bin\/perl/g' $file > ${file}.new
+	mv $file ${file}.old
+	mv ${file}.new $file
+	rm ${file}.old;
+	chmod +x $file;
+	echo -n " $file";
+done
+echo
+cd -
+
+echo -n "Readjusting Autoreconf ...";
+cp /dnatools/bin/autoreconf /dnatools/bin/autoreconf.old
+rm -rf /dnatools/bin/autoreconf.new;
+cat /dnatools/bin/autoreconf | sed "s/'aclocal';/'\/dnatools\/bin\/aclocal';/g" | \
+sed "s/'libtoolize';/'\/dnatools\/bin\/libtoolize';/g" | \
+sed "s/'autopoint';/'\/dnatools\/bin\/autopoint';/g" | \
+sed "s/'make';/'\/dnatools\/bin\/make';/g" > /dnatools/bin/autoreconf.new
+mv /dnatools/bin/autoreconf.new /dnatools/bin/autoreconf
+chmod +x /dnatools/bin/autoreconf
+echo " OK";
+
+echo Creating: `dirname $(gcc --print-libgcc-file-name)`/specs
+
+gcc -dumpspecs | sed -e 's@/dnatools@@g'                   \
     -e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
     -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' >      \
     `dirname $(gcc --print-libgcc-file-name)`/specs
 
-echo 'main(){}' > dummy.c
+echo 'int main(){}' > dummy.c
 cc dummy.c -v -Wl,--verbose &> dummy.log
 readelf -l a.out | grep ': /lib'
 

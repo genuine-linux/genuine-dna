@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# file
+f="$1";
+
+# wait
+w="${2:-5}";
+
+while : ; do
+	if [ ! -f "$f" ]; then
+		echo "Waiting $w seconds for file: $f ...";
+		sleep $w;
+		continue;
+	else
+		tail -f $f;
+	fi;
+done

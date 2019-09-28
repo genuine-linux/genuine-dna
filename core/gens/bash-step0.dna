@@ -1,6 +1,9 @@
 #!/bin/bash
 
 ./configure --prefix=$TOOLBOX \
+   --target="$GENUINE_TGT" \
+   --build="$GENUINE_TGT" \
+   --host="$GENUINE_TGT" \
    --without-bash-malloc
 
 make

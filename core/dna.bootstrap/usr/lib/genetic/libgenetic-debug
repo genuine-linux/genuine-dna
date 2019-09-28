@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# genetic-19.x.x (libgenetic-debug) #
+
+# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# Genetic Debug Library #
+
+# libgenetic-debug.la: Core functions and definitions #
+
+### -- 'genetic' environment debug -- ###
+
+# debug_setup(): Debug genetic environment #
+environment_debug() {
+	# If genetic $ENABLEDEBUG && $ENABLEDEBUG_ENVIRONMENT are enabled, then show some setups #
+	if test "$ENABLEDEBUG" == "yes" && test "$ENABLEDEBUG_ENVIRONMENT" == "yes"; then
+		# Show genetic $GENUINE_RELEASE $GENUINE_TGT, $GENETIC_ARCH #
+		echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+		echolog_debug "$DEBUG This is 'genetic' Genuine Release '$GENUINE_RELEASE' with 'Environment Debug' enabled.";
+		echolog_debug "$DEBUG Running on '$HOST_OS' ($HOST_OS_VERSION) host platform '$HOST_PLATFORM/$HOST_CPU' machine '$HOST_SYSTEM/$HOST_MACHINE' and using '$BASH' ($BASH_VERSION) as interpreter with arguments: '$BASH_ARGV'.";
+		echolog_debug "$DEBUG =====================================================";
+
+		# Show CFLAGS & CXXFLAGS #
+		if test ! -z "$CFLAGS"; then
+			echolog_debug "$DEBUG Defined (gcc) build optimizations CFLAGS='$CFLAGS'."
+		fi;
+
+		if test ! -z "$CXXFLAGS"; then
+			echolog_debug "$DEBUG Defined (g++) build optimizations CXXFLAGS='$CXXFLAGS'."
+		fi;
+
+		if test ! -z "$CPPFLAGS"; then
+			echolog_debug "$DEBUG Defined (cpp) build optimizations CPPFLAGS='$CPPFLAGS'."
+		fi;
+
+		# Show genetic Language Support values #
+		echolog_debug "$DEBUG Language setup is 'LC_ALL=$LC_ALL' and 'LANG=$LANG'.";
+
+		# Show COLOR values #
+		if test "$COLOR" == "yes"; then
+			echolog_debug "$DEBUG Color Support enabled!"
+		else
+			echolog_debug "$DEBUG Color Support disabled!"
+		fi;
+
+		# Show $ENABLELOG values: yes|no #
+		if test "$ENABLELOG" == "yes"; then
+			echolog_debug "$DEBUG Main 'genetic' log file is enabled: '$LOGFILE'.";
+		else
+			echolog_debug "$DEBUG Main 'genetic' log file is disabled!";
+		fi;
+
+		# Show $ENABLEDEBUG value: yes|no #
+		if test "$ENABLEDEBUG" == "yes"; then
+			echolog_debug "$DEBUG Debug 'genetic' log file is enabled: '$DEBUGLOGFILE'.";
+		else
+			echolog_debug "$DEBUG Debug 'genetic' log file is disabled!";
+		fi;
+
+		# Show $ENABLE_VERBOSE value: yes|no #
+		echolog_debug "$DEBUG Verbose 'genetic' screen output: '$ENABLE_VERBOSE'.";
+
+		# Show $ENABLE_Force value: yes|no #
+		if test "$ENABLE_FORCE" == "yes"; then
+			echolog_debug "$DEBUG Running 'genetic' with '-f' or '--force' option enabled!!!"
+			echolog_debug "$DEBUG Forcing all 'errorcheck' and 'spinner' functions to end always with an exit '$true' status!";
+		else
+			echolog_debug "$DEBUG Disabled forcing all 'errorcheck' and 'spinner' functions to end always with an exit '$true' status.";
+		fi;
+ 
+		# Show $DATEFORMAT $LOGDATE #
+		echolog_debug "$DEBUG All 'genetic' log files are using '[$DATEFORMAT]'.";
+
+		# Packages #
+		echolog_debug "$DEBUG Packages default install PATH is 'GEN_PKGRULES_PREFIX=$GEN_PKGRULES_PREFIX'.";
+
+		# Package Pools & Database #
+		echolog_debug "$DEBUG Store 'genetic' Common Package Cache: '$CACHEDIR'";
+		echolog_debug "$DEBUG Store 'genetic' Binary Packages Database: '$GENETIC_PACKAGES_DB'";
+		# echolog_debug "$DEBUG Store 'genetic' Source Packages Database: '$GENETIC_SOURCES_DB' (not used yet).";
+		echolog_debug "$DEBUG Store 'genetic' Binary Packages: '$GENETIC_PACKAGES'";
+		echolog_debug "$DEBUG Store 'genetic' Source Packages: '$GENETIC_SOURCES'";
+		echolog_debug "$DEBUG =====================================================";
+	fi;
+}

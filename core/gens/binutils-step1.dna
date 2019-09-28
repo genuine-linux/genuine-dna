@@ -12,6 +12,9 @@ AR=$GENUINE_TGT-ar                 \
 RANLIB=$GENUINE_TGT-ranlib         \
 ../$DNA_PACKAGE_VERSION/configure \
     --prefix=$TOOLBOX            \
+    --target=${GENUINE_TGT}          \
+    --build=${GENUINE_TGT}          \
+    --host=$GENUINE_TGT \
     --with-sysroot  \
     --with-lib-path=$TOOLBOX/lib \
     --disable-nls   \

@@ -1,6 +1,12 @@
 #!/bin/bash
 
-./configure --prefix=$TOOLBOX
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+
+./configure --prefix=$TOOLBOX \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT"
 
 make
 

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sed -i '/def add_multiarch_paths/a \        return' setup.py
+
+./configure --prefix=$TOOLBOX \
+	--target="$GENUINE_TGT" \
+	--host="$GENUINE_TGT" \
+	--build="$GENUINE_TGT" \
+	--without-ensurepip
+
+make
+
+make install

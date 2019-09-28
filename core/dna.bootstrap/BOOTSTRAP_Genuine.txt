@@ -1,4 +1,0 @@
-# Bootstrapping Genuine GNU/Linux
-
-./bootstrap_genuine_base.sh
-./bootstrap_genuine_packages.sh

@@ -22,11 +22,15 @@ function create_crosstoolbox {
 mkdir -p $LOG_DIR $TMP_DIR; 
 
 # Check for previous builds
-CHECK_DONE=$(ls $LOG_DIR | grep '.done');
-
-if [ -z "$CHECK_DONE" ]; then
+if [ -L "$TOOLBOX" ] || [ -L "$CROSSTOOLBOX" ]; then
 	# If any previous build was found ...
-	echo "$INF Previous DNA build was found!";
+	echo "$WRN A previous DNA build was found!";
+	echo "$INF Trying to recover from last session.";
+	echo "$WRN Cleaning tmp before start!";
+	rm -rf $TMP_DIR/*
+else
+	# If any previous build was not found ...
+	echo "$INF Previous DNA build was not found!";
  
 	# Clean TMP and LOG before start
 	echo "$WRN Cleaning tmp and log before start.";
@@ -57,9 +61,4 @@ if [ -z "$CHECK_DONE" ]; then
                 rm -rf $CROSSTOOLBOX_DIR;
                 create_crosstoolbox;
         fi;
-else
-	echo "$WRN A previous DNA build was found!";
-	echo "$INF Trying to recover from last session.";
-	echo "$WRN Cleaning tmp before start!";
-	rm -rf $TMP_DIR/*
 fi;

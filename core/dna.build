@@ -97,10 +97,10 @@ for DNA_PACKAGE in $HAVE_PACKAGES; do
                 done;
 		
 		# Check build
-		CHECK_MAKE_STOP=$(tail -n 100 $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "make" | grep "Stop");
-		CHECK_MAKE_ERROR=$(tail -n 100 $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "make" | grep "Error");
-		CHECK_CONFIGURE_ERROR=$(tail -n 100 $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "configure:" | grep "error:");
-		if [ -z "$CHECK_MAKE_STOP" ] || [ -z "$CHECK_CONFIGURE_ERROR" ]; then
+		CHECK_MAKE_STOP=$(cat $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "^make" | grep "Stop [0-9]");
+		CHECK_MAKE_ERROR=$(cat $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "^make" | grep "Error [0-9]");
+		CHECK_CONFIGURE_ERROR=$(cat $LOG_DIR/$DNA_PACKAGE_NAME.log | grep "configure:" | grep "error:");
+		if [ -z "$CHECK_MAKE_STOP" ] || [ -z "$CHECK_MAKE_ERROR" ] || [ -z "$CHECK_CONFIGURE_ERROR" ]; then
 			echo -e "\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\b\\bfinished!";
 			touch $LOG_DIR/$DNA_PACKAGE_NAME.done;
 		else

@@ -1,0 +1,354 @@
+#!/bin/bash
+
+# genetic-19.x.x (libgenetic-env) #
+
+# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# Genetic Environment Library #
+
+# libgenetic-env.la: Environment variables and definitions #
+
+### --- Define '@PACKAGE' Environment variables --- ###
+
+# load_core_variables(): loads 'genetic' required variables #
+load_core_variables() {
+
+	# Setup LANG & LC_ALL #
+	export LANG=$LANG;
+	export LC_ALL=$LC_ALL;
+
+
+	# Define '@PACKAGE' commands #
+	ENV="env";
+	ECHO="echo -e";
+	DIRNAME="dirname";
+	GREP="grep";
+	PATCH="patch";
+	PING="ping";
+	NSLOOKUP="nslookup";
+	HOSTCMD="host";
+	AWK="awk";
+	SORT="sort";
+	CAT="cat";
+	MV="mv";
+	CP="cp";
+	LN="ln";
+	LS="ls";
+	RM="rm";
+	CD="cd";
+	WC="wc";
+	DU="du";
+	CHMOD="chmod";
+	TOUCH="touch";
+	TAIL="tail";
+	HEAD="head";
+	LESS="less";
+	MORE="more";
+	FIND="find";
+	STRIP="strip";
+	MKDIR="mkdir";
+	MAKE="make";
+	CMAKE="cmake";
+	DATE="date";
+	TEE="tee";
+	SED="sed";
+	TAR="tar";
+	GZIP="gzip";
+	BZIP2="bzip2";
+	XZ="xz";
+	LDCONFIG="ldconfig";
+	ACLOCAL="aclocal";
+	LIBTOOL="libtool";
+	LIBTOOLIZE="libtoolize";
+	AUTOCONF="autoconf";
+	AUTOMAKE="automake";
+	AUTORECONF="autoreconf";
+	SETTERM="setterm";
+	UNAME="uname";
+	WHOAMI="whoami";
+	TRAP="trap";
+	SLEEP="sleep";
+	TPUT="tput";
+	KILL="kill";
+	LET="let";
+	PIDOF="pidof";
+	GETOPT="getopt";
+	GETOPTS="getopts";
+	GETTEXT="gettext";
+  	XGETTEXT="xgettext";
+  	if [ -f "/usr/bin/perl" ]; then
+		PERL="/usr/bin/perl";
+	else
+  		PERL="perl";
+	fi;
+	
+	if [ -f "/usr/bin/python3" ]; then
+		PYTHON="/usr/bin/python3";
+	else
+		PYTHON="python3";
+	fi;
+
+	# Into DNATOOLS redefine FIND and STRIP
+	if test -d "/dnatools"; then
+		if test ! -f "/usr/bin/find" && test ! -f "/bin/find"; then
+			FIND="/dnatools/bin/find";
+		fi;
+
+		if test ! -f "/usr/bin/strip" && test ! -f "/bin/strip"; then
+			STRIP="/dnatools/bin/strip";
+		fi;
+	fi;
+
+	# Define (true & false)
+
+	true=0;
+	false=1;
+
+
+	# Define Operating System #
+	HOST_OS=$($UNAME -o);
+	HOST_OS_VERSION=$($UNAME -r)
+	HOST_SYSTEM=$($UNAME -s);
+	HOST_MACHINE=$($UNAME -m);
+	HOST_PLATFORM=$($UNAME -i);
+	HOST_CPU=$($UNAME -p);
+
+
+	# Define Current User #
+	USER="$($WHOAMI)";
+
+
+	# Define 'genetic' Log Date Format #
+	LOGDATE=$($DATE $DATEFORMAT);
+
+
+	# Define $GENETIC_LAST_ERROR #
+	GENETIC_LAST_ERROR="";
+
+	load_terminal_color_support;
+
+	return $true;
+}
+
+# load_terminal_color_support(): 'genetic' Terminal Color Support #
+load_terminal_color_support() {
+
+	### --- 'genetic' Terminal Color Support --- ###
+
+	if test "$ENABLE_COLOR" == "yes"; then
+		# Define Shell Colors #
+		color_blk='\e[0;30m';  # Black - Regular #
+		color_red='\e[0;31m';  # Red #
+		color_grn='\e[0;32m';  # Green #
+		color_ylw='\e[0;33m';  # Yellow #
+		color_blu='\e[0;34m';  # Blue #
+		color_pur='\e[0;35m';  # Purple #
+		color_cyn='\e[0;36m';  # Cyan #
+		color_wht='\e[0;37m';  # White #
+
+		color_bblk='\e[1;30m'; # Black - Bold #
+		color_bred='\e[1;31m'; # Red #
+		color_bgrn='\e[1;32m'; # Green #
+		color_bylw='\e[1;33m'; # Yellow #
+		color_bblu='\e[1;34m'; # Blue #
+		color_bpur='\e[1;35m'; # Purple #
+		color_bcyn='\e[1;36m'; # Cyan #
+		color_bwht='\e[1;37m'; # White #
+
+		color_ublk='\e[4;30m'; # Black - Underline #
+		color_ured='\e[4;31m'; # Red #
+		color_ugrn='\e[4;32m'; # Green #
+		color_uylw='\e[4;33m'; # Yellow #
+		color_ublu='\e[4;34m'; # Blue #
+		color_upur='\e[4;35m'; # Purple #
+		color_ucyn='\e[4;36m'; # Cyan #
+		color_uwht='\e[4;37m'; # White #
+
+		color_bkblk='\e[40m';  # Black - Background #
+		color_bkred='\e[41m';  # Red #
+		color_bdgrn='\e[42m';  # Green #
+		color_bkylw='\e[43m';  # Yellow #
+		color_bkblu='\e[44m';  # Blue #
+		color_bkpur='\e[45m';  # Purple #
+		color_bkcyn='\e[46m';  # Cyan #
+		color_bkwht='\e[47m';  # White #
+
+		color_reset='\e[0m';   # Text Reset #
+
+		# Define Shell Color Messages #
+		OK="${color_bgrn}[${color_grn}(${color_bgrn}-${color_grn})${color_bgrn}]${color_reset}";
+		ERROR="${color_bred}[${color_red}(${color_bred}*${color_red})${color_bred}]${color_reset}";
+		WARNING="${color_bylw}[${color_ylw}(${color_bylw}!${color_ylw})${color_bylw}]${color_reset}";
+		DEBUG="${color_bred}[${color_red}(${color_bred}@${color_red})${color_bred}]${color_reset}";
+		INFO="${color_bwht}[${color_wht}(${color_bwht}·${color_wht})${color_bwht}]${color_reset}";
+		BUILD="${color_bcyn}[${color_cyn}(${color_bcyn}%${color_cyn})${color_bcyn}]${color_reset}";
+		QUESTION="${color_bgrn}[${color_grn}(${color_bgrn} \\b? \\b${color_grn})${color_bgrn}]${color_reset}";
+		#SELECT=$"${color_bpur}[${color_pur}(${color_bpur}\+${color_pur})${color_bpur}]${color_reset}";
+		SELECT="[(+)]";
+		BOOTSTRAP="${color_bblu}[${color_ylw}(${color_bylw}^${color_ylw})${color_bblu}]${color_reset}";
+		SPIN1="${color_bblu}[${color_ylw}(${color_bylw}|${color_ylw})${color_bblu}]${color_reset}";
+		SPIN2="${color_bblu}[${color_ylw}(${color_bylw}/${color_ylw})${color_bblu}]${color_reset}";
+		SPIN3="${color_bblu}[${color_ylw}(${color_bylw}-${color_ylw})${color_bblu}]${color_reset}";
+		SPIN4="${color_bblu}[${color_ylw}(${color_bylw}\\ \\b${color_ylw})${color_bblu}]${color_reset}";
+		FINISHED="\\b\\b\\b\\b ... ${color_grn}finished!${color_reset}";
+		FAILED="\\b\\b\\b\\b ... ${color_bred}failed!${color_reset}";
+
+		# User Screen Color Messages #
+
+		# GENUINE_VERSION #
+		GENUINE_VERSION=$(grep ^Release /etc/genuine-release | awk '{print $NF}' | sed 's/^G//g');
+
+		# genetic version #
+		genetic_VERSION="$INFO ${color_bylw}Genetic Package Manager ${color_bblu}[${color_bwht}genetic ${color_cyn}(${color_wht}${GENUINE_VERSION}${color_cyn})${color_bblu}] ${color_reset}running on ${color_bcyn}(${color_bwht}$HOST_MACHINE${color_bcyn}) ${color_bcyn}'${color_bgrn}$HOST_OS${color_bcyn}'${color_reset}.";
+
+		# genetic help #
+		HELP="$INFO ${color_bgrn}Usage:${color_reset} ${color_bwht}genetic ${color_bcyn}--option1 --option2 'args' ... ${color_bwht}--command|-c 'file'
+
+$INFO Commands:
+
+	${color_bwht}[-h] --help
+	${color_bwht}[-v] --version
+
+$INFO Options:
+
+	${color_bcyn}     --admindir   ${color_cyn}'directory'
+	${color_bcyn}     --color
+	${color_bcyn}     --verbose
+	${color_bcyn}     --force
+	${color_bwht}[-R] --rebuildb
+
+$INFO Bootstrap Genuine System:
+
+	${color_bwht}[-B] --bootstrap
+
+$INFO Source Development Commands:
+
+	     ${color_bcyn}--noarch     ${color_cyn}'(Create <noarch> package)'
+	     ${color_bcyn}--autotools
+	     ${color_bcyn}--prefix     ${color_cyn}'directory'
+	     ${color_bcyn}--configure  ${color_cyn}'--with --enable'
+	     ${color_bcyn}--packages   ${color_cyn}'package1 package2'
+	${color_bwht}[-s] --source     ${color_wht}'source.tar.<gz|bz2|xz>'
+
+	     ${color_bcyn}--noarch     ${color_cyn}'(Build <noarch> package)'
+	     ${color_bcyn}--autotools
+	     ${color_bcyn}--disable-gen-orig
+	     ${color_bcyn}--disable-gen-source
+	     ${color_bcyn}--disable-gen-debug
+	     ${color_bcyn}--disable-gen-all
+	${color_bwht}[-b] --build      ${color_wht}'SrcInfo'
+
+	${color_bwht}[-c] --clean      ${color_wht}'SrcInfo'
+
+$INFO Package Management Commands:
+
+	${color_bcyn}     --noscripts  ${color_cyn}(Ignore 'PostInst' & 'PreInst' scripts)
+	${color_bcyn}     --instdir    ${color_cyn}'directory'
+	${color_bwht}[-i] --install    ${color_wht}'package-version.<arch|dev|doc|dbg|src>.gen'
+
+	${color_bcyn}     --noscripts  ${color_cyn}(Ignore 'PostRemv' & 'PreRemv' scripts)
+	${color_bcyn}     --instdir    ${color_cyn}'directory'
+	${color_bcyn}     --purge      ${color_cyn}(Delete 'package' </etc> files)
+	${color_bwht}[-u] --uninstall  ${color_wht}'package.<dbg|dev>'
+
+	${color_bwht}[-l] --list       ${color_wht}'pattern'
+
+	     ${color_bcyn}--unpackdir  ${color_cyn}'directory'
+	${color_bwht}[-U] --unpack     ${color_wht}'package-version.<arch|dev|doc|dbg|src>.gen'${color_reset}
+
+$INFO Try ${color_bwht}'${color_grn}man genetic.(1)${color_bwht}'${color_reset} for more information.";
+
+	else # Define Shell RAW Messages (no color) #
+
+		# Define Shell Messages #
+		OK="[(-)]";
+		ERROR="[(*)]";
+		WARNING="[(!)]";
+		DEBUG="[(@)]";
+		INFO="[(·)]";
+		BUILD="[(%)]";
+		QUESTION="[(?)]";
+		SELECT="[(+)]";
+		BOOTSTRAP="[(^)]";
+		SPIN1="[(|)]";
+		SPIN2="[(/)]";
+		SPIN3="[(-)]";
+		SPIN4="[(\\)]";
+		FINISHED="\\b\\b\\b\\b ... finished!";
+		FAILED="\\b\\b\\b\\b ... failed!";
+
+		# User Screen Color Messages #
+
+		# genetic version #
+		genetic_VERSION="$INFO Genetic Package Manager [genetic (19.5.6)] running on ($HOST_MACHINE) '$HOST_OS'.";
+
+		# genetic help #
+		  	HELP="$INFO Usage: genetic --option1 --option2 'arg' ... --command|-c 'file'
+
+$INFO Commands:
+
+	[-h] --help
+	[-v] --version
+
+$INFO Options:
+
+	     --admindir   'directory'
+	     --color
+	     --verbose
+	     --force
+	[-R] --rebuildb
+
+$INFO Bootstrap Genuine System:
+
+	[-B] --bootstrap
+
+$INFO Source Development Commands:
+
+	     --noarch     '(Create <noarch> package)'
+	     --autotools
+	     --prefix     'directory'
+	     --configure  '--with --enable'
+	     --packages   'package1 package2'
+	[-s] --source     'source.tar.<gz|bz2|xz>'
+
+	     --noarch     '(Build <noarch> package)'
+	     --autotools
+	     --disable-gen-orig
+	     --disable-gen-source
+	     --disable-gen-debug
+	     --disable-gen-all
+	[-b] --build      'SrcInfo'
+
+	[-c] --clean      'SrcInfo'
+
+$INFO Package Management Commands:
+
+	     --noscripts  (Ignore 'PostInst' & 'PreInst' scripts)
+	     --instdir    'directory'
+	[-i] --install    'package-version.<arch|dev|doc|dbg|src>.gen'
+
+	     --noscripts  (Ignore 'PostRemv' & 'PreRemv' scripts)
+	     --instdir    'directory'
+	     --purge      (Delete 'package' </etc> files)
+	[-u] --uninstall  'package.<dbg|dev>'
+
+	[-l] --list       'pattern'
+
+	     --unpackdir  'directory'
+	[-U] --unpack     'package-version.<arch|dev|doc|dbg|src>.gen'
+
+$INFO Try 'man genetic.(1)' for more information.";
+	fi;
+
+	return $true;
+}
+

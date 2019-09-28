@@ -1,6 +1,11 @@
 #!/bin/bash
 
+sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
+
 ./configure --prefix=$TOOLBOX \
+	--host="$GENUINE_TGT" \
+	--target="$GENUINE_TGT" \
+	--build="$GENUINE_TGT" \
     --without-guile
 
 make

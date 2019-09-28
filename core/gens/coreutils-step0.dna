@@ -1,7 +1,10 @@
 #!/bin/bash
 
 ./configure --prefix=$TOOLBOX \
-    --enable-install-program=hostname
+    --enable-install-program=hostname \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT"
 
 make
 

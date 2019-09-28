@@ -1,10 +1,13 @@
 #!/bin/bash
 
 sh Configure -des -Dprefix=$TOOLBOX \
-                  -Dlibs=-lm
+                  -Dlibs=-lm \
+		  -Uloclibpth \
+		  -Dcc="${GENUINE_TGT}-gcc" \
+		  -Ulocincpth
 
 make
 
-cp -v perl cpan/podlators/pod2man $TOOLBOX/bin
-mkdir -pv $TOOLBOX/lib/perl5/5.20.1
-cp -Rv lib/* $TOOLBOX/lib/perl5/5.20.1
+cp -v perl cpan/podlators/scripts/pod2man $TOOLBOX/bin
+mkdir -pv $TOOLBOX/lib/perl5/5.28.1
+cp -Rv lib/* $TOOLBOX/lib/perl5/5.28.1

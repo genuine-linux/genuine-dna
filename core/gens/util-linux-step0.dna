@@ -3,7 +3,10 @@
 ./configure --prefix=$TOOLBOX                \
             --without-python               \
             --disable-makeinstall-chown    \
-            --without-systemdsystemunitdir \
+            --without-systemdsystemunitdir  \
+        --host="$GENUINE_TGT" \
+        --target="$GENUINE_TGT" \
+        --build="$GENUINE_TGT" \
             PKG_CONFIG=""
 
 make

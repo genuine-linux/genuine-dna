@@ -8,6 +8,7 @@ if [[ $? -eq 1 ]]; then
 	echo "$WRN Adding new user ($USER).";
 	/usr/sbin/groupadd $GROUP;
 	/usr/sbin/useradd -s /bin/bash -g $USER -m -k /dev/null $USER;
+	#echo "exec env -i HOME=\$HOME TERM=\$TERM PS1='\u:\w\$ ' /usr/bin/bash";
 	echo "set +h
 umask 022
 SYS_DIR=$SYS_DIR

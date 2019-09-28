@@ -1,0 +1,170 @@
+AUTHOR: Tushar Teredesai <tushar AT linuxfromscratch DOT org>
+
+DATE: 2006-01-17
+
+LICENSE: BSD
+
+SYNOPSIS: Fakeroot approach for package installation
+
+DESCRIPTION:
+LFS and BLFS instructions install files directly into the root directory
+without any kind of package management. Except for some simplistic cases, not
+having some sort of package management on the system will lead to problems.
+
+In this hint, I discuss a style of package management that is most commonly used
+by distros - the fakeroot approach. And looking at the advantages, it is no
+wonder why it is the most popular method.
+
+ATTACHMENTS:
+* http://www.linuxfromscratch.org/hints/downloads/attachments/autotools-multiversion/autoconf-wrapper
+* http://www.linuxfromscratch.org/hints/downloads/attachments/autotools-multiversion/automake-wrapper
+* http://www.linuxfromscratch.org/patches/download/autoconf/autoconf-2.13-race.patch
+* http://www.linuxfromscratch.org/patches/download/autoconf/autoconf-2.13-fedora_macro_fixes-1.patch
+* http://www.linuxfromscratch.org/patches/download/automake/automake-1.4-p6-fedora_fixes.patch
+* http://www.linuxfromscratch.org/patches/download/automake/automake-1.5-fedora_fixes.patch
+
+PREREQUISITES:
+None.
+
+HINT:
+
+In the fakeroot approach, instead of installing the files into the final
+location (i.e. /), the files are installed into a temporary location and then
+moved to a different location. The way to achieve this is package dependent.
+Generally, the compilation instructions are identical to what you will find in
+the LFS or BLFS book. It is only during the installation that you need to modify
+the instructions.
+
+Before going into the details of the approach, let us check out the advantages
+of the fakeroot approach so that you can decide whether it is the right
+technique for your system.
+  * Does not require any additional packages to be installed on the system.
+  * Allows manipulating the installed files before then end up in their final
+    location. This removes patches in LFS such as coreutils-remove-XXX.patch
+    that will never be accepted upstream. It also allows performing various
+    maintainence operations such as compressing man and info pages. It also
+    allows you to not allow the package to replace certain files (such as
+    configuration files).
+  * Allows upgrading packages on a live system (including packages such as
+    glibc). Anyone who has tried to upgrade qt while logged into kde knows
+    what I am talking about:) Bumping off users for the duration of package
+    upgrades reflects poorly on the system administrator IMO.
+  * If the package installation fails for some reason, there won't be a
+    "half-baked" pacakge in /. Though a bit extreme, consider the following
+    example. You are building gcc in BLFS and run into a problem during make
+    install. You may be fscked since a partial gcc is installed in / which may
+    or may not run. You have also destroyed the previously installed gcc. If
+    you had installed it in fakeroot, you could have investigated the cause,
+    corrected the problem, removed the fakeroot directory and installed the
+    files again.
+  * Allows checking of conflicts before the package is installed. For example,
+    heimdal installs executables that overwrite executables from other
+    packages. If you blindly install heimdal into / you may not notice it
+    until its too late.
+  * Provides a clear distinction between post installation configuration. LFS
+    and BLFS only talk about installing packages (and sometimes about
+    upgrading packages) but never about removing packages. Some packages are
+    particularly hard to remove. Just removing the files that were installed
+    by the package is not enough, you also need to run additional commands.
+    For example, for the GNOME packages you may need to uninstall schemas and
+    regenerate scrollkeeper files. With the fakeroot approach, you will soon
+    get into the habit of performing two additional steps:
+    - post install config: Steps to be performed after the package is
+      relocated to /.
+    - post removal config: Steps to be performed after the package is removed.
+      Generally, this reverses whatever was done by the post install config.
+
+The steps to installing a package with this approach are as follows. If you
+are creating scripts for package installation, each of the following can be a
+function of its own.
+  *) Unpack the source and apply patches if required.
+       tar -xvf $pkg-$ver.tar.bz2
+  *) Compile.
+       cd $pkg-$ver
+       ./configure --prefix=/usr
+       make
+  *) Optionally test the package.
+       make -k check
+  *) Install into fakeroot. Adjust the FAKEROOT envar to suit your system.
+       FAKEROOT=/usr/fakeroot/$pkg-$ver
+       make DESTDIR=$FAKEROOT install
+  *) Perform whatever maintainence you need on the installed files.
+  *) If upgrading the packaqge, perform post removal config steps for the
+     previously installed version.
+  *) Relocate the package to the final destination.
+       cd $FAKEROOT
+       tar cf - . | (cd / ; tar xf - )
+  *) Perform post install configuration.
+  *) If upgrading a package, remove files left over by the previous version.
+
+Hopefully, now you are convinced that the fakeroot approach is the right
+approach for you. So lets get down to the details on how to achieve this.
+Since it is impossible to include instructions for all the packages in LFS and
+BLFS, I will go through some common ways to install packages into fakeroot. If
+you get stuck in a particular package:
+* Check out my build scripts at
+  <http://linuxfromscratch.org/~tushar/build-scripts/>.
+* Check out Gentoo Ebuilds at <http://www.gentoo.org/cgi-bin/viewcvs.cgi/>.
+* Check out Fedora spec files at
+  <http://cvs.fedora.redhat.com/viewcvs/?root=core>.
+
+Ways to install into fakeroot:
+* Installation controlled using an envar.
+  Since the fakeroot approach is the most commonly used approach for package
+  management, lot of package maintainers use an easy way to control the
+  installation. Also, since most packages use autotools, the envar for
+  fakeroot is DESTDIR. Hence the installation for this kind of packages would
+  be
+    make DESTDIR=$FAKEROOT install
+  Some packages may use a different envar for fakeroot. For example, glibc
+  uses install_root. Check the INSTALL file in the package to find the envar.
+* Installation by modifying prefix during installation.
+  For some older packages, a simple way to make the packages install into
+  fakeroot is to change the prefix variable during installation.
+    make prefix=$FAKEROOT/usr install
+* Manual installation.
+  Some packages are stubborn. Sometimes it is easier to install all files
+  manually. This is convinient for packages that do not install few files.
+
+Things to look out for:
+* Sometimes packages do not create the destination file before installing
+  files into a dir. Normally when installing into / this is not a problem
+  since the destination dir such as /usr/bin would already have been created.
+  But when installing into a fakeroot, you may need to create these dirs
+  manually using install -d.
+* A small minority of packages hardcode the fakeroot directory into the files.
+  It is generally a good idea to peruse the logs.
+* Packages that install info pages create a file /usr/share/info/dir. This
+  file should be recreated after the package is install. Refer to the LFS
+  book's section on texinfo on how to regenrate this file.
+* Perl modules have two problems. One is that the file .packlist hardcodes the
+  FAKEROOT dir in it. This needs to be removed using sed. Additionally, each
+  module installs a shared file perllocal.pod. If the module is installed
+  directly into /, the installation would have appended the new contents to
+  the file. Since we install into a fakeroot, we need to manually append
+  this file to the system installed perllocal.pod and prevent installation of
+  the perllocal.pod installed by the module.
+* Packages that install GConf schemas install the schemas automatically during
+  make install. Since we are installing into a fakeroot, this step needs to be
+  performed in the post installation config step. To disable installation of
+  the schmeas, either set the GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL var to
+  true during make install or pass the --disable-schema-install switch to
+  configure.
+* For packages that install scrollkeeper catalogs, the scrollkeeper-update
+  process needs to be disabled during installation and the scrollkeeper
+  database needs to be updated in the post installation config.
+* For packages that install fonts, fc-cache and gtk-updated-icon-cache needs to
+  be called during post installation config phase.
+* For packages that install gtk immodules and loaders, the configuration needs
+  to be recreated manually by calling gtk-query-immodules and
+  gdk-pixbuf-query-loaders.
+* For packages that install mime db files, the mime database needs to be
+  updated manually by calling update-mime-database.
+
+If you feel adventorous, you can combine this hint with the pkg-user hint for
+the unlimate package manager scheme:-) I have been using that for quite some
+time and even though it is a little bit complex, it has served me well.
+
+CHANGELOG:
+[2005-12-09]
+  * Initial Version of the hint.

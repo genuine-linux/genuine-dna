@@ -1,0 +1,290 @@
+#!/bin/bash
+
+# genetic-19.x.x (libgenetic-bootstrap) #
+
+# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# libgenetic-bootstrap: Bootstrap Genuine system distribution #
+
+### --- Define 'genetic' Bootstrap functions --- ###
+
+# create_gen_base_dirs($@): Create genuine base system directories #
+create_gen_base_dirs() {
+	echologn "$INFO Creating required system directories ..."
+	mkdir -p /{bin,boot,etc/{opt,sysconfig,pki/anchors},home,lib/firmware,mnt,opt}
+	mkdir -p /{media/{floppy,cdrom},sbin,srv,var}
+	install -d -m 0750 /root
+	install -d -m 1777 /tmp /var/tmp
+	mkdir -p /usr/{,local/}{bin,include,lib,sbin,src}
+	mkdir -p /usr/{,local/}share/{color,dict,doc,info,locale,man}
+	mkdir -p  /usr/{,local/}share/{misc,terminfo,zoneinfo}
+	mkdir -p  /usr/libexec
+	mkdir -p /usr/{,local/}share/man/man{1..8}
+
+	case $(uname -m) in
+	 x86_64) ln -s /usr/lib /usr/lib64
+	         ln -s /lib /lib64
+	         ln -s /usr/local/lib /usr/local/lib64 ;;
+	esac
+
+	install -dm755 /usr/lib/pkgconfig
+
+	mkdir - /var/{log,mail,spool}
+	mkdir -p /run/lock
+	echolog " done!"
+}
+
+# create_gen_base_links($@): Create genuine base system links #
+create_gen_base_links() {
+	echologn "$INFO Creating required system links ..."
+	ln -s /run /var/run
+	ln -s /run/lock /var/lock
+	mkdir -p /var/{opt,cache,lib/{color,misc,locate},local}
+	ln -s /dnatools/bin/{bash,cat,chmod,dd,echo,ln,mkdir,pwd,rm,stty,touch} /bin
+	ln -s /dnatools/bin/{env,install,perl,printf,file,bison}    /usr/bin
+	ln -s /dnatools/lib/libgcc_s.so{,.1}                  /usr/lib
+	ln -s /dnatools/lib/libstdc++.{a,so{,.6}}             /usr/lib
+	ln -s /dnatools/lib/gcc /usr/lib
+	sed 's/dnatools/usr/' /dnatools/lib/libstdc++.la > /usr/lib/libstdc++.la
+	ln -s /dnatools/lib/libncursesw.so.6 /usr/lib/libncursesw.so.6
+	ln -sf libncursesw.so.6 /usr/lib/libncurses.so
+	ln -sf /dnatools/lib/libfl.so.2 /lib/libfl.so.2
+	ln -sf /lib/libfl.so.2 /lib/libfl.so
+	ln -s bash /bin/sh
+	ln -s /proc/self/mounts /etc/mtab
+	ln -s flex /dnatools/bin/lex
+	echolog " done!";
+}
+
+# create_gen_system_passwd($@): Create genuine passwd file #
+create_gen_system_passwd() {
+	cat > /etc/passwd << "EOF"
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/dev/null:/bin/false
+daemon:x:6:6:Daemon User:/dev/null:/bin/false
+messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
+systemd-bus-proxy:x:72:72:systemd Bus Proxy:/:/bin/false
+systemd-journal-gateway:x:73:73:systemd Journal Gateway:/:/bin/false
+systemd-journal-remote:x:74:74:systemd Journal Remote:/:/bin/false
+systemd-journal-upload:x:75:75:systemd Journal Upload:/:/bin/false
+systemd-network:x:76:76:systemd Network Management:/:/bin/false
+systemd-resolve:x:77:77:systemd Resolver:/:/bin/false
+systemd-timesync:x:78:78:systemd Time Synchronization:/:/bin/false
+nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
+EOF
+}
+
+# create_gen_system_group($@): Create genuine group file #
+create_gen_system_group() {
+	cat > /etc/group << "EOF"
+root:x:0:
+bin:x:1:daemon
+sys:x:2:
+kmem:x:3:
+tape:x:4:
+tty:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+video:x:12:
+utmp:x:13:
+usb:x:14:
+cdrom:x:15:
+adm:x:16:
+messagebus:x:18:
+systemd-journal:x:23:
+input:x:24:
+mail:x:34:
+systemd-bus-proxy:x:72:
+systemd-journal-gateway:x:73:
+systemd-journal-remote:x:74:
+systemd-journal-upload:x:75:
+systemd-network:x:76:
+systemd-resolve:x:77:
+systemd-timesync:x:78:
+nogroup:x:99:
+users:x:999:
+EOF
+}
+
+# create_gen_log_wtmp($@): Create System logs #
+create_gen_log_wtmp() {
+	touch /var/log/{btmp,lastlog,faillog,wtmp}
+	chgrp -v utmp /var/log/lastlog
+	chmod -v 664  /var/log/lastlog
+	chmod -v 600  /var/log/btmp
+}
+
+
+# fix_gen_toolchain($@): Fix Genuine ToolChain #
+fix_gen_toolchain() {
+	#echo "Adjusting toolchain ..."
+	#if [ -f "/dnatools/bin/ld-new" ]; then
+	#	mv -v /dnatools/bin/{ld,ld-old}
+	#	mv -v /dnatools/$(gcc -dumpmachine)/bin/{ld,ld-old}
+	#	mv -v /dnatools/bin/{ld-new,ld}
+	#	ln -sv /dnatools/bin/ld /dnatools/$(gcc -dumpmachine)/bin/ld
+	#fi
+
+	cd /dnatools/bin
+	echologn "Adjust GNU Autotools </bin/perl> to </usr/bin/perl>:"
+	for file in autoreconf autoscan automake automake-1.16 autoconf autoheader autom4te autoupdate; do
+		sed 's/\/bin\/perl/\/usr\/bin\/perl/g' $file > ${file}.new
+		mv $file ${file}.old
+		mv ${file}.new $file
+		rm ${file}.old;
+		chmod +x $file;
+		echologn " $file";
+	done
+
+	echolog "";
+	cd -
+
+	echologn "Readjusting Autoreconf ...";
+	cp /dnatools/bin/autoreconf /dnatools/bin/autoreconf.old
+	rm -rf /dnatools/bin/autoreconf.new;
+	cat /dnatools/bin/autoreconf | sed "s/'aclocal';/'\/dnatools\/bin\/aclocal';/g" | \
+	sed "s/'libtoolize';/'\/dnatools\/bin\/libtoolize';/g" | \
+	sed "s/'autopoint';/'\/dnatools\/bin\/autopoint';/g" | \
+	sed "s/'make';/'\/dnatools\/bin\/make';/g" > /dnatools/bin/autoreconf.new
+	mv /dnatools/bin/autoreconf.new /dnatools/bin/autoreconf
+	chmod +x /dnatools/bin/autoreconf
+	echolog " OK";
+
+	echolog Creating: `dirname $(gcc --print-libgcc-file-name)`/specs
+
+	gcc -dumpspecs | sed -e 's@/dnatools@@g'                   \
+	    	-e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
+		    -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' >      \
+		    `dirname $(gcc --print-libgcc-file-name)`/specs
+
+	echo 'int main(){}' > dummy.c
+	cc dummy.c -Wl,--verbose &> dummy.log
+	readelf -l a.out | grep ': /lib'
+
+	grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+	grep -B1 '^ /usr/include' dummy.log
+	grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+	grep "/lib.*/libc.so.6 " dummy.log
+	grep found dummy.log
+
+	rm dummy.c a.out dummy.log
+}
+
+# bootstrap_gen_system($@): Bootstrap Genuine System #
+bootstrap_gen_system() {
+
+	echolog "$BOOTSTRAP BootStrap Genuine Release ($GENUINE_RELEASE)!";
+
+BUILD_ORDER_DB="/etc/genetic/bootstrap/build_order.db";
+
+# Build packages
+PKG_BUILD_ORDER=$(grep -v "^#" $BUILD_ORDER_DB);
+TOTAL_PKGS=$(grep -v "^#" $BUILD_ORDER_DB | cat -n | awk '{print $1}' | tail -1);
+BUILT_PKGS=0;
+
+echolog "$BOOTSTRAP Need to build $TOTAL_PKGS Genuine packages!";
+
+for _PKG in $PKG_BUILD_ORDER; do
+
+        PKG_REAL_NAME=$(echo "$_PKG" | awk -F':' '{print $2}');
+        PKG=$(echo "$_PKG" | awk -F':' '{print $1}');
+
+        # Package Name & Version
+        SRCPKG=$(find $GENETIC_SOURCES -name "$PKG-*" | awk -F'/' '{print $NF}' | tail -1);
+
+        if [ ! -z "$SRCPKG" ]; then
+                echolog "$BOOTSTRAP Genuine source package for $PKG available: $SRCPKG!";
+        else
+                echolog "$BOOTSTRAP ERROR!Can't find a source package for $PKG!";
+                exit 1;
+        fi;
+
+        PKG_VERSION=$(echo $SRCPKG | awk -F'-' '{print $NF}' | sed -e 's/\.src\.gen//g');
+        PKG_NAME=$(echo $SRCPKG | sed -e 's/-'$PKG_VERSION'\.src\.gen//g');
+
+        if [ -z "$PKG_VERSION" ] || [ -z "$PKG_NAME" ]; then
+                echolog "$BOOTSTRAP ERROR! Can't find PKG_NAME or PKG_VERSION!";
+                exit 1;
+        fi
+
+        genetic -i $GENETIC_SOURCES/$PKG_NAME-$PKG_VERSION.src.gen || exit 1;
+
+        cd $GENETIC_TMP/$PKG_NAME-$PKG_VERSION;
+
+        genetic --disable-gen-all -b SrcInfo || exit 1;
+
+        ((BUILT_PKGS++));
+
+        echolog "$BOOTSTRAP ($BUILT_PKGS/$TOTAL_PKGS) Genetic packages built!";
+
+        find $GENETIC_PACKAGES -iname "$PKG_REAL_NAME-$PKG_VERSION*.gen" | while read pkg; do
+                genetic -i $pkg;
+        done
+
+        INSTALLED_PKGS=$(genetic -l All | grep -v Genetic | wc -l);
+        echolog "$BOOTSTRAP ($INSTALLED_PKGS) Genetic packages installed!";
+
+        # Adjust toolchain after reinstalling glibc #
+        if test "$PKG_NAME" == "glibc"; then
+		fix_gen_toolchain;
+        fi;
+done
+
+echolog "$BOOTSTRAP Finished bootstrapping Genuine Release!";
+
+}
+
+# enable_shadowed_passwords($@): Create genuine base system directories #
+enable_shadowed_passwords() {
+	# To enable shadowed passwords, run the following command:
+	pwconv
+
+	# To enable shadowed group passwords, run:
+	grpconv
+
+	# This parameter causes useradd to create a mailbox file for the newly created user.
+	sed -i 's/yes/no/' /etc/default/useradd
+
+	# Choose a password for user root and set it by running:
+	passwd root
+}
+
+# test_gen_gcc($@): Testing Genuine GCC Compiler #
+test_gen_gcc() {
+	echo 'int main(){}' > dummy.c
+	cc dummy.c -v -Wl,--verbose &> dummy.log
+	readelf -l a.out | grep ': /lib'
+
+	grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+	grep -B4 '^ /usr/include' dummy.log
+	grep "/lib.*/libc.so.6 " dummy.log
+	grep found dummy.log
+
+	rm -v dummy.c a.out dummy.log
+}
+
+# gen_bootstrap($@): Bootstrap Genuine base system #
+gen_bootstrap() {
+	create_gen_base_dirs;
+	create_gen_base_links;
+	create_gen_system_passwd;
+	create_gen_system_group;	
+	create_gen_log_wtmp;
+	fix_gen_toolchain;
+	bootstrap_gen_system;
+	enable_shadowed_passwords;
+	test_gen_gcc;
+}

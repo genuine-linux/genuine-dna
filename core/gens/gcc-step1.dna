@@ -31,6 +31,8 @@ CXX=$GENUINE_TGT-g++                                     \
 AR=$GENUINE_TGT-ar                                       \
 RANLIB=$GENUINE_TGT-ranlib                               \
     ../$DNA_PACKAGE_VERSION/configure --prefix=$TOOLBOX \
+    --target=${GENUINE_TGT}          \
+    --build=${GENUINE_TGT}          \
     --with-local-prefix=$TOOLBOX                       \
     --with-native-system-header-dir=$TOOLBOX/include   \
     --enable-languages=c,c++                         \
@@ -47,7 +49,7 @@ make install
 
 ln -sv gcc $TOOLBOX/bin/cc
 
-echo 'main(){}' > dummy.c
+echo 'int main(){}' > dummy.c
 cc dummy.c
 readelf -l a.out | grep ': '$TOOLBOX''
 rm -v dummy.c a.out
