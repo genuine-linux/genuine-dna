@@ -415,6 +415,7 @@ xf86-video-fbdev:xf86-video-fbdev
 xf86-video-intel:xf86-video-intel
 xf86-video-nouveau:xf86-video-nouveau
 xf86-video-vmware:xf86-video-vmware
+xf86-video-vboxvideo:xf86-video-vboxvideo
 # XORG APPS 2 #
 xdg-utils-xdg-utils
 twm:twm
