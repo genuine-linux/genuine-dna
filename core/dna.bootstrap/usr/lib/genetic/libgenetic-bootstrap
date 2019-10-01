@@ -67,6 +67,7 @@ create_gen_base_links() {
 
 # create_gen_system_passwd($@): Create genuine passwd file #
 create_gen_system_passwd() {
+	echologn "$INFO Creating required system files ..."
 	cat > /etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
@@ -81,10 +82,12 @@ systemd-resolve:x:77:77:systemd Resolver:/:/bin/false
 systemd-timesync:x:78:78:systemd Time Synchronization:/:/bin/false
 nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
 EOF
+	echolog " done!";
 }
 
 # create_gen_system_group($@): Create genuine group file #
 create_gen_system_group() {
+	echologn "$INFO Creating required system files ..."
 	cat > /etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
@@ -117,6 +120,7 @@ systemd-timesync:x:78:
 nogroup:x:99:
 users:x:999:
 EOF
+	echolog " done!";
 }
 
 # create_gen_log_wtmp($@): Create System logs #

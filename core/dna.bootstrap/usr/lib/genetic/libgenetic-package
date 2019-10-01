@@ -258,6 +258,10 @@ update_desktop_database() {
 	fi;
 	if test -f "/usr/bin/update-desktop-database"; then
 		update-desktop-database /usr/share/applications &>/dev/null;
+		update-desktop-database -q
+	fi;
+	if test -d "/usr/share/icons/hicolor"; then
+		gtk-update-icon-cache -tf --include-image-data /usr/share/icons/hicolor
 	fi;
 }
 
