@@ -8,7 +8,7 @@ function create_toolbox {
         mkdir -p $TOOLBOX_DIR;
         echo "$WRN Linking $TOOLBOX_DIR to $TOOLBOX";
         ln -s $TOOLBOX_DIR /;
-	chown -R $USER:$GROUP $TOOLBOX_DIR;
+#	chown -R $USER:$GROUP $TOOLBOX_DIR;
 }
 
 function create_crosstoolbox {
@@ -16,7 +16,7 @@ function create_crosstoolbox {
         mkdir -p $CROSSTOOLBOX_DIR;
         echo "$WRN Linking $CROSSTOOLBOX_DIR to $CROSSTOOLBOX";
         ln -s $CROSSTOOLBOX_DIR /; 
-	chown -R $USER:$GROUP $CROSSTOOLBOX_DIR;
+#	chown -R $USER:$GROUP $CROSSTOOLBOX_DIR;
 }
 
 mkdir -p $LOG_DIR $TMP_DIR; 
