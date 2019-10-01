@@ -3,9 +3,13 @@ Genuine DNA Devel Tools
 
 **Genuine GNU/Linux DNA Developer Tools** are designed for bootstrap a **Genuine GNU/Linux Developer System**.
 
+If you want to contribute to Genuine GNU/Linux, you should use another Linux system to build it.
+
 # INSTALL
 
 Configure your user in file "dna.conf".
+
+As "root" user!
 
 Check your host system:
 
