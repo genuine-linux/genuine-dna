@@ -56,6 +56,9 @@ source $GENETIC_LIB/libgenetic-uninstall;
 source $GENETIC_LIB/libgenetic-install;
 source $GENETIC_LIB/libgenetic-unpack;
 
+# Load genetic Repo Functions #
+source $GENETIC_LIB/libgenetic-repo;
+
 # Load genetic Bootstrap Genuine system #
 source $GENETIC_LIB/libgenetic-bootstrap;
 

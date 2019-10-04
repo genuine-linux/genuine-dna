@@ -7,9 +7,9 @@ If you want to contribute to Genuine GNU/Linux, you should use another Linux sys
 
 # INSTALL
 
-Configure your user in file "dna.conf".
+Configure an user in file "dna.conf".
 
-As "root" user!
+Run the next commands as "root" user!
 
 Check your host system:
 
@@ -23,7 +23,7 @@ Bootstrap a Genuine system:
 ./dna build
 ```
 
-Once the first stage is finished you are into a chrooted environment to finally bootstrap Genuine:
+Once the first stage has finished, you will be prompted into a chrooted environment to finally bootstrap Genuine:
 
 ```
 ./0.chroot.sh
@@ -38,7 +38,7 @@ Once the first stage is finished you are into a chrooted environment to finally 
 
 If you finished sucessfully latest bootstrap (step 6) you should have a bootable system.
 
-If you need to chroot to your new system you can use the following script:
+If you need to chroot into your new system you can use the following script:
 
 ```
 ./7.chroot.sh
@@ -48,4 +48,4 @@ Read more at our [Wiki Pages] (https://github.com/genuine-linux/genuine-dna/wiki
 
 ==============
 
-Genuine GNU/Linux (c) 2009-2014
+Genuine GNU/Linux (c) 2009-2019

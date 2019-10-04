@@ -19,4 +19,6 @@ PATH=$TOOLBOX/bin:/bin:/usr/bin
 export SYS_DIR LC_ALL GENUINE_TGT GENUINE_HOST PATH" > /home/$USER/.bashrc
 fi;
 
+mkdir -p $SRC_DIR
+
 chown -R $USER:$GROUP $TOOLBOX $TOOLBOX_DIR $SYS_DIR $SRC_DIR $TMP_DIR $LOG_DIR /home/$USER;

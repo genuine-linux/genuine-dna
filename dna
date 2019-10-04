@@ -108,6 +108,7 @@ function dnahelp {
 	echo "./dna build";
 	echo "      clean";
 	echo "      cleanall";
+	echo "      kill";
 	echo "      debug";
 	echo "";
 }
@@ -185,6 +186,8 @@ case "$OPTIONS" in
 	"clean") rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/*; exit;
 	;;
 	"cleanall") rm -rf $TOOLBOX $CROSSTOOLBOX $SYS_DIR/* $TMP_DIR/* $LOG_DIR/* $SRC_DIR/*; exit;
+	;;
+	"kill") for p in $(ps -fea | grep ^$USER | awk '{print $2}'); do kill -9 $p; done;
 	;;
 	*) dnahelp; exit;
 	;;

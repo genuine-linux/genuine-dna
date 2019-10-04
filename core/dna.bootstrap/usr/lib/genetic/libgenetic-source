@@ -237,7 +237,7 @@ gen_source_package() {
     		# Makefile.PL #
     		$PERL Makefile.PL &> ../$package_name.src-Makefile.PL-$BUILDLOG;
 		stop_spinner $?;
-  fi
+	fi
 
 	# If package is a Python Module then load "configure.py" #
 	if test -f "configure.py"; then
@@ -247,10 +247,10 @@ gen_source_package() {
 
 		$CD $GENETIC_TMP/$package_name-$package_version/$package_name-$package_version;
 
-    # configure.py #
-    $PYTHON configure.py &> ../$package_name.src-configure.py-$BUILDLOG;
+		# configure.py #
+		$PYTHON configure.py &> ../$package_name.src-configure.py-$BUILDLOG;
 		stop_spinner $?;
-  fi
+	fi
 
 	# Check Makefile for DESTDIR or PREFIX (preference DESTDIR)
 	echologn_debug_verbose "$DEBUG Reading 'Makefile' and check for <DESTDIR> and <PREFIX> ...";

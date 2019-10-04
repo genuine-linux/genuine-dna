@@ -1,11 +1,24 @@
 DNA HOWTO
 =========
 
-./dna build (Build Genuine Developer System)
-      clean (Clean DNA)
-      clean (Clean DNA & Downloaded Source Tarballs)
-      debug (Debug DNA Variables)
+Help:
+
+./dna build    (Build Genuine Developer System)
+      clean    (Clean DNA)
+      cleanall (Clean DNA & Downloaded Source Tarballs)
+      kill     (Kill DNA)
+      debug    (Debug DNA Variables)
+
+Usage:
+
+Check your internet connection.
+
+Configure DNA with file dna.conf.
+
+Launch "./dna build" as root user.
 
 Once you get a chroot you can bootstrap your new system:
 
-genetic --bootstrap
+"genetic --bootstrap"
+
+Wait until it has finished.

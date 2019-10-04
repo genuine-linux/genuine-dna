@@ -125,10 +125,12 @@ EOF
 
 # create_gen_log_wtmp($@): Create System logs #
 create_gen_log_wtmp() {
+	echologn "$INFO Creating required log files ..."
 	touch /var/log/{btmp,lastlog,faillog,wtmp}
 	chgrp -v utmp /var/log/lastlog
 	chmod -v 664  /var/log/lastlog
 	chmod -v 600  /var/log/btmp
+	echolog " done!";
 }
 
 
@@ -142,8 +144,8 @@ fix_gen_toolchain() {
 	#	ln -sv /dnatools/bin/ld /dnatools/$(gcc -dumpmachine)/bin/ld
 	#fi
 
-	cd /dnatools/bin
 	echologn "Adjust GNU Autotools </bin/perl> to </usr/bin/perl>:"
+	cd /dnatools/bin
 	for file in autoreconf autoscan automake automake-1.16 autoconf autoheader autom4te autoupdate; do
 		sed 's/\/bin\/perl/\/usr\/bin\/perl/g' $file > ${file}.new
 		mv $file ${file}.old
