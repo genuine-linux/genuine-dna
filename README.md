@@ -48,4 +48,4 @@ Read more at our [Wiki Pages] (https://github.com/genuine-linux/genuine-dna/wiki
 
 ==============
 
-Genuine GNU/Linux (c) 2009-2019
+Genuine GNU/Linux (c) 2009-2020
