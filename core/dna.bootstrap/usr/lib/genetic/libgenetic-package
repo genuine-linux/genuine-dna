@@ -246,6 +246,18 @@ update_perllocal_pod() {
 	return $true;
 }
 
+# update_glib_schemas(): Update glib schemas #
+update_glib_schemas() {
+
+        echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+        echolog_debug "$DEBUG Starting 'update_glib_schemas()'!";
+        echolog_debug "$DEBUG =====================================================";
+
+	if test -d "/usr/share/glib-2.0/schemas"; then
+		glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null;
+	fi;
+}
+
 # update_desktop_database(): Update desktop-file-utils applications database #
 update_desktop_database() {
 
@@ -260,8 +272,20 @@ update_desktop_database() {
 		update-desktop-database /usr/share/applications &>/dev/null;
 		update-desktop-database -q
 	fi;
-	if test -d "/usr/share/icons/hicolor"; then
-		gtk-update-icon-cache -tf --include-image-data /usr/share/icons/hicolor
+	for d in $(find /usr/share/icons -maxdepth 1 -type d); do
+		gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
+	done
+}
+
+# update_mime_database(): Update desktop mime applications database #
+update_mime_database() {
+
+        echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+        echolog_debug "$DEBUG Starting 'update_mime_database()'!";
+        echolog_debug "$DEBUG =====================================================";
+
+	if test -d "/usr/share/mime"; then
+		update-mime-database /usr/share/mime &>/dev/null;
 	fi;
 }
 

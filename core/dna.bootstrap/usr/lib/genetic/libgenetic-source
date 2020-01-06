@@ -96,7 +96,7 @@ gen_source_package() {
 	TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/Makefile";
 
 	# Execute configure to create Makefile
-	if [ -f "$package_name-$package_version/configure" ] && [ ! -f "$package_name-$package_version/CMakeLists.txt" ]; then
+	if [ -f "$package_name-$package_version/configure" ]; then
 		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' 'configure' script!";
 
 		# GNU Autotools #
@@ -214,7 +214,7 @@ gen_source_package() {
 	fi;
 
 	# If package uses CMAKE
-	if test -f "$package_name-$package_version/CMakeLists.txt"; then
+	if test -f "$package_name-$package_version/CMakeLists.txt" && test ! -f "$package_name-$package_version/configure"; then
 		### Start for each 'package_to_generate' create '@PACKAGE' source files ###
 		start_spinner "Running '${color_wht}cmake${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
 		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' 'CMakeLists.txt' file!";
@@ -285,6 +285,7 @@ gen_source_package() {
 	echologn_debug_verbose "$DEBUG Writing '$package_name' ($package_version) source package 'SrcRules' file ...";
 	$ECHO "source=$package_name" > $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	$ECHO "version=$package_version" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
+	$ECHO "srcurl=http://host/$source-$package_version" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	$ECHO "depends=" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	echolog_debug_nodate_verbose "$FINISHED";
 	### End '$package_name' 'SrcInfo' file ###

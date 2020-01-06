@@ -871,8 +871,14 @@ gen_install_binary_package() {
 	# Update "perllocal.pod" #
 	update_perllocal_pod;
 
+	# Update "glib-schemas" #
+	update_glib_schemas;
+
 	# Update "desktop-file-utils" applications database #
 	update_desktop_database;
+
+	# Update mime applications database #
+	update_mime_database;
 
 	# Update "fc-cache" font cache #
 	update_fc_cache;

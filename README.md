@@ -7,7 +7,7 @@ If you want to contribute to Genuine GNU/Linux, you should use another Linux sys
 
 # INSTALL
 
-Configure an user in file "dna.conf".
+Configure your sudoer user in file "dna.conf".
 
 Run the next commands as "root" user!
 
