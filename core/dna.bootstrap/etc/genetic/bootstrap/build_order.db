@@ -766,6 +766,9 @@ emerald
 emerald-themes
 compiz-manager
 #
+wxWidgets:wxWidgets
+libfilezilla:libfilezilla
+filezilla:filezilla
 #
 #v86d-0.1.10
 #dash-0.5.7

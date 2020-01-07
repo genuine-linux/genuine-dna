@@ -236,6 +236,7 @@ $INFO Source Development Commands:
 	     ${color_bcyn}--autotools
 	     ${color_bcyn}--prefix     ${color_cyn}'directory'
 	     ${color_bcyn}--configure  ${color_cyn}'--with --enable'
+	     ${color_bcyn}--configure-self-dir
 	     ${color_bcyn}--packages   ${color_cyn}'package1 package2'
 	${color_bwht}[-s] --source     ${color_wht}'source.tar.<gz|bz2|xz>'
 
@@ -317,6 +318,7 @@ $INFO Source Development Commands:
 	     --autotools
 	     --prefix     'directory'
 	     --configure  '--with --enable'
+	     --configure-self-dir
 	     --packages   'package1 package2'
 	[-s] --source     'source.tar.<gz|bz2|xz>'
 

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# genetic-19.x.x (libgenetic-repo) #
+
+# Copyright (c) 2014-2020 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# gen_repo_file(): Create a repository repo file in /etc/genetic/repos.d/ #
+function gen_repo_file() {
+	# Parameters: $repo_file #
+	repo_file="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'gen_repo_file($repo_file)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+}
+
+# list_repo_files(): List all repofiles #
+function list_repo_files() {
+	# Parameters: $repo_files_dir #
+	repo_files_dir="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'list_repo_files($repo_files_dir)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+}
+
+# read_repo_files(): Read all repofiles from listed repos #
+function read_repo_files() {
+	# Parameters: $repo_files #
+	repo_files="$@"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'read_repo_files($repo_files)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+}
+

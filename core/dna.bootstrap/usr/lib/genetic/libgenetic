@@ -71,7 +71,7 @@ main() {
 		else
 			# Define $ACTION_OPTIONS #
 			ACTION_OPTIONS=$($GETOPT -o hvBRu:i:l:U:b:c:s: \
-				 -l "help,version,verbose,silent,force,rebuildb,color,noarch,noscripts,autotools,purge,bootstrap,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,uninstall:,install:,list:,unpack:,unpackdir:,build:,source:,clean:,configure:,packages:,prefix:,admindir:,instdir:" \
+				 -l "help,version,verbose,silent,force,rebuildb,color,noarch,noscripts,autotools,purge,bootstrap,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,uninstall:,install:,list:,unpack:,unpackdir:,build:,source:,clean:,configure-self-dir,configure:,packages:,prefix:,admindir:,instdir:" \
 				 -n "$0" -- "$@");
 
 			eval set -- "$ACTION_OPTIONS"
@@ -130,6 +130,9 @@ main() {
 					;;
 					--configure) # <configure> options for <source> package #
 						CONFIGURE_OPTIONS="$2"; shift 2;
+					;;
+					--configure-self-dir) # <configure-self-dir> configure package in it's self directory
+						CONFIGURE_SELF_DIR=$false; shift;
 					;;
 					--packages) # <packages> to generate from <source> package #
 						PACKAGES_TO_GENERATE="$2"; shift 2;

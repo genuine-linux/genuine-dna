@@ -272,9 +272,11 @@ update_desktop_database() {
 		update-desktop-database /usr/share/applications &>/dev/null;
 		update-desktop-database -q
 	fi;
-	for d in $(find /usr/share/icons -maxdepth 1 -type d); do
-		gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
-	done
+	if grep icon $package; then
+		for d in $(find /usr/share/icons -maxdepth 1 -type d); do
+			gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
+		done
+	fi
 }
 
 # update_mime_database(): Update desktop mime applications database #

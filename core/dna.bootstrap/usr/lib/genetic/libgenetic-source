@@ -184,31 +184,55 @@ gen_source_package() {
 		fi;
 
 		# CONFIGURE #
-		# Create temp directory to 'configure' package #
-		$MKDIR -p $GENETIC_TMP/$package_name-$package_version/src.configure;
-		$CD $GENETIC_TMP/$package_name-$package_version/src.configure;
+		if [ "$CONFIGURE_SELF_DIR" == "$true" ]; then
+			# Create temp directory to 'configure' package #
+			$MKDIR -p $GENETIC_TMP/$package_name-$package_version/src.configure;
+			$CD $GENETIC_TMP/$package_name-$package_version/src.configure;
 
-		# Load new_work_spinner for configure
-		echolog_debug_verbose "$DEBUG Running '../$package_name-$package_version/configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS' ...";
-		start_spinner "Running '${color_wht}configure${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
+			# Load new_work_spinner for configure
+			echolog_debug_verbose "$DEBUG Running '../$package_name-$package_version/configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS' ...";
+			start_spinner "Running '${color_wht}configure${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
 
-		$FIND ../$package_name-$package_version -exec $TOUCH {} \; &>/dev/null
+			$FIND ../$package_name-$package_version -exec $TOUCH {} \; &>/dev/null
 
-		if test -f "../$package_name-$package_version/Makefile"; then
-			echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources with '$MAKE clean' ..."; 
-			$CD ../$package_name-$package_version;
-			$MAKE clean &> ../$package_name.src-clean-$BUILDLOG;
-			$CD ../src.configure;
+			if test -f "../$package_name-$package_version/Makefile"; then
+				echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources with '$MAKE clean' ..."; 
+				$CD ../$package_name-$package_version;
+				$MAKE clean &> ../$package_name.src-clean-$BUILDLOG;
+				$CD ../src.configure;
+			else
+				echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+			fi;
+
+			# configure #
+			../$package_name-$package_version/configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS &> ../$package_name.src-configure-$BUILDLOG
+
+			stop_spinner $?;
+
+			TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/src.configure/Makefile";
 		else
-			echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+			$CD $GENETIC_TMP/$package_name-$package_version/$package_name-$package_version;
+
+			# Load new_work_spinner for configure
+			echolog_debug_verbose "$DEBUG Running './configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS' ...";
+			start_spinner "Running '${color_wht}configure${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
+
+			$TOUCH ../$package_name-$package_version &>/dev/null
+
+			if test -f "Makefile"; then
+				echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources with '$MAKE clean' ..."; 
+				$MAKE clean &> ../$package_name.src-clean-$BUILDLOG;
+			else
+				echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+			fi;
+
+			# configure #
+			./configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS &> ../$package_name.src-configure-$BUILDLOG
+
+			stop_spinner $?;
+
+			TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/Makefile";
 		fi;
-
-		# configure #
-		../$package_name-$package_version/configure --prefix=$GEN_PKGRULES_PREFIX $CONFIGURE_OPTIONS &> ../$package_name.src-configure-$BUILDLOG
-
-		stop_spinner $?;
-
-		TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/src.configure/Makefile";
 	else
 		echolog_debug_verbose "$DEBUG '$package_name-$package_version' 'configure' script not found!";
 	fi;
