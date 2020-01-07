@@ -272,7 +272,7 @@ update_desktop_database() {
 		update-desktop-database /usr/share/applications &>/dev/null;
 		update-desktop-database -q
 	fi;
-	if grep icon $package; then
+	if echo $package | grep icon; then
 		for d in $(find /usr/share/icons -maxdepth 1 -type d); do
 			gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
 		done
