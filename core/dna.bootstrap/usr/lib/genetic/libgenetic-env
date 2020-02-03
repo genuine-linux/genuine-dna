@@ -56,8 +56,8 @@ load_core_variables() {
 	FIND="find";
 	STRIP="strip";
 	MKDIR="mkdir";
-	MAKE="make";
-	CMAKE="cmake";
+	MAKE="make $GEN_MAKE_OPTS"; export MAKE="$MAKE";
+	CMAKE="cmake"; export CMAKE="$CMAKE";
 	DATE="date";
 	TEE="tee";
 	SED="sed";

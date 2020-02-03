@@ -377,7 +377,7 @@ if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_v
   $ECHO "# Makefile.PL #
 if test -f \"Makefile.PL\"; then
 	echo \" --- Configure <\$name (\$version)> ---\";
-	$PERL Makefile.PL;
+	\$PERL Makefile.PL;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
@@ -387,7 +387,7 @@ if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_v
   $ECHO "# configure.py #
 if test -f \"configure.py\"; then
 	echo \" --- Configure <\$name (\$version)> ---\";
-	$PYTHON configure.py;
+	\$PYTHON configure.py;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
@@ -399,7 +399,7 @@ if test -f \"CMakeLists.txt\"; then
 	echo \" --- CMake Configure <\$name (\$version)> ---\";
 	mkdir build.cmake;
 	cd build.cmake;
-	$CMAKE -DCMAKE_INSTALL_PREFIX=/usr \
+	\$CMAKE -DCMAKE_INSTALL_PREFIX=/usr \
 		../;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
@@ -408,7 +408,7 @@ fi;
   $ECHO "# make
 if test -f \"Makefile\"; then
 	echo \" --- Make <\$name (\$version)> ---\";
-	make;
+	\$MAKE;
 fi;
 
 # Create install directory
@@ -417,7 +417,7 @@ mkdir -pv \${GENPKG$GEN_PKGRULES_VARPREFIX};
 # make install
 if test -f \"Makefile\"; then
 	echo \" --- Make Install <\$name (\$version)> ---\";
-	make $GEN_PKGRULES_VARPREFIX=\${GENPKG$GEN_PKGRULES_VARPREFIX} install;
+	\$MAKE $GEN_PKGRULES_VARPREFIX=\${GENPKG$GEN_PKGRULES_VARPREFIX} install;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 		### End '$package_name' 'Rules' file ###

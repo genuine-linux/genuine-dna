@@ -45,12 +45,15 @@ libffi:libffi
 openssl:openssl
 ca-certificates:ca-certificates
 Python:Python
-pip-python3
+pip-python3:pip-python3
 python3-distutils-extra:python3-distutils-extra
 python3-distro:python3-distro
 python3-psutil:python3-psutil
 python3-setproctitle:python3-setproctitle
+Python2:Python2
 libxml2:libxml2
+libxml2:python2-libxml2
+libxml2-python3:libxml2-python3
 sgml-common:sgml-common
 unzip:unzip
 zip:zip
@@ -115,7 +118,6 @@ reiserfsprogs:reiserfsprogs
 xfsprogs:xfsprogs
 sqlite:sqlite
 boost:boost
-Python2:Python2
 thin-provisioning-tools:thin-provisioning-tools
 lvm2:lvm2
 btrfs-progs:btrfs-progs
@@ -214,9 +216,11 @@ sudo:sudo
 xdg-su:xdg-su
 fcron:fcron
 sysstat:sysstat
+logrotate:logrotate
 glib:glib
 gobject-introspection:gobject-introspection
 shared-mime-info:shared-mime-info
+time:time
 dialog:dialog
 # LINUX KERNEL #
 linux:linux
@@ -227,8 +231,11 @@ busybox:busybox
 mkinitramfs:mkinitramfs
 debianutils:debianutils
 initramfs-tools:initramfs-tools
+rrdtool:rrdtool
+lm-sensors:lm-sensors
 # FS #
 fuse:fuse
+tree:tree
 # NFS#
 tcp-wrappers:tcp-wrappers
 libgssglue:libgssglue
@@ -246,7 +253,7 @@ wireless-tools:wireless-tools
 iw:iw
 iwd:iwd
 ethtool:ethtool
-pm-utils
+pm-utils:pm-utils
 # XORG - Libraries #
 desktop-file-utils:desktop-file-utils
 libpng:libpng
@@ -313,6 +320,7 @@ funcsigs:funcsigs
 MarkupSafe:MarkupSafe
 Beaker:Beaker
 Mako:Mako
+libglvnd:libglvnd
 mesa:mesa
 libva:libva
 intel-vaapi-driver:intel-vaapi-driver
@@ -424,7 +432,8 @@ xf86-video-nouveau:xf86-video-nouveau
 xf86-video-vmware:xf86-video-vmware
 xf86-video-vboxvideo:xf86-video-vboxvideo
 # XORG APPS 2 #
-xdg-utils-xdg-utils
+xdg-utils:xdg-utils
+xdg-user-dirs:xdg-user-dirs
 twm:twm
 xterm:xterm
 xclock:xclock
@@ -475,8 +484,8 @@ json-glib:json-glib
 gtk+:gtk+
 gtk-engines:gtk-engines
 libglade:libglade
-pycairo-python2
-pycairo-python3
+pycairo-python2:pycairo-python2
+pycairo-python3:pycairo-python3
 pygobject:pygobject
 pygobject3-python2:pygobject3-python2
 pygobject3-python3:pygobject3-python3
@@ -704,6 +713,10 @@ gtksourceview3:gtksourceview3
 dbus-test-runner:dbus-test-runner
 libfakekey:libfakekey
 gcr:gcr
+gnome-menus:gnome-menus
+libgee:libgee
+bamf:bamf
+libdbusmenu:libdbusmenu
 #libgnome-keyring:libgnome-keyring
 mate-common:mate-common
 libmatekbd:libmatekbd
@@ -723,17 +736,20 @@ mate-panel:mate-panel
 mate-applets:mate-applets
 ayatana-ido:ayatana-ido
 libayatana-indicator:libayatana-indicator
-#libayatana-appindicator:libayatana-appindicator
+libayatana-appindicator:libayatana-appindicator
 ayatana-indicator-messages:ayatana-indicator-messages
 ayatana-indicator-notifications:ayatana-indicator-notifications
 #ayatana-indicator-power:ayatana-indicator-power
-#ayatana-indicator-printers:ayatana-indicator-printers
-#ayatana-indicator-session:ayatana-indicator-session
-#ayatana-indicator-application:ayatana-indicator-application
+ayatana-indicator-printers:ayatana-indicator-printers
+googletest:googletest
+ayatana-indicator-session:ayatana-indicator-session
+ayatana-indicator-application:ayatana-indicator-application
+network-manager-applet:network-manager-applet
 mate-indicator-applet:mate-indicator-applet
 mate-session-manager:mate-session-manager
 mate-media:mate-media
 mate-netbook:mate-netbook
+mate-menu:mate-menu
 vte:vte
 mate-terminal:mate-terminal
 mate-screensaver:mate-screensaver
@@ -748,6 +764,7 @@ ndctl:ndctl
 #dmraid:dmraid
 libblockdev:libblockdev
 udisks:udisks
+gvfs:gvfs
 mate-utils:mate-utils
 caja:caja
 python-caja:python-caja
@@ -766,10 +783,12 @@ mate-tweak:mate-tweak
 #caja-dropbox:caja-drop-box
 # DESKTOP EFFECTS #
 Cython:Cython
+metacity:metacity
 compiz:compiz
 emerald:emerald
 emerald-themes:emerald-themes
 compiz-manager:compiz-manager
+plank:plank
 #
 wxWidgets:wxWidgets
 libfilezilla:libfilezilla
