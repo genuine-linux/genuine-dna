@@ -1,6 +1,12 @@
-# Begin /etc/shells
-
-/bin/sh
+# /etc/shells: valid login shells
 /bin/bash
-
-# End /etc/shells
+/bin/csh
+/bin/dash
+/bin/esh
+/bin/fish
+/bin/ksh
+/bin/mksh
+/bin/sash
+/bin/sh
+/bin/tcsh
+/bin/zsh

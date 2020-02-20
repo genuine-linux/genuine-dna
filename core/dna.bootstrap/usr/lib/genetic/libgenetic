@@ -2,7 +2,7 @@
 
 # genetic-19.x.x (libgenetic) #
 
-# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+# Copyright (c) 2014-2020 Antonio Cao (@burzumishi) #
 
 # This is free software;
 # You have unlimited permission to copy and/or distribute it,
@@ -40,7 +40,7 @@ main() {
 		check_directory_structure "$LOCKDIR $GENETIC_TMP $GENETIC_SOURCES $GENETIC_PACKAGES $CACHEDIR $TMPDIR";
 
 		# Lock genetic instance #
-		lock_instance;
+		#lock_instance;
 
 		# Check genetic Operating System #
 		check_os;
@@ -70,8 +70,8 @@ main() {
 			help;
 		else
 			# Define $ACTION_OPTIONS #
-			ACTION_OPTIONS=$($GETOPT -o hvBRu:i:l:U:b:c:s: \
-				 -l "help,version,verbose,silent,force,rebuildb,color,noarch,noscripts,autotools,purge,bootstrap,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,uninstall:,install:,list:,unpack:,unpackdir:,build:,source:,clean:,configure-self-dir,configure:,packages:,prefix:,admindir:,instdir:" \
+			ACTION_OPTIONS=$($GETOPT -o hvVBbcCdDRu:i:l:U:s: \
+				 -l "help,version,verbose,silent,force,rebuildb,color,noarch,noscripts,autotools,purge,bootstrap,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,disable-distclean,disable-clean,uninstall:,install:,list:,unpack:,unpackdir:,build,source:,clean,configure-self-dir,configure:,packages:,prefix:,admindir:,instdir:" \
 				 -n "$0" -- "$@");
 
 			eval set -- "$ACTION_OPTIONS"
@@ -95,7 +95,7 @@ main() {
 					-h|--help) # <help> genetic help #
 						help; shift; break;
 					;;
-					-v|--version) # Show genetic version #
+					-V|--version) # Show genetic version #
 						if test "$ENABLE_VERSION" == "yes"; then
 							ENABLE_VERSION="yes";
 						else
@@ -104,7 +104,7 @@ main() {
 						fi;
 						shift; break;
 					;;
-					--verbose) # <verbose> genetic output #
+					-v|--verbose) # <verbose> genetic output #
 						ENABLE_VERBOSE="yes"; shift;
 					;;
 					--silent) # <silent> genetic output #
@@ -132,7 +132,7 @@ main() {
 						CONFIGURE_OPTIONS="$2"; shift 2;
 					;;
 					--configure-self-dir) # <configure-self-dir> configure package in it's self directory
-						CONFIGURE_SELF_DIR=$false; shift;
+						CONFIGURE_SELF_DIR="yes"; shift;
 					;;
 					--packages) # <packages> to generate from <source> package #
 						PACKAGES_TO_GENERATE="$2"; shift 2;
@@ -149,17 +149,26 @@ main() {
 					--disable-gen-source) # Disable sourcepackage.src.gen creation while building #
 						DISABLE_GEN_SOURCE="yes"; shift;
 					;;
-					--disable-gen-all) # Disable sourcepackage.src.gen creation while building #
+					-d|--disable-gen-all) # Disable sourcepackage.src.gen creation while building #
 						DISABLE_GEN_ORIG="yes";
 						DISABLE_GEN_DEBUG="yes";
 						DISABLE_GEN_SOURCE="yes";
 						DISABLE_GEN_ALL="yes"; shift;
 					;;
+					-D|--disable-distclean) # Disable distclean before build #
+						DISABLE_DISTCLEAN="${DISABLE_DISTCLEAN:-yes}"; 
+						shift;
+					;;
+					-C|--disable-clean) # Disable distclean before build #
+						DISABLE_CLEAN="${DISABLE_CLEAN:-yes}"; shift;
+					;;
 					-c|--clean) # Clean previous genetic package builds #
-						gen_clean_package $2; shift 2;
+						DISABLE_CLEAN="${DISABLE_CLEAN:-no}";
+						DISABLE_DISTCLEAN="${DISABLE_DISTCLEAN:-no}";
+						gen_clean_package "SrcInfo"; shift;
 					;;
 					-b|--build) # <build> genetic packages from "sourcepackage SrcInfo file" #
-						gen_build_package "$2"; shift 2;
+						gen_build_package "SrcInfo"; shift;
 					;;
 					--noscripts) # Set alternative install to extract 'genetic' package <rootfs> data #
 						ENABLE_NOSCRIPTS="yes"; shift;
@@ -168,13 +177,17 @@ main() {
 						INSTDIR="$2"; shift 2;
 					;;
 					-i|--install) # <install> genetic packages from "package.arch|src|dev|dbg.gen" #
-					  INSTALL_PACKAGES="$BASH_ARGV";
+						# Lock genetic instance #
+						lock_instance;
+					  	INSTALL_PACKAGES="$BASH_ARGV";
 						gen_install_packages "$INSTALL_PACKAGES"; shift 2;
 					;;
 					--purge) # Purge configuration files (/etc) #
 						ENABLE_PURGE="yes"; shift;
 					;;
 					-u|--uninstall) # <uninstall> genetic packages from "package.arch|dev|dbg.gen" #
+						# Lock genetic instance #
+						lock_instance;
 						UNINSTALL_PACKAGES="$BASH_ARGV";
 						gen_uninstall_packages "$UNINSTALL_PACKAGES"; shift 2;
 					;;

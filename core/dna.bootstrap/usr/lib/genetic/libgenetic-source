@@ -184,7 +184,7 @@ gen_source_package() {
 		fi;
 
 		# CONFIGURE #
-		if [ "$CONFIGURE_SELF_DIR" == "$true" ]; then
+		if [ "$CONFIGURE_SELF_DIR" != "yes" ]; then
 			# Create temp directory to 'configure' package #
 			$MKDIR -p $GENETIC_TMP/$package_name-$package_version/src.configure;
 			$CD $GENETIC_TMP/$package_name-$package_version/src.configure;
@@ -246,12 +246,14 @@ gen_source_package() {
 		$CD $GENETIC_TMP/$package_name-$package_version/$package_name-$package_version;
 		$MKDIR build.cmake
 		$CD build.cmake
-		cmake ../ &> ../../$package_name.src-cmake-$BUILDLOG;
+		$CMAKE -DCMAKE_INSTALL_PREFIX=$GEN_PKGRULES_PREFIX ../ &> ../../$package_name.src-cmake-$BUILDLOG;
 		stop_spinner $?;
+
+		TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/build.cmake/Makefile";
 	fi
 
 	# If package is a Perl Module then load "Makefile.PL" #
-	if test -f "${TEMP_MAKEFILE}.PL"; then
+	if test -f "$package_name-$package_version/Makefile.PL" && test ! -f "$package_name-$package_version/configure"; then
 		### Start for each 'package_to_generate' create '@PACKAGE' source files ###
 		start_spinner "Running '${color_wht}Makefile.PL${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
 		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' '${TEMP_MAKEFILE}.PL' script!";
@@ -261,10 +263,12 @@ gen_source_package() {
     		# Makefile.PL #
     		$PERL Makefile.PL &> ../$package_name.src-Makefile.PL-$BUILDLOG;
 		stop_spinner $?;
+		
+		TEMP_MAKEFILE="$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/Makefile";
 	fi
 
-	# If package is a Python Module then load "configure.py" #
-	if test -f "configure.py"; then
+	# If package is a Python Module with "configure.py" #
+	if test -f "$package_name-$package_version/configure.py"; then
 		### Start for each 'package_to_generate' create '@PACKAGE' source files ###
 		start_spinner "Running '${color_wht}configure.py${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
 		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' 'configure.py' script!";
@@ -274,6 +278,34 @@ gen_source_package() {
 		# configure.py #
 		$PYTHON configure.py &> ../$package_name.src-configure.py-$BUILDLOG;
 		stop_spinner $?;
+  	fi;
+  
+	# If package is a Python Module with "setup.py" #
+  	if test -f "$package_name-$package_version/setup.py"; then
+		### Start for each 'package_to_generate' create '@PACKAGE' source files ###
+		start_spinner "Running '${color_wht}setup.py${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
+		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' 'setup.py' script!";
+
+		$CD $GENETIC_TMP/$package_name-$package_version/$package_name-$package_version;
+
+		# setup.py #
+		$PYTHON setup.py &> ../$package_name.src-setup.py-$BUILDLOG;
+		stop_spinner $?
+	fi
+
+	# If package is a Python Module with "setup.py" #
+  	if test -f "$package_name-$package_version/meson.build"; then
+		### Start for each 'package_to_generate' create '@PACKAGE' source files ###
+		start_spinner "Running '${color_wht}meson${color_reset}' attempting to create '${color_wht}Makefile${color_reset}'";
+		echolog_debug_verbose "$DEBUG Found '$package_name-$package_version' 'meson'!";
+
+		$CD $GENETIC_TMP/$package_name-$package_version/$package_name-$package_version;
+
+		# meson configure #
+		mkdir build.meson &&
+		cd build.meson &&
+		$MESON --prefix=$GEN_PKGRULES_PREFIX ../ &> ../../$package_name.src-meson-$BUILDLOG;
+		stop_spinner $?
 	fi
 
 	# Check Makefile for DESTDIR or PREFIX (preference DESTDIR)
@@ -294,11 +326,6 @@ gen_source_package() {
 	if test -z "$GEN_PKGRULES_VARPREFIX"; then GEN_PKGRULES_VARPREFIX="DESTDIR"; fi;
 	echolog_debug_verbose "$DEBUG Rules file 'GEN_PKGRULES_VARPREFIX' value is: '$GEN_PKGRULES_VARPREFIX'.";
 
-	### Removing src.configure directory ### 
-	echolog_debug_verbose "$DEBUG Delete 'src.configure' directory if found.";
-	check_dir "$GENETIC_TMP/$package_name-$package_version/src.configure" "$RM -rf $GENETIC_TMP/$package_name-$package_version/src.configure";
-	### End cleaning src.configure directory ###
-
 	### Generate package source files ###
 	echolog_debug_verbose "$DEBUG Start writing '$packages_to_generate' source files.";
 
@@ -309,7 +336,8 @@ gen_source_package() {
 	echologn_debug_verbose "$DEBUG Writing '$package_name' ($package_version) source package 'SrcRules' file ...";
 	$ECHO "source=$package_name" > $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	$ECHO "version=$package_version" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
-	$ECHO "srcurl=http://host/$source-$package_version" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
+	$ECHO "srcurl=http://srchost/$package_name-$package_version" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
+	$ECHO "category=base" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	$ECHO "depends=" >> $GENETIC_TMP/$package_name-$package_version/SrcInfo;
 	echolog_debug_nodate_verbose "$FINISHED";
 	### End '$package_name' 'SrcInfo' file ###
@@ -370,14 +398,39 @@ if test -f \"configure\"; then
 	./configure $RULES_CONFIGURE_OPTIONS_LIST;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
+else
+  if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/CMakeLists.txt"; then
+  # CMAKE CONFIGURE
+  $ECHO "# CMake configure #
+if test -f \"CMakeLists.txt\"; then
+	echo \" --- CMake Configure <\$name (\$version)> ---\";
+	rm -rf build.cmake &&
+	mkdir build.cmake &&
+	cd build.cmake &&
+	$CMAKE -DCMAKE_INSTALL_PREFIX=$GEN_PKGRULES_PREFIX ../;
+fi;
+" >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
+  fi;
+fi;
+
+# MESON CONFIGURE
+if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/meson.build"; then
+  $ECHO "# Meson configure #
+if test -f \"meson.build\"; then
+	echo \" --- Meson Configure <\$name (\$version)> ---\";
+	mkdir build.meson;
+	cd build.meson;
+	$MESON --prefix=$GEN_PKGRULES_PREFIX ../;
+fi;
+" >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
 
 # PERL MAKEFILE
-if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/Makefile.PL"; then
+if test -f "${TEMP_MAKEFILE}.PL"; then
   $ECHO "# Makefile.PL #
 if test -f \"Makefile.PL\"; then
 	echo \" --- Configure <\$name (\$version)> ---\";
-	\$PERL Makefile.PL;
+	$PERL Makefile.PL;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
@@ -387,39 +440,72 @@ if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_v
   $ECHO "# configure.py #
 if test -f \"configure.py\"; then
 	echo \" --- Configure <\$name (\$version)> ---\";
-	\$PYTHON configure.py;
+	$PYTHON configure.py;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
 
-# CMAKE CONFIGURE
-if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/CMakeLists.txt"; then
-  $ECHO "# CMake configure #
-if test -f \"CMakeLists.txt\"; then
-	echo \" --- CMake Configure <\$name (\$version)> ---\";
-	mkdir build.cmake;
-	cd build.cmake;
-	\$CMAKE -DCMAKE_INSTALL_PREFIX=/usr \
-		../;
+# PYTHON SETUP BUILD
+if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/setup.py"; then
+  $ECHO "# setup.py #
+if test -f \"setup.py\"; then
+	echo \" --- Configure <\$name (\$version)> ---\";
+	$PYTHON setup.py build;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
 fi;
 
+# PYTHON SETUP INSTALL
+if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/setup.py"; then
+  $ECHO "# Create install directory
+mkdir -pv \${GENPKG$GEN_PKGRULES_VARPREFIX};
+
+# setup.py #
+if test -f \"setup.py\"; then
+	echo \" --- Install <\$name (\$version)> ---\";
+	$PYTHON setup.py install --optimize=1 --root=dest;
+	cp -av dest/*  \${GENPKG$GEN_PKGRULES_VARPREFIX}
+fi;
+" >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
+fi;
+
+# Ninja #
+if test -f "$GENETIC_TMP/$package_name-$package_version/$package_name-$package_version/meson.build"; then
+  $ECHO "# ninja
+if test -f \"build.ninja\"; then
+	echo \" --- Ninja <\$name (\$version)> ---\";
+	$NINJA;
+fi;
+
+# Create install directory
+mkdir -pv \${GENPKG$GEN_PKGRULES_VARPREFIX};
+
+# ninja install
+if test -f \"build.ninja\"; then
+	echo \" --- Ninja Install <\$name (\$version)> ---\";
+	$GEN_PKGRULES_VARPREFIX=\${GENPKG$GEN_PKGRULES_VARPREFIX} $NINJA install;
+fi;
+" >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
+fi;
+
+# Makefile #
+if test -f "$TEMP_MAKEFILE" || test -f "${TEMP_MAKEFILE}.PL"; then
   $ECHO "# make
-if test -f \"Makefile\"; then
+if test -f \"Makefile\" || test -f \"makefile\"; then
 	echo \" --- Make <\$name (\$version)> ---\";
-	\$MAKE;
+	$MAKE $GEN_MAKE_OPTS;
 fi;
 
 # Create install directory
 mkdir -pv \${GENPKG$GEN_PKGRULES_VARPREFIX};
 
 # make install
-if test -f \"Makefile\"; then
+if test -f \"Makefile\" || test -f \"makefile\"; then
 	echo \" --- Make Install <\$name (\$version)> ---\";
-	\$MAKE $GEN_PKGRULES_VARPREFIX=\${GENPKG$GEN_PKGRULES_VARPREFIX} install;
+	$MAKE $GEN_MAKE_OPTS $GEN_PKGRULES_VARPREFIX=\${GENPKG$GEN_PKGRULES_VARPREFIX} install;
 fi;
 " >> $GENETIC_TMP/$package_name-$package_version/$package_to_generate/Rules
+fi;
 		### End '$package_name' 'Rules' file ###
 
 		### Start '$package_name' 'Info' file ###
@@ -430,6 +516,7 @@ original_name=$package_name
 name=$package_to_generate
 version=$package_version
 package=\$name-\$version
+category=
 depends=
 installbefore=
 installafter=
@@ -471,6 +558,11 @@ replaces=\"\$name\"
 
 		stop_spinner $?;
 	done;
+	
+	### Removing src.configure directory ### 
+	echolog_debug_verbose "$DEBUG Delete 'src.configure' directory if found.";
+	check_dir "$GENETIC_TMP/$package_name-$package_version/src.configure" "$RM -rf $GENETIC_TMP/$package_name-$package_version/src.configure";
+	### End cleaning src.configure directory ###
 
 	### Source package '$SOURCE_NAME' generated #
 	echolog "$INFO Source package '${color_wht}$package_name $package_version${color_reset}' files created in '${color_wht}$GENETIC_TMP/$package_name-$package_version${color_reset}'.";

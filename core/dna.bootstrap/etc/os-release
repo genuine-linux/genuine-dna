@@ -1,0 +1,7 @@
+NAME=Genuine
+ID=genuine
+PRETTY_NAME="Genuine/Linux"
+ANSI_COLOR="1;32"
+HOME_URL="https://www.genuine-linux.org/"
+SUPPORT_URL="https://www.genuine-linux.org/support/"
+BUG_REPORT_URL="https://bugs.genuine-linux.org/"

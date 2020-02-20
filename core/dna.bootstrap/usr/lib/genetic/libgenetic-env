@@ -44,6 +44,8 @@ load_core_variables() {
 	LN="ln";
 	LS="ls";
 	RM="rm";
+	POPD="popd";
+	PUSHD="pushd";
 	CD="cd";
 	WC="wc";
 	DU="du";
@@ -56,8 +58,10 @@ load_core_variables() {
 	FIND="find";
 	STRIP="strip";
 	MKDIR="mkdir";
-	MAKE="make $GEN_MAKE_OPTS"; export MAKE="$MAKE";
-	CMAKE="cmake"; export CMAKE="$CMAKE";
+	MAKE="make $GEN_MAKE_OPTS";
+	CMAKE="cmake";
+	MESON="meson";
+	NINJA="ninja";
 	DATE="date";
 	TEE="tee";
 	SED="sed";
@@ -205,7 +209,7 @@ load_terminal_color_support() {
 		# User Screen Color Messages #
 
 		# GENUINE_VERSION #
-		GENUINE_VERSION=$(grep ^Release /etc/genuine-release | awk '{print $NF}' | sed 's/^G//g');
+		GENUINE_VERSION=$(cat /etc/genuine-release | awk '{print $4}' | sed 's/^G//g');
 
 		# genetic version #
 		genetic_VERSION="$INFO ${color_bylw}Genetic Package Manager ${color_bblu}[${color_bwht}genetic ${color_cyn}(${color_wht}${GENUINE_VERSION}${color_cyn})${color_bblu}] ${color_reset}running on ${color_bcyn}(${color_bwht}$HOST_MACHINE${color_bcyn}) ${color_bcyn}'${color_bgrn}$HOST_OS${color_bcyn}'${color_reset}.";

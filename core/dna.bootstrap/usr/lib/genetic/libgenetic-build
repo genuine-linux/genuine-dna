@@ -2,7 +2,7 @@
 
 # genetic-19.x.x (libgenetic-build) #
 
-# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+# Copyright (c) 2014-2020 Antonio Cao (@burzumishi) #
 
 # This is free software;
 # You have unlimited permission to copy and/or distribute it,
@@ -225,12 +225,17 @@ gen_build_binary_package() {
 					start_spinner "Running '${color_wht}GNU Autotools${color_reset}' attempting to create '${color_wht}configure${color_reset}'";
 
 					# Run distclean #
-					if test -f "Makefile"; then
-						echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources: '$MAKE distclean' ..."; 
-						$MAKE distclean &> ../$name/name-distclean-$BUILDLOG;
+					if [ "$DISABLE_DISTCLEAN" != "yes" ]; then
+						if test -f "Makefile"; then
+							echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources: '$MAKE distclean' ..."; 
+							$MAKE distclean &> ../$name/name-distclean-$BUILDLOG;
+							$RM -v *.log &> ../$name/name-distclean-$BUILDLOG;
+						else
+							echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+						fi;
 					else
-						echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
-					fi;
+						echolog_debug "$DEBUG Make distclean disabled on user demand!";
+					fi
 
 					# Run GNU Autotools #
 					#$ACLOCAL --verbose &> ../$name/$name-$ACLOCAL-$BUILDLOG;
@@ -253,14 +258,18 @@ gen_build_binary_package() {
 
 				start_spinner "Running '${color_wht}GNU Autotools${color_reset}' attempting to create '${color_wht}configure${color_reset}'";
 
-				# Run distclean #
-				if test -f "Makefile"; then
-					echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources: '$MAKE distclean' ..."; 
-					$MAKE distclean &> ../$name/name-distclean-$BUILDLOG;
+				# Run distclean #					
+				if [ "$DISABLE_DISTCLEAN" != "yes" ]; then
+					if test -f "Makefile"; then
+						echolog_debug "$DEBUG A previous 'Makefile' was found! Cleaning sources: '$MAKE distclean' ..."; 
+						$MAKE distclean &> ../$name/name-distclean-$BUILDLOG;
+					else
+						echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+					fi;
 				else
-					echolog_debug "$DEBUG No previous 'Makefile' was found!"; 
+					echolog_debug "$DEBUG Make distclean disabled on user demand!";
 				fi;
-
+				
 				# Run GNU Autotools #
 				#$ACLOCAL --verbose &> ../$name/$name-$ACLOCAL-$BUILDLOG;
 				#$LIBTOOLIZE -v &> ../$name/$name-$LIBTOOLIZE-$BUILDLOG;
@@ -284,16 +293,20 @@ gen_build_binary_package() {
 	start_spinner "Building package '${color_wht}$name $version${color_reset}' (${color_wht}$GENETIC_ARCH${color_reset}), please wait";
 
 	### Clean source directory ###
-	if test -f "../$source_package-$source_version/Makefile"; then
-		echolog_debug "$DEBUG Package '$source_package $source_version' Makefile found! Sources does need cleaning!";
-		$CD ../$source_package-$source_version;
-		echologn_debug "$DEBUG Cleaning '$source_package $source_version' sources";
-		$MAKE clean &> ../$name/$name-clean-$BUILDLOG;
-		echolog_debug_nodate "$FINISHED";
-		$CD ../$name;
+	if [ "$DISABLE_CLEAN" != "yes" ]; then
+		if test -f "../$source_package-$source_version/Makefile"; then
+			echolog_debug "$DEBUG Package '$source_package $source_version' Makefile found! Sources does need cleaning!";
+			$CD ../$source_package-$source_version;
+			echologn_debug "$DEBUG Cleaning '$source_package $source_version' sources";
+			$MAKE clean &> ../$name/$name-clean-$BUILDLOG;
+			echolog_debug_nodate "$FINISHED";
+			$CD ../$name;
+		else
+			echolog_debug "$DEBUG Package '$source_package $source_version' Makefile not found! Sources does not need cleaning!";
+		fi
 	else
-		echolog_debug "$DEBUG Package '$source_package $source_version' Makefile not found! Sources does not need cleaning!";
-	fi
+		echolog_debug "$DEBUG Make clean disabled on user demand!";
+	fi;
 
 	# Clear install directory #
 	echolog_debug "$DEBUG Clear '$ROOTFS' temporary directory if exits ...";

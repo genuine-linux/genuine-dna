@@ -1,7 +1,0 @@
-/dev/sda[n] 	/boot 	ext2 	rw,defaults 	   0	 0
-/dev/sda[n] 	/    	ext4 	rw,defaults 	   0  	 0
-/dev/sda[n] 	swap 	swap 	pri=1 		   0 	 0
-proc           /proc        proc   defaults        0     0
-sysfs          /sys         sysfs  defaults        0     0
-devpts         /dev/pts     devpts gid=4,mode=620  0     0
-shm            /dev/shm     tmpfs  defaults        0     0
