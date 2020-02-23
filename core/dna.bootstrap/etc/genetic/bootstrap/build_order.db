@@ -124,6 +124,8 @@ netifrc:netifrc
 opentmpfiles:opentmpfiles
 pcre:pcre
 pcre2:pcre2
+gcovr:gcovr
+lcov:lcov
 lzo:lzo
 libaio:libaio
 mdadm:mdadm
@@ -159,6 +161,7 @@ swig:swig
 unbound:unbound
 lua:lua
 LuaJIT:LuaJIT
+lgi:lgi
 highlight:highlight
 itstool:itstool
 gtk-doc:gtk-doc
@@ -176,6 +179,7 @@ libpsl:libpsl
 curl:curl
 wireless-tools:wireless-tools
 cmake:cmake
+cmake-extras:cmake-extras
 brotli:brotli
 c-ares:c-ares
 libassuan:libassuan
@@ -251,6 +255,7 @@ rrdtool:rrdtool
 lm-sensors:lm-sensors
 dkms:dkms
 cpufrequtils:cpufrequtils
+dracut:dracut
 # FS #
 fuse:fuse
 tree:tree
@@ -460,6 +465,7 @@ xf86-video-nouveau:xf86-video-nouveau
 xf86-video-vmware:xf86-video-vmware
 xf86-video-vboxvideo:xf86-video-vboxvideo
 # XORG APPS 2 #
+libxdg-basedir:libxdg-basedir
 xdg-utils:xdg-utils
 xdg-user-dirs:xdg-user-dirs
 twm:twm
@@ -551,7 +557,7 @@ gtk3+:gtk3+
 rustc:rustc
 cbindgen:cbindgen
 librsvg:librsvg
-openssh:gnome-openssh-askpass
+#openssh:gnome-openssh-askpass
 # THEMES & BG & ICONS & SCREENSAVERS #
 XML-Simple:gnome-icon-theme
 icon-naming-utils:icon-naming-utils
@@ -570,6 +576,7 @@ mupdf:mupdf
 ghostscript:ghostscript
 ghostscript-fonts-std:ghostscript-fonts-std
 gnu-gs-fonts-other:gnu-gs-fonts-other
+texlive:texlive
 xapian-core:xapian-core
 doxygen:doxygen
 glibmm:glibmm
@@ -718,6 +725,7 @@ extra:extra
 #edi:edi
 E17gtk-3.22.2:E17gtk-3.22.2
 # EDITORS #
+nano:nano
 vim:gvim
 cream:cream
 emacs:emacs
@@ -731,14 +739,20 @@ kismet:kismet
 aircrack-ng:aircrack-ng
 # DISKS #
 xarchiver:xarchiver
+ranger:ranger
 # EYE CANDY #
 LuaBitOp:LuaBitOp
 conky:conky
-#
 # OLD WINDOW MANAGERS #
 e16:e16
 fluxbox:fluxbox
 WindowMaker:WindowMaker
+# OTHER WM #
+xcb-util-xrm:xcb-util-xrm
+awesome:awesome
+libev:libev
+yajl;yajl
+i3:i3
 # MATE DESKTOP #
 autoconf-archive:autoconf-archive
 dconf:dconf
@@ -759,6 +773,9 @@ gnome-keyring:gnome-keyring
 mate-common:mate-common
 libmatekbd:libmatekbd
 libmatemixer:libmatemixer
+ayatana-ido:ayatana-ido
+libayatana-indicator:libayatana-indicator
+libayatana-appindicator:libayatana-appindicator
 mate-polkit:mate-polkit
 mate-backgrounds:mate-backgrounds
 mate-icon-theme:mate-icon-theme
@@ -772,13 +789,10 @@ libmateweather:libmateweather
 mate-themes:mate-themes
 mate-panel:mate-panel
 mate-applets:mate-applets
-ayatana-ido:ayatana-ido
-libayatana-indicator:libayatana-indicator
-libayatana-appindicator:libayatana-appindicator
 mate-control-center:mate-control-center
 ayatana-indicator-messages:ayatana-indicator-messages
 ayatana-indicator-notifications:ayatana-indicator-notifications
-#ayatana-indicator-power:ayatana-indicator-power
+ayatana-indicator-power:ayatana-indicator-power
 ayatana-indicator-printers:ayatana-indicator-printers
 googletest:googletest
 ayatana-indicator-session:ayatana-indicator-session
@@ -815,12 +829,16 @@ mozo:mozo
 mate-calc:mate-calc
 eom:eom
 engrampa:engrampa
+texlive:texlive
 atril:atril
 mate-tweak:mate-tweak
 system-tools-backends:system-tools-backends
 liboobs:liboobs
 gnome-system-tools:gnome-system-tools
-#mate-power-manager:mate-power-manager
+mate-power-manager:mate-power-manager
+topmenu-gtk3:topmenu-gtk3
+appmenu-gtk-module:appmenu-gtk-module
+vala-panel-appmenu:vala-panel-appmenu
 #mate-user-share:mate-user-share
 #caja-dropbox:caja-drop-box
 # DESKTOP EFFECTS #
