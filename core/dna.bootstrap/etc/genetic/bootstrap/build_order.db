@@ -567,6 +567,7 @@ gnome-icon-theme-symbolic:gnome-icon-theme-symbolic
 gnome-backgrounds:gnome-backgrounds
 gnome-themes-extra:gnome-themes-extra
 xscreensaver:xscreensaver
+powerline:powerline
 plymouth:plymouth
 plymouth-openrc-plugin:plymouth-openrc-plugin
 # MORE 
