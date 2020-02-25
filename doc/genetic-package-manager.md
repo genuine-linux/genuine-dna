@@ -12,46 +12,48 @@ Buscar ficheiros e paquetes
 Comandos útiles para buscar paquetes e/ou ficheiros dos paquetes
 
 ```shell
-genetic -l ${PKG-NAME} # busca paquetes entre os instalados no sistema
-genetic -L ${FILE}     # busca a qué paquete dos instalados pertence o ficheiro 
-genetic -L bash$       # o comando -L acepta expresións regulares
+genetic -l {PKG-NAME} # busca paquetes entre os instalados no sistema
+genetic -L {FILE}     # busca a qué paquete dos instalados pertence o ficheiro 
+genetic -L bash$      # o comando -L acepta expresións regulares
 ```
 
 - - -
 
-instalando software con genetic
--------------------------------
+Instalando software con `genetic`
+---------------------------------
 
-### Primeiro paso: obter o codigo fonte
+### Primeiro paso: Obter o código fonte
 
 
-#### Opcion 1: descargar de internet (para usar `genetic -s`)
+#### Opcion 1: Descargar de internet (para usar `genetic -s`)
+
+> Esta opción é a adecuada para crear novos paquetes
 
 Unha vez descargado o código fonte, construír o paquete source de genetic.
 
 ```shell
-wget https://example.com/source-code.tar.gz
-genetic -s ${RUTA-AO-TAR-GZ}
+wget https://example.com/source-code.tar.gz # ou outro mecanismo de descarga
+genetic -s source-code.tar.gz
 ```
 
 > O formato pode ser .tar.gz, .tar.bz2, .xz, e moitos outros.
-> Genetic esta desenhado para _tragar_ case con calquera cousa existente.
+> Genetic esta deseñado para _tragar_ case con calquera cousa existente.
 
 Esta operación xera os ficheiros que precisa o genetic para construír e
 instalar o paquete, que se gardan en temporalmente en
 **`/var/tmp/genetic/{PKG-NAME}-{PKG-VER}`**.
 
 ```shell
-# Contido do directorio */var/tmp/genetic/${PKG-NAME}-{PKG-VER}*:
+# Contido dun directorio /var/tmp/genetic/{PKG-NAME}-{PKG-VER}:
 # 
-#   /${PKG-NAME}-${PKG-VER} # código fonte orixinal
-#   /SrcInfo                # información específica para construír o paquete
-#   /${PKG-NAME}/Rules      # "a receta" para construír o paquete (script de bash)
-#   /${PKG-NAME}/files      # directorio con "ficheiros extra" a incluír no paquete
-#                           # debe estruturase ao igual que a raíz do sistema {etc,var,usr,etc} etcétera
+#   /{PKG-NAME}-{PKG-VER} # código fonte orixinal
+#   /SrcInfo              # información específica para construír o paquete
+#   /{PKG-NAME}/Rules     # "a receta" para construír o paquete (script de bash)
+#   /{PKG-NAME}/files     # directorio con "ficheiros extra" a incluír no paquete
+#                         # debe estruturase ao igual que a raíz do sistema {etc,var,usr,etc} etcétera
 #   IMPORTANTE: hai que instruir a genetic no Rules para que inclua os *files/*
 #   cp -av ../$name/files/* $GENPKGDESTDIR/ # habitualmente executado despois de _make install_
-#   /${PKG-NAME}/Info       # Información específica para instalar o paquete unha vez construído
+#   /{PKG-NAME}/Info      # Información específica para instalar o paquete unha vez construído
 ```
 
 ##### Comprobar o output! #####
@@ -70,7 +72,7 @@ Investiga no log cal pode ser a causa do fallo. Habitualmente:
 
 Pasar ao segundo paso.
 
-#### Opcion 2: usar unha fonte que xa existe no hdd (paquete source)
+#### Opcion 2: Usar unha fonte que xa existe no hdd (paquete source)
 
 Desta maneira aforras a descarga reaproveitando un paquete source que xa
 foi construido nun momento anterior.
@@ -94,7 +96,7 @@ no _directorio caché_ de genetic **`/var/cache/genetic`**. Para construír
 un paquete:
 
 ```shell
-cd /var/tmp/genetic/${PKG-NAME}-{PKG-VER}
+cd /var/tmp/genetic/{PKG-NAME}-{PKG-VER}
 genetic -b
 ```
 
@@ -103,7 +105,7 @@ genetic -b
 > `genetic --disable-gen-all -b` evita xerar o .src.gen e o .dbg.gen
 > De maneira que se acaba moito antes de construír e aforras espazo no hdd
 
-```
+```shell
 # O directorio /var/cache/genetic/PackagePool almacena os paquetes instalables:
 
 # /{PKG-NAME}-{PKG-VER}~{BUILD-REV}.{ARCH}.gen     # paquete principal (binarios, config, manpages, etcs)
@@ -116,8 +118,8 @@ genetic -b
 # {PKG-NAME}-{PKG-VER}.src.gen # o source de genetic xunto ao source orixinal
 ```
 
-> Importante: **NON INSTALAR O DBG**. Hai que instalar todos os paquetes 
-> dbg para poder usalos na práctica para o debugging
+> Importante: **NON INSTALAR O `.dbg.gen`**. Hai que instalar todos os paquetes 
+> `.dbg.gen` para poder usalos na práctica para o debugging.
 
 ### Comprobar a saída!! PETOU? ###
 
