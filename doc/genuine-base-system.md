@@ -6,6 +6,9 @@ genuine-base
 : contén unha lista de paquetes a construír para instalar o sistema base,
 ordeado en función das dependencias dos paquetes.
 
+directorios de interese
+------------------------
+
 - `/usr/src`
 : contén os repositorios para desenvolvemento
 
@@ -32,3 +35,4 @@ Habilitar un servizo: `sudo rc-update add {NOME-DEMONIO} default`
 Parar/arrancar un servizo:
 `/etc/init.d/{NOME-DEMONIO} stop`
 `/etc/init.d/{NOME-DEMONIO} start`
+
