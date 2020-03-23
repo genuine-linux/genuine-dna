@@ -9,5 +9,5 @@ sh Configure -des -Dprefix=$TOOLBOX \
 make
 
 cp -v perl cpan/podlators/scripts/pod2man $TOOLBOX/bin
-mkdir -pv $TOOLBOX/lib/perl5/5.28.1
-cp -Rv lib/* $TOOLBOX/lib/perl5/5.28.1
+mkdir -pv $TOOLBOX/lib/perl5/5.30.1
+cp -Rv lib/* $TOOLBOX/lib/perl5/5.30.1

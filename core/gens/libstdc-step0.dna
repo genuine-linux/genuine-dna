@@ -11,11 +11,9 @@ CXXFLAGS="$CXXFLAGS -fPIC" \
     --target=$GENUINE_TGT                 \
     --prefix=$TOOLBOX                \
     --disable-multilib              \
-    --disable-shared                \
     --disable-nls                   \
-    --disable-libstdcxx-threads     \
     --disable-libstdcxx-pch         \
-    --with-gxx-include-dir=$TOOLBOX/$GENUINE_TGT/include/c++/8.2.0
+    --with-gxx-include-dir=$TOOLBOX/$GENUINE_TGT/include/c++/9.2.0
 
 make
 

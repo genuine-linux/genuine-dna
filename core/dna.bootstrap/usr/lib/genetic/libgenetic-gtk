@@ -1,0 +1,963 @@
+#!/bin/bash
+
+# genetic-20.x.x (libgenetic-gtk) #
+
+# Copyright (c) 2014-2020 Antonio Cao (@burzumishi) #
+
+# This is free software;
+# You have unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# libgenetic-gtk: Package Manager Zenity functions and definitions #
+
+# gen_check_zenity(): Check if Zenity is available #
+gen_check_zenity() {
+	# Parameters: none #
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'gen_check_zenity($ZENITY)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	ZENITY_AVAILABLE="$($WHICH $ZENITY)";
+	ZENITY_PATH="$($DIRNAME $ZENITY_AVAILABLE)";
+
+	if $ZENITY_PATH/$ZENITY --help &>/dev/null; then
+		return $true;
+	else
+		return $false;
+	fi
+}
+
+gen_zenity_info() {
+	INFO_TXT="$1";
+
+	echolog "$INFO $INFO_TXT";
+	$ZENITY --info --ellipsize --text="INFO: $INFO_TXT";
+
+	return $true;
+}
+
+gen_zenity_warning() {
+	WARNING_TXT="$1";
+
+	echolog "$WARNING $WARNING_TXT!";
+	$ZENITY --warning --ellipsize --text="WARNING! $WARNING_TXT!";
+
+	return $true;
+}
+
+gen_zenity_error() {
+	ERROR_TXT="$1";
+
+	echolog "$ERROR $ERROR_TXT!";
+	$ZENITY --error --ellipsize --text="ERROR!!! $ERROR_TXT!";
+
+	return $false;
+}
+
+gen_zenity_question() {
+	QUESTION_TXT="$1";
+
+	echolog "$WARNING $QUESTION_TXT";
+	$ZENITY --error --ellipsize --text="WARNING! $QUESTION_TXT?";
+
+	return $?;
+}
+
+gen_zenity_progress() {
+	PROGRESS_CMD="$1";
+	PROGRESS_TXT="$2";
+	$PROGRESS_CMD | $ZENITY \
+		--progress \
+	       	--percentage=0 \
+		--time-remaining \
+		--no-cancel \
+		--auto-close \
+		--auto-kill \
+		--text="$PROGRESS_TXT, please wait ..."
+	PROGRESS_RETURN=$?;
+	if [[ $PROGRESS_RETURN -ne $true ]]; then
+		gen_zenity_error "$PROGRESS_TXT finished with errors";
+		return $false;
+	else
+		return $true;
+	fi
+}
+
+gen_zenity_cancelled_by_user() {
+	ACTION="$1";
+
+	## Cancelled, return to installer main menu #
+        gen_zenity_error "$ACTION: Cancelled by user!";
+	
+        gen_installer;
+}
+
+# gen_zenity_list_disks() {
+gen_zenity_select_disk() {
+	SELECT_DISK=$($ZENITY --list \
+	  $_ZENITY_WINDOW_SIZE \
+	  --title="Select a Hard Drive" \
+	  --column="Drive" --column="Size" \
+	  $($LSBLK | $GREP disk | $AWK '{print "/dev/"$1" "$4}') || gen_installer);
+}
+
+gen_zenity_grub() {
+	( _disk="$1";
+
+	$ECHO "10"; $SLEEP 1;
+
+	echolog "$WARNING Creating GRUB Bootloader config: /boot/grub/grub.cfg ...";
+	gen_chroot "$GRUB_MKCONFIG -o /boot/grub/grub.cfg";
+
+	$ECHO "50"; $SLEEP 1;
+
+	echolog "$WARNING Installing GRUB Bootloader to $_disk ...";
+	gen_chroot "$GRUB_INSTALL $_disk";
+
+	echolog "$WARNING Adjusting GRUB configuration ...";
+	_root="$($ECHO $_disk | $AWK -F"/" '{print $NF}')";
+	$SED 's/'$_root'2/sda2/g' $_TARGET/boot/grub/grub.cfg > $_TARGET/boot/grub/grub.cfg.new
+	$MV $_TARGET/boot/grub/grub.cfg.new $_TARGET/boot/grub/grub.cfg
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_install_grub() {
+	_select_disk="$1";
+	GRUB_DISK="$($ECHO $_select_disk | $AWK '{print $1}')";
+	#gen_zenity_info "You have selected $GRUB_DISK to install GRUB bootloader";
+	gen_zenity_progress "gen_zenity_grub $_select_disk" "Installing GRUB to $_select_disk";
+}
+
+gen_partition_layout() {
+	( _disk="$1";
+	_file="$2";
+
+	$ECHO "50"; $SLEEP 1;
+	
+	echolog "$WARNING Creating partition layout in $_disk using $_file ...";
+	$SFDISK $_disk < $_file;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_partition_manager() {
+	gen_zenity_select_disk;
+
+	export _select_disk="$SELECT_DISK";
+	
+	PARTITION_DISK="$($ECHO $SELECT_DISK | $AWK '{print $1}')";
+
+	echolog "$INFO Ensuring that all $_TARGET mount points are free ...";
+	$UMOUNT $_TARGET/sys \
+		$_TARGET/dev/pts \
+		$_TARGET/dev \
+		$_TARGET/boot \
+		$_TARGET/run \
+		$_TARGET/proc \
+		$_TARGET &>/dev/null
+
+	# Disk size (using sectors)
+	_BS=2048;
+	_PGS=1; # partition gap size
+	_DISK_SIZE=$($FDISK -l $PARTITION_DISK | $HEAD -1 | $AWK '{print $7}');
+
+	# Partition layout
+	export _BOOT="${PARTITION_DISK}1";
+	_BOOT_PATH="/boot";
+	_BOOT_FS="ext2";
+	_BOOT_START=2048;
+	_BOOT_SIZE=4012032;
+	
+	export _ROOT="${PARTITION_DISK}2";
+	_ROOT_PATH="/";
+	_ROOT_FS="ext4";
+	_ROOT_START=4014080;
+	_ROOT_SIZE=0; # Try to guess it later
+
+	export _SWAP="${PARTITION_DISK}3";
+	_SWAP_PATH="swp";
+	_SWAP_FS="swap";
+	_SWAP_START=0; # Try to guess it later
+	_SWAP_SIZE=4093952;
+	
+	# GUESS _ROOT_SIZE: TOTAL DISK SIZE - BOOT START - BOOT SIZE - SWAP SIZE - GAP SIZE = ROOT SIZE
+	_ROOT_SIZE=$($ECHO ${_DISK_SIZE}-${_BOOT_START}-${_BOOT_SIZE}-${_SWAP_SIZE}-${_PGS}-${_PGS} | $BC);
+
+	# GUESS _SWAP_START: ROOT START + PARTITION GAP SECTOR (2049) = SWAP START
+	_SWAP_START=$($ECHO ${_ROOT_START}+${_ROOT_SIZE}+${_PGS} | $BC);
+
+	# SIZE Mb
+	_DISK_SIZE_MB=$($ECHO ${_DISK_SIZE}/${_BS} | $BC);
+	_BOOT_SIZE_MB=$($ECHO ${_BOOT_SIZE}/${_BS} | $BC);
+	_ROOT_SIZE_MB=$($ECHO ${_ROOT_SIZE}/${_BS} | $BC);
+	_SWAP_SIZE_MB=$($ECHO ${_SWAP_SIZE}/${_BS} | $BC);
+
+	# Write SFDISK partition layout
+	echolog "$WARNING Creating $PARTITION_DISK partition layout!";
+	SFDISK_PARTITIONS="$TMPDIR/sfdisk.partitions";
+
+	$ECHO "start=   ${_BOOT_START},    size=   ${_BOOT_SIZE}, type=83" > $SFDISK_PARTITIONS
+	$ECHO "start=   ${_ROOT_START}, size=   ${_ROOT_SIZE}, type=83" >> $SFDISK_PARTITIONS
+	$ECHO "start=   ${_SWAP_START}, size=   ${_SWAP_SIZE}, type=82" >> $SFDISK_PARTITIONS
+
+	if [ -f "$SFDISK_PARTITIONS" ]; then
+		# Apply SFDISK partition layout
+		echolog_debug "$WARNING You have selected $PARTITION_DISK to install Genuine GNU/Linux!\n\nWARNING!! All disk data will be removed!!!";
+		$ZENITY --question --ellipsize \
+			$_ZENITY_WINDOW_SIZE \
+			--text "Partition Layout:\n\n$($CAT $SFDISK_PARTITIONS)\n\n\nDisk Size:\n\n${PARTITION_DISK} ${_DISK_SIZE} sectors ${_DISK_SIZE_MB} Mb\n\n\nPartitions Size:\n\n${_BOOT} ${_BOOT_PATH} ${_BOOT_SIZE_MB}\n${_ROOT} ${_ROOT_PATH}       ${_ROOT_SIZE_MB}\n${_SWAP} ${_SWAP_PATH}  ${_SWAP_SIZE_MB}\n\n\nWARNING!!! Are you sure that do you want to use $PARTITION_DISK?\nWARNING!!! If you continue ahead, ALL DATA WILL BE REMOVED FROM DISK!!!";
+       		 if [[ $? -eq $true ]]; then
+	       	        #gen_zenity_warning "All data from disk $PARTITION_DISK will be removed NOW!";
+			gen_zenity_progress "gen_partition_layout $PARTITION_DISK $SFDISK_PARTITIONS" "Applying partition layout to: $PARTITION_DISK";
+			if [[ $? -eq $true ]]; then
+				$ECHO "$PARTITION_DISK" > $TMPDIR/install.target.disk
+			else
+				gen_zenity_warning "Disk $PARTITION_DISK can't be partitioned!\n\nPlease, check system installation logs!";
+			fi
+		else
+       	        	gen_zenity_cancelled_by_user "Create Partition Layout";
+       	 	fi
+	else
+	 	gen_zenity_error "Can't create $SFDISK_PARTITIONS partition layout!\n\nPlease, check system installation logs!";
+	fi
+}
+
+gen_set_keymap() {
+	( _keymap="$1";
+
+	$ECHO "10"; $SLEEP 1;
+
+	echolog "$WARNING Setting up keymap: qwerty/$_keymap";
+
+	$CAT $_TARGET/etc/conf.d/keymaps | $SED 's/keymap="?"/keymap="-u qwerty\/'$_keymap'"/g' \
+		> $_TARGET/etc/conf.d/keymaps.new;
+
+	$ECHO "50"; $SLEEP 1;
+
+	$MV $_TARGET/etc/conf.d/keymaps.new $_TARGET/etc/conf.d/keymaps;
+
+	$ECHO "75"; $SLEEP 1;
+
+	echolog "$WARNING Trying to load configured keymap: qwerty/$_keymap";
+	gen_chroot "$LOADKEYS -u qwerty/$_keymap";
+	
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_select_keymap() {
+	echolog "$INFO Select your keyboard map!";
+	KEYMAPS="$($LS $_TARGET/usr/share/keymaps/i386/qwerty | $SED 's/\.map\.gz//g' | $SORT | $UNIQ)";
+	SELECT_KEYMAP=$($ZENITY --list \
+		$_ZENITY_WINDOW_SIZE \
+		--title="Select your keyboard map! (Only i386/QWERTY keyboards are listed)" \
+		--column="Available Keyboard Maps" \
+		$(for keymap in $KEYMAPS; do $ECHO "$keymap"; done) || gen_installer);
+
+	echolog "$WARNING Selected keymap is: $SELECT_KEYMAP";
+
+	gen_zenity_progress "gen_set_keymap $SELECT_KEYMAP" "Setting up keymap: $SELECT_KEYMAP";
+}
+
+gen_set_locale() {
+	( _locale="$1";
+
+	$ECHO "10"; $SLEEP 1;
+
+	$ECHO "# Set up i18n variables\nexport LANG=$_locale" > $_TARGET/etc/profile.d/i18n.sh;
+
+	$ECHO "50"; $SLEEP 1;
+
+	$CHMOD +x $_TARGET/etc/profile.d/i18n.sh;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_select_locale() {
+	echolog "$INFO Select your region language";
+	LANGUAGES="$($LOCALE -a)";
+	SELECT_LOCALE=$($ZENITY --list \
+		$_ZENITY_WINDOW_SIZE \
+		--title="Select your region language" \
+		--column="Available Languages" \
+		$(for lang in $LANGUAGES; do $ECHO "$lang"; done) || gen_installer);
+
+	echolog "$WARNING Selected language is: $SELECT_LOCALE";
+
+	gen_zenity_progress "gen_set_locale $SELECT_LOCALE" "Setting up system language to: $SELECT_LOCALE"
+
+	gen_zenity_select_keymap;
+	gen_installer;
+}
+
+gen_format_target_partitions() {
+	( _root="$1";
+	_boot="$2";
+	_swap="$3";
+	
+	$ECHO "10"; $SLEEP 1;
+	
+	echolog "$WARNING Format $_boot partition ...";
+	$MKFS_EXT2 $_boot >/dev/null;
+	
+	$ECHO "50"; $SLEEP 1;
+	
+	echolog "$WARNING Format $_swap partition ...";
+	$MKSWAP $_swap >/dev/null;
+	
+	$ECHO "75"; $SLEEP 1;
+
+	echolog "$WARNING Format $_root partition ...";
+	$MKFS_EXT4 $_root >/dev/null;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_install_format_target_partitions() {
+	gen_zenity_progress "gen_format_target_partitions $_ROOT $_BOOT $_SWAP" \
+		"Formatting $_ROOT, $_BOOT and $_SWAP partitions";
+}
+
+gen_create_target() {
+	_target="$1";
+	if [ ! -d "$_target" ]; then
+		echolog "$WARNING Creating $_target installation directory ...";
+		mkdir -p $_target;
+	else
+		echolog "$INFO Directory $_target already created ...";
+	fi
+	return $true;
+}
+
+gen_mount_target() {
+	( _root="$1";
+	_boot="$2";
+	_target="$3";
+	
+	$ECHO "10"; $SLEEP 1;
+
+	gen_create_target $_target;
+
+	$ECHO "15"; $SLEEP 1;
+
+	echolog_debug "$WARNING Mounting $_root to $_target ...";
+	$MOUNT $_root $_target;
+
+	$ECHO "20"; $SLEEP 1;
+
+	echolog_debug "$WARNING Creating a base directory layout ...";
+	$MKDIR -p $_target/{dev,proc,sys,run};
+	$MKDIR -p $_target/{bin,boot,etc/{opt,pki/anchors},home,lib/firmware,mnt,opt};
+	$MKDIR -p $_target/{media/{floppy,cdrom},sbin,srv,var};
+	$INSTALL -d -m 0700 $_target/root;
+	$INSTALL -d -m 1777 $_target/tmp $_target/var/tmp;
+	
+	$ECHO "30"; $SLEEP 1;
+
+	$MKDIR -p $_target/usr/{,local/}{bin,include,lib,sbin,src};
+	$MKDIR -p $_target/usr/{,local/}share/{color,dict,doc,info,locale,man};
+	$MKDIR -p $_target/usr/{,local/}share/{misc,terminfo,zoneinfo};
+	$MKDIR -p $_target/usr/libexec;
+	$MKDIR -p $_target/usr/{,local/}share/man/man{1..8};
+
+	$ECHO "40"; $SLEEP 1;
+
+	$INSTALL -dm755 $_target/usr/lib/pkgconfig;
+	$MKDIR -p $_target/var/{log,mail,spool};
+	$MKDIR -p $_target/run/lock;
+	$MKDIR -p $_target/var/{opt,cache,lib/{color,misc,locate},local};
+
+	$ECHO "50"; $SLEEP 1;
+
+	echolog_debug "$WARNING Creating initial $_target/dev/console and $_target/dev/null ...";
+	$MKNOD -m 600 $_target/dev/console c 5 1;
+	$MKNOD -m 666 $_target/dev/null c 1 3;
+
+	$ECHO "60"; $SLEEP 1;
+
+	echolog_debug "$WARNING Mounting $_boot to $_target/boot ...";
+	$MOUNT $_boot $_target/boot;
+
+
+	$ECHO "70"; $SLEEP 1;
+
+	echolog_debug "$WARNING Creating required directory links ...";
+	case $GENETIC_ARCH in
+	 x86_64) $LN -s /usr/lib $_target/usr/lib64;
+       		 $LN -s /lib $_target/lib64;
+         	 $LN -s /usr/local/lib $_target/usr/local/lib64;
+	 ;;
+	esac
+	
+	$ECHO "80"; $SLEEP 1;
+
+	$LN -s /run $_target/var/run;
+	$LN -s /run/lock $_target/var/lock;
+	$LN -s /proc/self/mounts $_target/etc/mtab;
+
+	$ECHO "90"; $SLEEP 1;
+
+	$TOUCH $_target/var/log/{btmp,lastlog,faillog,wtmp};
+	$CHGRP utmp $_target/var/log/lastlog;
+	$CHMOD 664  $_target/var/log/lastlog;
+	$CHMOD 600  $_target/var/log/btmp;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_umount_target() {
+	( _root="$1";
+	_boot="$2";
+	_target="$3";
+
+	$ECHO "10"; $SLEEP 1;
+
+	echolog "$WARNING Umounting $_boot from $_target/boot ...";
+	$UMOUNT $_target/boot;
+
+	$ECHO "50"; $SLEEP 1;
+
+	echolog "$WARNING Umounting $_root from $_target ...";
+	$UMOUNT $_target;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_install_mount_target() {
+	gen_zenity_progress "gen_mount_target $_ROOT $_BOOT $_TARGET" \
+		"Mounting $_ROOT and $_BOOT to $_TARGET\n\nAnd creating the required base directory layout for Genuine GNU/Linux";
+}
+
+gen_zenity_install_umount_target() {
+	gen_zenity_progress "gen_umount_target $_ROOT $_BOOT $_TARGET" \
+		"Umounting $_ROOT and $_BOOT from $_TARGET";
+}
+
+gen_bind_filesystems() {
+	echolog "Binding host system filesystems to $_TARGET ...";
+	$MOUNT --bind /dev $_TARGET/dev/;
+	$MOUNT -t devpts devpts $_TARGET/dev/pts -o gid=5,mode=620;
+	$MOUNT -t proc proc $_TARGET/proc;
+	$MOUNT -t sysfs sysfs $_TARGET/sys;
+	$MOUNT -t tmpfs tmpfs $_TARGET/run;
+
+	if [ -h "$_TARGET/dev/shm" ]; then
+		$MKDIR -p $_TARGET/$(readlink $_TARGET/dev/shm);
+		$CHMOD 1777 $_TARGET/dev/shm;
+	fi;
+}
+
+gen_zenity_install_bind_filesystems() {
+	gen_zenity_progress "gen_bind_filesystems" \
+		"Binding host system filesystems to $_TARGET";
+}
+
+gen_unbind_filesystems() {
+	echolog "Unbinding host system filesystems from $_TARGET ...";
+	$UMOUNT $_TARGET/run;
+	$UMOUNT $_TARGET/dev/pts;
+	$UMOUNT $_TARGET/dev;
+	$UMOUNT $_TARGET/proc;
+	$UMOUNT $_TARGET/sys;
+}
+
+gen_zenity_install_unbind_filesystems() {
+	gen_zenity_progress "gen_unbind_filesystems" \
+		"Unbinding host system filesystems from $_TARGET";
+}
+
+gen_zenity_install_package() {
+	( _genpkg="$1";
+	_genpkgname="$2";
+	_pkgpercent="$3";
+
+	$ECHO "$_pkgpercent"; $SLEEP 0.1;
+	
+	$EXPORT INSTDIR="$_TARGET";
+	$EXPORT ENABLE_NOSCRIPTS="yes";
+
+	gen_install_packages "$_genpkg";
+	errorcheck $? "gen_zenity_install_package: Installation failed for package $_genpkgname with error: $?";
+
+	$UNSET INSTDIR;
+	$UNSET ENABLE_NOSCRIPTS; )
+}
+
+gen_zenity_install_fstab() {
+	( _root="$1";
+	_boot="$2";
+	_swap="$3";
+	_target="$4";
+
+	_fstab="$_target/etc/fstab";
+
+	$ECHO "10"; $SLEEP 1;
+
+	_BOOT_UUID=$($BLKID $_boot | $AWK '{print $2}');
+	_ROOT_UUID=$($BLKID $_root | $AWK '{print $2}');
+	_SWAP_UUID=$($BLKID $_swap | $AWK '{print $2}');
+
+	$ECHO "50"; $SLEEP 1;
+
+	echolog_debug "$WARNING Creating $_fstab ...";
+	#$ECHO "$_BOOT_UUID 	/boot 	ext2 	defaults 	   0	 0" > $_fstab;
+	$ECHO "/dev/sda1 	/boot 	ext2 	defaults 	   0	 0" > $_fstab;
+	#$ECHO "$_ROOT_UUID 	/    	ext4 	defaults 	   0  	 0" >> $_fstab;
+	$ECHO "/dev/sda2 	/    	ext4 	defaults 	   0  	 0" >> $_fstab;
+	#$ECHO "$_SWAP_UUID 	swap 	swap 	pri=1 		   0 	 0" >> $_fstab;
+	$ECHO "/dev/sda3 	swap 	swap 	pri=1 		   0 	 0" >> $_fstab;
+	$ECHO "/dev/cdrom     /media/cdrom auto   defaults	   0     0" >> $_fstab;
+
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_chroot() {
+	_chcmd="$1";
+
+	echolog_debug "$WARNING Executing under chroot $_TARGET: $_chcmd";
+	echolog "$WARNING Executing under chroot $_TARGET: $_chcmd";
+
+	$CHROOT "$_TARGET" /usr/bin/env -i \
+	    HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
+	    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+	    /bin/bash --login -c "$_chcmd" 2>&1 >> $TMPDIR/gen_chroot.log;
+}
+
+gen_zenity_configure_target_system() {
+	( $ECHO "10"; $SLEEP 1;
+
+	# Execute ldconfig and depmod -a
+	echolog_debug "$WARNING Running $LDCONFIG and $DEPMOD in $_TARGET ...";
+	gen_chroot "$LDCONFIG; $DEPMOD -a; $CHMOD +x /etc/init.d/*";
+
+	$ECHO "20"; $SLEEP 1;
+
+	# Copy genuine-base-system for finishing target system installation
+	_genuine_base_pkg=$($FIND $GENETIC_PACKAGES -name "genuine-base-system-[0-9]*.$GENETIC_ARCH.gen" | $GREP -w "genuine-base-system" | $SORT | $TAIL -1);
+	if [ -f "$_genuine_base_pkg" ]; then
+		# Create PackagePool if it does not exist
+		if [ ! -d "$_TARGET$GENETIC_PACKAGES" ]; then
+			echolog_debug "$WARNING Creating $_TARGET$GENETIC_PACKAGES!";
+			$MKDIR -p $_TARGET$GENETIC_PACKAGES;
+		else
+			echolog_debug "$WARNING Directory $_TARGET$GENETIC_PACKAGES already exists!";
+		fi;
+
+		$ECHO "25"; $SLEEP 1;
+
+		# Copy genuine-base-system package to $_TARGET
+		echolog_debug "$INFO Copying $_genuine_base_pkg to $_TARGET$_genuine_base_pkg ...";
+		$CP $_genuine_base_pkg $_TARGET$_genuine_base_pkg
+
+		if [[ $? -ne $true ]]; then
+			echolog_debug "$ERROR Can't copy $_genuine_base_pkg to $_TARGET$_genuine_base_pkg ...";
+		else
+			$ECHO "30"; $SLEEP 1;
+			# Reinstall a genuine-base-system package in chroot, this will finish system configuration
+			echolog_debug "$WARNING Reinstall genuine-base-system chrooted in $_TARGET ...";
+			gen_chroot "$RM -rf /var/cache/genetic/genuine-base-system; genetic -i $_genuine_base_pkg";
+		fi
+	else
+		echolog_debug "$ERROR Package $_genuine_base_pkg does not exist ...";
+	fi
+
+	$ECHO "40"; $SLEEP 1;
+
+	# Rebuild genetic database in target system
+	echolog_debug "$WARNING Rebuild genetic packages database in $_TARGET ...";
+	gen_chroot "genetic -R";
+	
+	$ECHO "45"; $SLEEP 1;
+
+	# Setup plymouth theme
+	echolog_debug "$WARNING Setting up Genuine Plymouth theme ...";
+	gen_chroot "plymouth-set-default-theme -R genuine";
+
+	$ECHO "50"; $SLEEP 1;
+
+	# Create initrd for installed kernels	
+	for k in $($LS $_TARGET/lib/modules); do
+		echolog_debug "$WARNING Generating initramfs in /boot/initrd-$k-$GENETIC_ARCH ...";
+		gen_chroot "/sbin/mkinitramfs $k";
+	done
+
+	$ECHO "60"; $SLEEP 1;
+
+	> $TMPDIR/packages.postinst.log
+	for _pkg in $_GENUINE_BASE_SYSTEM_PACKAGES; do
+		echolog_debug "$INFO Setting up $_pkg, please wait ...";
+		$CHMOD +x $_TARGET/var/cache/genetic/${_pkg}/PostInst;
+		gen_chroot "/bin/bash /var/cache/genetic/${_pkg}/PostInst 2>&1 >> $TMPDIR/packages.postinst.log";
+	done
+
+	$CHMOD 0777 $_TARGET/tmp $_TARGET/var/tmp;
+
+	$ECHO "70"; $SLEEP 1;
+	
+        # Enable shadowed passwords
+	echolog_debug "$INFO Enabling shadowed passwords ...";
+        gen_chroot "pwconv";
+
+	$ECHO "80"; $SLEEP 1;
+
+        # Enable shadowed group passwords
+	echolog_debug "$INFO Enabling shadowed group passwords ...";
+        gen_chroot "grpconv";
+
+	$ECHO "90"; $SLEEP 1;
+
+        # This parameter causes useradd to create a mailbox file for the newly created user.
+	echolog_debug "$INFO Setting up useradd to create a mailbox file by default for new users ...";
+        $SED -i 's/yes/no/' $_TARGET/etc/default/useradd
+
+	$ECHO "95"; $SLEEP 1;
+
+	echolog_debug "$INFO Adding services to sysinit runlevel ...";
+	for init_srv in opentmpfiles-dev opentmpfiles-setup udev udev-trigger; do
+		if test -f "$_TARGET/$init_srv" || test -L "$_TARGET/$init_srv"; then
+			echolog_debug "$INFO Adding service $init_srv to sysinit runlevel ...";
+			gen_chroot "rc-update add $init_srv sysinit";
+		fi;
+	done
+
+	echolog_debug "$INFO Adding services to default runlevel ...";
+	for srv in NetworkManager acpid agetty.tty1 agetty.tty2 agetty.tty3 agetty.tty4 agetty.tty5 agetty.tty6 alsasound autofs autoipd avahi-daemon avahi-dnsconfd bluetooth bootlogd consolefont cupsd dbus dhcpcd dnsmasq docker elogind fcron gpm local named net.eth0 netmount ntpd numlock openrc-settingsd rpcbind rsyncd sshd.eth0 syslogd sysstat udev-postmount xdm xdm-setup; do
+		if test -f "$_TARGET/$srv" || test -L "$_TARGET/$srv"; then
+			echolog_debug "$INFO Adding service $srv to default runlevel ...";
+			gen_chroot "rc-update add $srv default";
+		fi;
+	done
+
+	$ECHO "100"; $SLEEP 1;)
+}
+
+gen_zenity_install_passwd() {
+	( $ECHO "10"; $SLEEP 1;
+	
+	# Copy passwd group shadow gshadow files to target
+	echolog_debug "$INFO Copying to $_TARGET/etc files: passwd, shadow, group, gshadow";
+	cp /usr/share/genuine-base-system/passwd $_TARGET/etc/
+
+	$ECHO 25; $SLEEP 1;
+
+	$CP /usr/share/genuine-base-system/group $_TARGET/etc/
+
+	$ECHO 50; $SLEEP 1;
+
+	$CP /usr/share/genuine-base-system/shadow $_TARGET/etc/
+
+	$ECHO 75; $SLEEP 1;
+
+	$CP /usr/share/genuine-base-system/gshadow $_TARGET/etc/
+
+	$ECHO "90"; $SLEEP 1;
+
+	echolog "Copy /etc/skel files to $_TARGET/root ...";
+
+	$CP /etc/skel/.bash* $_TARGET/root/
+	
+	$CP /etc/skel/.profile $_TARGET/root/
+
+	$ECHO 100; $SLEEP 1; )
+}
+
+gen_zenity_install_system() {
+	echolog "$INFO You have selected to install Genuine GNU/Linux!";
+
+	gen_zenity_partition_manager;
+
+	gen_zenity_install_format_target_partitions;
+
+	gen_zenity_install_mount_target;
+
+	gen_zenity_progress "gen_zenity_install_fstab $_ROOT $_BOOT $_SWAP $_TARGET" "Creating $_TARGET/fstab";
+	
+	gen_zenity_progress "gen_zenity_install_passwd" "Creating $_TARGET/etc files: passwd, group, shadow, gshadow";
+	
+	gen_zenity_install_bind_filesystems;
+
+	_pkgnum=0;
+	for _pkg in $_GENUINE_BASE_SYSTEM_PACKAGES; do
+		_genpkg=$($FIND $GENETIC_PACKAGES -name "${_pkg}-[0-9]*.$GENETIC_ARCH.gen" | $GREP -w "$_pkg" | $SORT | $TAIL -1);
+		if [ -f "$_genpkg" ]; then
+			echolog "$INFO Selecting package to install $_pkg ..."
+			_pkgnum=$(( $_pkgnum +1 ));
+		else
+			echolog "$WARNING Package $_pkg cannot be selected to install!"
+		fi;
+	done
+
+	echolog "$WARNING Selected $_pkgnum packages to install!";
+
+	_pkgcount=1;
+	_total_percent=0;
+	for _pkg in $_GENUINE_BASE_SYSTEM_PACKAGES; do
+		_genpkg=$($FIND $GENETIC_PACKAGES -name "${_pkg}-[0-9]*.$GENETIC_ARCH.gen" | $GREP -w "$_pkg" | $SORT | $TAIL -1);
+		_genpkgname=$($ECHO $_genpkg | $AWK -F'/' '{print $NF}');
+		echolog "$WARNING [$_pkgcount/$_pkgnum] Installing $_genpkgname ...";
+	 	gen_zenity_progress "gen_zenity_install_package $_genpkg $_genpkgname $_total_percent" "[$_pkgcount/$_pkgnum] Installing $_genpkgname";
+		if [[ $? -eq $true ]]; then
+			_pkgcount=$(( $_pkgcount +1 ));
+			for _percent in {1..100} ; do
+        			if [[ $_pkgcount -lt $_pkgnum ]]; then
+                			_pkg_total=$($ECHO ${_pkgnum}*${_percent}/100 | $BC);
+                			if [[ $_pkg_total -eq $_pkgcount ]]; then
+                       			 	_total_percent=$_percent;
+                       			fi;
+                		fi
+                	done
+		else
+			gen_installer;
+		fi;
+        done
+	
+	echolog "$WARNING Configuring installed system packages, please wait ..."
+
+	gen_zenity_progress "gen_zenity_configure_target_system" "Configuring installed system packages";
+
+	gen_zenity_install_grub "$_select_disk";
+
+	gen_installer;
+}
+
+gen_set_hostname() {
+	( _hostname="$1";
+
+	$ECHO "20"; $SLEEP 1;
+
+	echolog "$WARNING Setting up hostname to: $_hostname";
+	$ECHO "# Set to the hostname of this machine\nhostname=$_hostname" > $_TARGET/etc/conf.d/hostname;
+
+	$ECHO "50"; $SLEEP 1;
+
+	$ECHO "# /etc/hosts: Local Host Database
+#
+# This file describes a number of aliases-to-address mappings for the for 
+# local hosts that share this file.
+#
+# The format of lines in this file is:
+#
+# IP_ADDRESS	canonical_hostname	[aliases...]
+#
+#The fields can be separated by any number of spaces or tabs.
+#
+# In the presence of the domain name service or NIS, this file may not be 
+# consulted at all; see /etc/host.conf for the resolution order.
+#
+
+# IPv4 and IPv6 localhost aliases
+127.0.0.1	localhost localhost.localdomain $_hostname
+::1		localhost
+
+#
+# Imaginary network.
+#10.0.0.2               myname
+#10.0.0.3               myfriend
+#
+# According to RFC 1918, you can use the following IP networks for private 
+# nets which will never be connected to the Internet:
+#
+#       10.0.0.0        -   10.255.255.255
+#       172.16.0.0      -   172.31.255.255
+#       192.168.0.0     -   192.168.255.255
+#
+# In case you want to be able to connect directly to the Internet (i.e. not 
+# behind a NAT, ADSL router, etc...), you need real official assigned 
+# numbers.  Do not try to invent your own network numbers but instead get one 
+# from your network provider (if any) or from your regional registry (ARIN, 
+# APNIC, LACNIC, RIPE NCC, or AfriNIC.)
+#
+" > $_TARGET/etc/hosts;
+	
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_set_hostname() {
+	echolog "$INFO Set a hostname for your Genuine box";
+	_hostname=$($ZENITY --title="Set a hostname for your Genuine box." --entry --text "Please choose a hostname for your Genuine installation.\n\nIt should only contain letters, numbers and dashes, no spaces." --entry-text "genuine")
+
+	echolog "$WARNING Selected hostname is: $_hostname";
+
+	gen_zenity_progress "gen_set_hostname $_hostname" "Setting up hostname to: $_hostname"
+
+	gen_installer;
+}
+
+gen_set_datetime() {
+	( _area="$1";
+	_timezone="$2";
+
+	$ECHO "10"; $SLEEP 1;
+
+	test -L $_TARGET/etc/localtime && $RM -f $_TARGET/etc/localtime;
+	
+	$ECHO "50"; $SLEEP 1;
+
+	$LN -s /usr/share/zoneinfo/$_area/$_timezone $_TARGET/etc/localtime;
+	
+	$ECHO "75"; $SLEEP 1;
+
+	$ECHO "$_area/$_timezone" > $_TARGET/etc/timezone;
+	
+	$ECHO "100"; $SLEEP 1; )
+}
+
+gen_zenity_set_datetime() {
+	echolog "$INFO Select your Timezone";
+	area=$($ZENITY --list \
+		$_ZENITY_WINDOW_SIZE \
+		--title "Select your Timezone" \
+		--text="Please select your country region." \
+		--column="Select your country region" \
+		--print-column=1 "Africa" "America" "Asia" "Australia" "Europe" "Pacific");
+	
+	timezone=$($LS -1 $_TARGET/usr/share/zoneinfo/$area | \
+		$ZENITY --list \
+		$_ZENITY_WINDOW_SIZE \
+		--title="Select your closest location" \
+		--column "Closest Location" \
+		--text "Please select the location closest to you");
+
+	echolog "$INFO Selected Timezone: $area/$timezone";
+
+	gen_zenity_progress "gen_set_datetime $area $timezone" "Setting up Date, Timezone and Localtime"
+
+	# Make sure we clean up any leading zeros in the day (as Zenity freaks out)
+	date_d=`$DATE +%d | $SED 's/^0//'`
+	date_m=`$DATE +%m | $SED 's/^0//'`
+	date_y=`$DATE +%Y`
+
+	date=$($ZENITY --calendar \
+		$_ZENITY_WINDOW_SIZE \
+		--text="Please select the current date" \
+		--title "Please select the current date" \
+		--day=$date_d \
+		--month=$date_m \
+		--year=$date_y \
+		--date-format="%Y%m%d");
+
+	echolog_debug "$INFO Selected Date is: $date";
+
+	time_h=`$DATE +%H`
+	time_m=`$DATE +%M`
+
+	time=$($ZENITY --title="Enter actual time" --entry --text "Please enter the time in 24hour format (HH:MM):" --entry-text "$time_h:$time_m");
+
+	while ! $DATE -d $time ; do
+		time=$($ZENITY --title="Enter actual time" --entry --text "Please enter the time in 24hour format (HH:MM):" --entry-text "$time_h:$time_m");
+	done
+
+	_SET_DATE=$($DATE +%Y%m%d -s $date);
+	_SET_TIME=$($DATE +%H:%M -s $time);
+
+	echolog "$WARNING Selected date is: $_SET_DATE";
+	echolog "$WARNING Selected time is: $_SET_TIME";
+
+	gen_installer;
+}
+
+gen_zenity_root_passwd() {
+	echolog "$INFO Setup root password";
+	ROOT_PASSWD=$($ZENITY --forms \
+	 $_ZENITY_WINDOW_SIZE \
+         --title="Setup root password" \
+         --text="Fill fields with your new root password." \
+         --add-password="Password" \
+         --add-password="Confirm Password" \
+	 --separator="|");
+
+	if [ "$ROOT_PASSWD" != "" ]; then
+		ROOT_PASSWD1=$($ECHO "$ROOT_PASSWD" | $AWK -F"|" '{print $1}');
+		ROOT_PASSWD2=$($ECHO "$ROOT_PASSWD" | $AWK -F"|" '{print $2}');
+
+		if [ "$ROOT_PASSWD1" == "$ROOT_PASSWD2" ] && [ "$ROOT_PASSWD1" != "" ] && [ "$ROOT_PASSWD2" != "" ]; then
+			echolog "$DEBUG Setting up root password ...";
+			gen_chroot "($ECHO \"$ROOT_PASSWD1\" ; $ECHO \"$ROOT_PASSWD2\") | $PASSWD";
+
+			if [[ $? -eq $true ]]; then
+				gen_zenity_info "Setup root password: Your root password has been updated!";
+			else
+				gen_zenity_info "Setup root password: Your root password has NOT been updated!";
+			fi
+
+			## Finished, return to installer main menu #
+			gen_installer;
+		else
+			gen_zenity_error "Setup root password: Check provided password! Password fields does NOT match!";
+			gen_zenity_root_passwd;
+		fi
+	else
+		gen_zenity_cancelled_by_user "Setup root password";
+	fi
+}
+
+gen_zenity_create_user() {
+	echolog "$DEBUG Create new users!";
+	USER_DATA=$($ZENITY --forms \
+	 $_ZENITY_WINDOW_SIZE \
+         --title="Create your new user" \
+         --text="Fill all fields with your new user information." \
+         --add-entry="User Name" \
+         --add-password="Password" \
+         --add-password="Confirm Password" \
+         --add-entry="Group Name" \
+	 --separator="|");
+
+	if [ "$USER_DATA" != "" ]; then
+		echolog_debug "$DEBUG Create new user with form data: $USER_DATA";
+		_USER_NAME=$($ECHO "$USER_DATA" | $AWK -F"|" '{print $1}');
+		USER_PASSWD1=$($ECHO "$USER_DATA" | $AWK -F"|" '{print $2}');
+		USER_PASSWD2=$($ECHO "$USER_DATA" | $AWK -F"|" '{print $3}');
+		USER_GROUP=$($ECHO "$USER_DATA" | $AWK -F"|" '{print $4}');
+
+		if [ "$USER_PASSWD1" == "$USER_PASSWD2" ] && [ "$USER_PASSWD1" != "" ] && [ "$USER_PASSWD2" != "" ]; then
+			if [ ! -z "$USER_GROUP" ]; then
+				echolog_debug "$DEBUG Create new user with form data: $USER_DATA";
+				echolog "$DEBUG $USERADD $_USER_NAME -m -s /bin/bash -g $USER_GROUP";
+				gen_chroot "$USERADD $_USER_NAME -m -s /bin/bash -g $USER_GROUP";
+				gen_chroot "($ECHO \"$USER_PASSWD1\" ; $ECHO \"$USER_PASSWD2\") | $PASSWD $_USER_NAME";
+				USERADD_CMD_CHECK=$?;
+			else
+				echolog_debug "$DEBUG Create new user with form data: $USER_DATA";
+				echolog "$DEBUG $USERADD $_USER_NAME -m -s /bin/bash -U";
+				gen_chroot "$USERADD $_USER_NAME -m -s /bin/bash -U";
+				gen_chroot "($ECHO \"$USER_PASSWD1\" ; $ECHO \"$USER_PASSWD2\") | $PASSWD $_USER_NAME";
+				USERADD_CMD_CHECK=$?;
+			fi;
+
+			if [[ $USERADD_CMD_CHECK -eq $true ]]; then
+				gen_zenity_info "Create user $_USER_NAME: Your user has been added to system!\n\n$USERADD_CMD_CHECK";
+			else
+				gen_zenity_info "Create user $_USER_NAME: Your user was NOT added to system!\n\n$USERADD_CMD_CHECK";
+			fi
+		
+			## Finished, return to installer main menu #
+			gen_installer;
+		else
+			gen_zenity_error "Create user $_USER_NAME: Passwords does NOT match!";
+			gen_zenity_create_user;
+		fi
+	else
+		gen_zenity_cancelled_by_user "Create user";
+	fi
+}
+
+gen_zenity_reboot() {
+	gen_zenity_question "Are you sure that do you want to reboot?";
+	if [[ $? -eq $true ]]; then
+		gen_zenity_install_unbind_filesystems;
+		gen_zenity_install_umount_target;
+		gen_zenity_warning "System is going to reboot NOW!";
+		$REBOOT;
+	else
+		gen_zenity_cancelled_by_user "Reboot";
+	fi
+}
+
+# end #

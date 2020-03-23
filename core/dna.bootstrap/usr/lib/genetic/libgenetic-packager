@@ -503,15 +503,15 @@ replaces=\"\$name \$name.dbg\"
 	# Strip debug symbols from binaries and libraries #
 	echologn_debug "$DEBUG Stripping debug symbols from '$name $version' programs and libraries ...";
 
-	for dir in bin sbin usr/bin usr/sbin usr/local/bin usr/local/sbin opt/bin; do
+	for dir in bin sbin usr/bin usr/sbin usr/local/bin usr/local/sbin opt/bin usr/libexec; do
 		if test -d "$dir"; then
-			$FIND $dir -type f -exec $STRIP --strip-all '{}' ';' &> ../stripbin.log
+			$FIND $dir -type f -exec $STRIP --strip-all {} \; &>../stripbin.log
 		fi;
 	done;
 
 	for dir in lib usr/lib usr/local/lib opt/lib; do
     if test -d "$dir"; then
-			$FIND $dir -type f -exec $STRIP --strip-debug '{}' ';' &> ../striplib.log
+			$FIND $dir -type f -exec $STRIP --strip-debug {} \; &>../striplib.log
 		fi;
 	done;
 

@@ -9,6 +9,4 @@ ln -sfv libncursesw.so.6 /usr/lib/libncurses.so
 ln -sf /dnatools/lib/libfl.so.2 /lib/libfl.so.2
 ln -sfv /lib/libfl.so.2 /lib/libfl.so
 ln -sv bash /bin/sh
-ln -sv /proc/self/mounts /etc/mtab
 ln -sv flex /dnatools/bin/lex
-

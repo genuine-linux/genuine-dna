@@ -1,13 +1,8 @@
 #!/bin/bash
 
-cd gettext-tools
-
 EMACS="no" ./configure --prefix=$TOOLBOX --disable-shared
 
-make -C gnulib-lib
-make -C intl pluralx.c
-make -C src msgfmt
-make -C src msgmerge
-make -C src xgettext
+make
 
-cp -v src/msgfmt src/msgmerge src/xgettext $TOOLBOX/bin
+cp -v gettext-tools/src/msgfmt gettext-tools/src/msgmerge \
+	gettext-tools/src/xgettext $TOOLBOX/bin

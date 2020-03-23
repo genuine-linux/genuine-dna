@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Genuine Installer
+GenericName=Genuine GNU/Linux Installer
+GenericName[ca]=Instalador Genuine GNU/Linux
+GenericName[es]=Instalador Genuine GNU/Linux
+GenericName[gl]=Instalador Genuine GNU/Linux
+GenericName[gl_ES]=Instalador Genuine GNU/Linux
+Comment=Install GNU/Linux to a hard drive or USB of your selection
+Comment[gl]=Instalar GNU/Linux nun disco duro ou USB da súa elección
+Comment[gl_ES]=Instalar GNU/Linux nun disco duro ou USB da súa elección
+Categories=GNOME;GTK;Settings;System;Utility;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;
+Keywords=Configuration;Utility;
+Exec=sudo genetic -I
+Icon=genuine
+Terminal=true
+Type=Application

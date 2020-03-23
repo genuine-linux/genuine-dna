@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# genetic-19.x.x (libgenetic-install) #
+# genetic-20.x.x (libgenetic-install) #
 
-# Copyright (c) 2014-2019 Antonio Cao (@burzumishi) #
+# Copyright (c) 2014-2020 Antonio Cao (@burzumishi) #
 
 # This is free software;
 # You have unlimited permission to copy and/or distribute it,
@@ -98,7 +98,7 @@ gen_install_source_package() {
 	# Install $PACKAGE #
 	echolog_debug_verbose "$DEBUG Installing source '$PACKAGE' ...";
 
-	SOURCE_NAME=$($ECHO "$PACKAGE" | $SED -e 's/.src.gen//g');
+	SOURCE_NAME=$($ECHO "$PACKAGE" | $SED 's/.src.gen//g');
 
 	# Initialize '$GENETIC_TMP/$SOURCE_NAME' data directory #
 	check_dir "$GENETIC_TMP/$SOURCE_NAME" "$RM -rf $GENETIC_TMP/$SOURCE_NAME";
@@ -669,6 +669,13 @@ gen_install_binary_package() {
 	# Select binary package to be installed #
 	echolog "$INFO Selecting binary package '${color_wht}$PACKAGE${color_reset}' to be installed.";
 
+	if test "$INSTDIR" != "/"; then # If --instdir is used, change CACHEDIR value
+		echolog_debug "$WARNING Warning! Changing genetic CACHEDIR to $INSTDIR$CACHEDIR!";
+		echolog "$WARNING Warning! Changing genetic CACHEDIR to $INSTDIR$CACHEDIR!";
+		export CACHEDIR_ORIG="$CACHEDIR";
+		export CACHEDIR="$INSTDIR$CACHEDIR";
+	fi;
+
 	# Initialize '$CACHEDIR/$PACKAGE' data directory #
 	echolog_debug_verbose "$DEBUG Create '$CACHEDIR/$PACKAGE' directory to store '$PACKAGE' data files."
 	check_dir "$CACHEDIR/$PACKAGE" "$RM -rf $CACHEDIR/$PACKAGE";
@@ -690,21 +697,45 @@ gen_install_binary_package() {
 
 	### UNINSTALL previous versions ###
 	# Check if '$Package' data directory "$CACHEDIR/$Package" or "$CACHEDIR/$Package.dbg" exists #
-	if test -d "$CACHEDIR/$Package" || test -d "$CACHEDIR/$Package.dbg"; then
-		# If true package is installed #
-		echolog "$WARNING Warning! Package '${color_wht}$Package${color_reset}' is already installed!";
-		echolog "$WARNING Warning! Reinstall '${color_wht}$Package${color_reset}' using replacement '${color_wht}$Package $Version${color_reset}'!";
+	if test "$INSTDIR" == "/"; then # If --instdir is used, do not uninstall packages from database
+		if test -d "$CACHEDIR/$Package" || test -d "$CACHEDIR/$Package.dbg"; then
+			# If true package is installed #
+			echolog "$WARNING Warning! Package '${color_wht}$Package${color_reset}' is already installed!";
+			echolog "$WARNING Warning! Reinstall '${color_wht}$Package${color_reset}' using replacement '${color_wht}$Package $Version${color_reset}'!";
 
-		# If updated package is linux then keep old files #
-		if test "$Package" == "linux"; then
-			echolog "$WARNING Warning! Old kernel package files will not be overwritten!";
-		else
-			# Delete old stored package data #
-			gen_uninstall_packages "$Package";
+               		# If updated package is linux then keep old files #
+               	 	case $Package in
+               	        linux)  # CRITICAL KERNEL PACKAGE #
+                                echolog "$WARNING Warning! Package $Package kernel package files ${color_bwht}SHOULD NOT${color_reset} be overwritten!";
+                                echolog "$ERROR Error! ${color_ured}!!!Package $Package kernel package must manually uninstalled using: genetic -u linux!!!${color_reset}";
+                                # Close genetic instance #
+                                exit_instance $true;
+                        ;;
+                        glibc|ncurses) # CRITICAL BASE PACKAGES #
+                                echolog "$WARNING Warning! Package $Package files will be directly overwritten but not uninstalled!";
+                                echolog "$WARNING Warning! ${color_ured}!!!You must reboot your system after installing $Package!!!${color_reset}";
+                        ;;
+                        *) # NOT CRITICAL PACKAGES #
+                                # Delete old stored package data #
+                                gen_uninstall_packages "$Package";
+				unset _TARGET;
+				INSTDIR="/";
+                        ;;
+                	esac;
 		fi;
+	else
+		echolog_debug "$WARNING Warning! Option [--instdir] was selected! Package $Package will not be removed!";
+		echolog "$WARNING Warning! Option [--instdir] was selected! Package $Package will not be removed!";
 	fi;
 
 	# Rename data directory to '$CACHEDIR/$Package' #
+	if [ -d "$CACHEDIR/$Package" ]; then
+		if [ -d "$CACHEDIR/$Package.old" ]; then
+			$RM -rf $CACHEDIR/$Package.old
+		fi;
+                echolog "$WARNING Warning! Package $Package genetic cache files are being directly overwritten but not uninstalled!";
+		$MV $CACHEDIR/$Package $CACHEDIR/$Package.old
+	fi
 	$MV $CACHEDIR/$PACKAGE $CACHEDIR/$Package;
 	$CD $CACHEDIR/$Package;
 
@@ -719,14 +750,20 @@ gen_install_binary_package() {
 	check_package_arch "$Package" "$Version" "$Arch";
 
 	# Start work_spinner #
-	start_spinner "Installing '${color_wht}$Package $Version${color_reset}' (${color_wht}$Arch${color_reset})";
+	if test "$INSTDIR" == "/"; then
+		start_spinner "Installing '${color_wht}$Package $Version${color_reset}' (${color_wht}$Arch${color_reset})";
+	else
+		start_spinner "Installing '${color_wht}$Package $Version${color_reset}' (${color_wht}$Arch${color_reset}) to: $INSTDIR";
+	fi
 
 	# Check dependencies from 'Info' file.
 	gen_check_package_depends "$CACHEDIR/$Package/Info";
 
 	# Preset '$Package' before install #
-	echolog_debug "$DEBUG Executing 'PreInst' script for '$Package $Version' ($Arch) ...";
-	$CHMOD +x PreInst; $BASH PreInst &>PreInst.log;
+	if [ "$ENABLE_NOSCRIPTS" != "yes" ]; then
+		echolog_debug "$DEBUG Executing 'PreInst' script for '$Package $Version' ($Arch) ...";
+		$CHMOD +x PreInst; $BASH PreInst &>PreInst.log;
+	fi;
 
 	### Install root.tmp files (package content) ###
 	$ECHO "$INSTDIR" &>$CACHEDIR/$Package/$Package.instdir 
@@ -837,8 +874,6 @@ gen_install_binary_package() {
 		echolog_debug "$DEBUG Not found '$Package $Version' ($Arch) link index '$Package.links'.";
 	fi;
 
-	# Reset $INSTDIR #
-	if test -z "$INSTDIR"; then INSTDIR="/"; fi;
 
 	echolog_debug "$DEBUG All '$Package $Version' ($Arch) indexed files are installed to system '$INSTDIR'.";
 
@@ -851,8 +886,10 @@ gen_install_binary_package() {
 	echolog_debug "$DEBUG Starting '$Package $Version' ($Arch) 'Final Configuration'.";		
 
 	# Post install setup for '$Package' #
-	echolog_debug "$DEBUG Executing 'PostInst' script for '$Package $Version' ($Arch) ...";
-	$CHMOD +x PostInst; $BASH PostInst &>PostInst.log;
+	if [ "$ENABLE_NOSCRIPTS" != "yes" ]; then
+		echolog_debug "$DEBUG Executing 'PostInst' script for '$Package $Version' ($Arch) ...";
+		$CHMOD +x PostInst; $BASH PostInst &>PostInst.log;
+	fi;
 
 	# Delete $ROOTFS.tmp
 	echolog_debug "$DEBUG Deleting 'root.tmp' file.";
@@ -862,29 +899,43 @@ gen_install_binary_package() {
 	echolog_debug "$DEBUG Deleting 'etc' sysconfig directory.";
 	check_dir "etc" "$RM -rf etc";
 
-	# Reconfiguring 'ld' dinamic linker #
-	$LDCONFIG &>/dev/null;
+	if test "$INSTDIR" == "/"; then
+		# Reconfiguring 'ld' dinamic linker #
+		$LDCONFIG &>/dev/null;
 
-	# Update 'Shared Info Database' #
-	update_info_dir;
+		# Update 'Shared Info Database' #
+		update_info_dir;
 
-	# Update "perllocal.pod" #
-	update_perllocal_pod;
+		# Update "perllocal.pod" #
+		update_perllocal_pod;
 
-	# Update "glib-schemas" #
-	update_glib_schemas;
+		# Update "glib-schemas" #
+		update_glib_schemas;
 
-	# Update "desktop-file-utils" applications database #
-	update_desktop_database;
+		# Update "desktop-file-utils" applications database #
+		update_desktop_database;
 
-	# Update mime applications database #
-	update_mime_database;
+		# Update mime applications database #
+		update_mime_database;
 
-	# Update "fc-cache" font cache #
-	update_fc_cache;
+		# Update "fc-cache" font cache #
+		update_fc_cache;
+	else
+		$EXPORT GENETIC_PACKAGES_DB="$CACHEDIR/packages.db";
+	fi;
 
 	# Update genetic 'Installed Packages Database' #
 	update_genetic_packages_db;
+
+	# Reset $INSTDIR #
+	if test -z "$INSTDIR"; then INSTDIR="/"; fi;
+
+	# Reset $CACHEDIR
+	$UNSET CACHEDIR;
+	CACHEDIR="$CACHEDIR_ORIG";
+
+	$UNSET GENETIC_PACKAGES_DB;	
+	GENETIC_PACKAGES_DB="$CACHEDIR/packages.db";
 
 	echolog_debug "$DEBUG Finished '$Package $Version' ($Arch) 'Final Configuration'.";
 

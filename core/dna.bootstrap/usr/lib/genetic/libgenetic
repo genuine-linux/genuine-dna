@@ -48,9 +48,6 @@ main() {
 		# Setup genetic Terminal #
 		setup_term_environment;
 
-		# Display genetic $STARTMSG_PACK #
-		startmsg;
-
 		# Check current user (genetic needs superuser privileges) #
 		check_user;
 
@@ -59,20 +56,14 @@ main() {
 
 		### Get and parse genetic Command Line Actions & Options ###
 
-		## [[Planned Options]] ##
-		##
-		## [Package Management Options] ##
-		##
-		## -L|--listfiles <package> ...   List files `owned' by package(s).
-
 		# Empty Command Line parameter displays help #
 		if test -z "$*"; then
 			help;
 		else
 			# Define $ACTION_OPTIONS #
-			ACTION_OPTIONS=$($GETOPT -o hvVBbcCdDRu:i:l:U:s: \
-				 -l "help,version,verbose,silent,force,rebuildb,color,noarch,noscripts,autotools,purge,bootstrap,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,disable-distclean,disable-clean,uninstall:,install:,list:,unpack:,unpackdir:,build,source:,clean,configure-self-dir,configure:,packages:,prefix:,admindir:,instdir:" \
-				 -n "$0" -- "$@");
+			ACTION_OPTIONS=$($GETOPT -o hIvVBbcCdDpRu:i:l:L:U:s: \
+				 -l "help,version,verbose,silent,force,rebuildb,color,print-architecture,noarch,noscripts,autotools,purge,bootstrap,installer,disable-gen-orig,disable-gen-source,disable-gen-debug,disable-gen-all,disable-distclean,disable-clean,uninstall:,install:,list:,listfiles:,unpack:,unpackdir:,build,source:,clean,configure-self-dir,configure:,packages:,prefix:,admindir:,instdir:" \
+				 -n "$0" -- "$@")
 
 			eval set -- "$ACTION_OPTIONS"
 
@@ -93,16 +84,14 @@ main() {
 						shift;
 					;;
 					-h|--help) # <help> genetic help #
+						startmsg;
 						help; shift; break;
 					;;
 					-V|--version) # Show genetic version #
-						if test "$ENABLE_VERSION" == "yes"; then
-							ENABLE_VERSION="yes";
-						else
-							ENABLE_VERSION="yes";
-							startmsg;
-						fi;
-						shift; break;
+						show_version; shift; break;
+					;;
+					-p|--print-architecture) # <verbose> genetic output #
+						genetic_print_architecture; shift;
 					;;
 					-v|--verbose) # <verbose> genetic output #
 						ENABLE_VERBOSE="yes"; shift;
@@ -114,6 +103,7 @@ main() {
 						ENABLE_FORCE="yes"; shift;
 					;;
 					-R|--rebuildb) # Rebuild genetic database #
+						startmsg;
 						update_genetic_packages_db; shift;
 					;;
 					--noarch) # Creates <noarch> package #
@@ -123,7 +113,12 @@ main() {
 						ENABLE_AUTOTOOLS="yes"; shift;
 					;;
 					-B|--bootstrap) # <bootstrap> Genuine System #
+						startmsg;
 						gen_bootstrap; shift; break;
+					;;
+					-I|--installer) # <gen_installer> Install Genuine System #
+						startmsg;
+						gen_installer; shift; break;
 					;;
 					--prefix) # Package configure & install <prefix> directory #
 						GEN_PKGRULES_PREFIX="$2"; shift 2;
@@ -138,6 +133,7 @@ main() {
 						PACKAGES_TO_GENERATE="$2"; shift 2;
 					;;
 					-s|--source) # <source> genetic package creation from "sourcepackage.tarball" #
+						startmsg;
 						gen_source_package "$2"; shift 2;
 					;;
 					--disable-gen-orig) # Disable package.orig.tar.bz2 creation while building #
@@ -163,14 +159,16 @@ main() {
 						DISABLE_CLEAN="${DISABLE_CLEAN:-yes}"; shift;
 					;;
 					-c|--clean) # Clean previous genetic package builds #
+						startmsg;
 						DISABLE_CLEAN="${DISABLE_CLEAN:-no}";
 						DISABLE_DISTCLEAN="${DISABLE_DISTCLEAN:-no}";
 						gen_clean_package "SrcInfo"; shift;
 					;;
 					-b|--build) # <build> genetic packages from "sourcepackage SrcInfo file" #
+						startmsg;
 						gen_build_package "SrcInfo"; shift;
 					;;
-					--noscripts) # Set alternative install to extract 'genetic' package <rootfs> data #
+					--noscripts) # Don't execute PostInst scripts #
 						ENABLE_NOSCRIPTS="yes"; shift;
 					;;
 					--instdir) # Set alternative install to extract 'genetic' package <rootfs> data #
@@ -179,8 +177,9 @@ main() {
 					-i|--install) # <install> genetic packages from "package.arch|src|dev|dbg.gen" #
 						# Lock genetic instance #
 						lock_instance;
-					  	INSTALL_PACKAGES="$BASH_ARGV";
-						gen_install_packages "$INSTALL_PACKAGES"; shift 2;
+						startmsg;
+					  	INSTALL_PACKAGES="$2"; shift 2;
+						gen_install_packages "$INSTALL_PACKAGES";
 					;;
 					--purge) # Purge configuration files (/etc) #
 						ENABLE_PURGE="yes"; shift;
@@ -188,24 +187,33 @@ main() {
 					-u|--uninstall) # <uninstall> genetic packages from "package.arch|dev|dbg.gen" #
 						# Lock genetic instance #
 						lock_instance;
-						UNINSTALL_PACKAGES="$BASH_ARGV";
+						startmsg;
+						UNINSTALL_PACKAGES="$2";
 						gen_uninstall_packages "$UNINSTALL_PACKAGES"; shift 2;
 					;;
 					-l|--list) # <list> genetic installed packages from database #
+						startmsg;
 						list_installed_packages "$2"; shift 2;
+					;;
+					-L|--listfiles) # <listfiles> genetic installed files from database #
+						startmsg;
+						list_installed_files "$2"; shift 2;
 					;;
 					--unpackdir) # <unpack> genetic package into <unpackdir> instead of <$TMPDIR> #
 						UNPACK_PATH="$2"; shift 2;
 					;;
 					-U|--unpack) # <unpack> genetic packages from "package.arch|src|dev|dbg.gen" #
+						startmsg;
 						gen_unpack_package "$2"; shift 2;
 					;;
 				 	--) shift; break;
 					;;
 					-*) # Unknown option (show 'genetic' help) #
+						startmsg;
 						help; shift; break;
 					;;
 					*) # Unknown option (show 'genetic' help) #
+						startmsg;
 						help; shift; break;
 					;;
 				esac;
@@ -666,7 +674,12 @@ continue_promt() {
 
 # show_version(): display 'genetic' version #
 show_version() {
-	$ECHO "$genetic_VERSION";
+	$ECHO "$GENETIC_RELEASE";
+}
+
+# genetic_print_architecture(): display genetic arch $HOST_MACHINE
+genetic_print_architecture() {
+	$ECHO "$HOST_MACHINE";
 }
 
 # startmsg(): display start message to user #
@@ -677,12 +690,10 @@ startmsg() {
 	echolog_debug "$DEBUG $genetic_VERSION";
 	echolog_debug "$DEBUG =====================================================";
 
-	if test "$ENABLE_VERSION" == "yes"; then
+	if test "$ENABLE_STARTMSG" == "yes"; then
 		# Display 'genetic' start message '$genetic_VERSION' #
 		echolog_debug "$DEBUG Display 'genetic' start message.";
-
-		# Show 'genetic' version #
-		show_version;
+		$ECHO "$genetic_VERSION";
 	else
 		# Display 'genetic' start message '$genetic_VERSION' is disabled #
 		echolog_debug "$DEBUG Display 'genetic' start message is disabled!";

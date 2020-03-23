@@ -1,0 +1,3 @@
+genetic -s source-version.tar.gz
+cd /var/tmp/genetic/source-version
+genetic -b

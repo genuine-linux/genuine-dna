@@ -28,6 +28,8 @@ load_core_variables() {
 
 
 	# Define '@PACKAGE' commands #
+	#GENETIC="genetic";
+	SOURCE="source";
 	ENV="env";
 	ECHO="echo -e";
 	DIRNAME="dirname";
@@ -36,8 +38,10 @@ load_core_variables() {
 	PING="ping";
 	NSLOOKUP="nslookup";
 	HOSTCMD="host";
+	_HOSTNAME="hostname";
 	AWK="awk";
 	SORT="sort";
+	UNIQ="uniq";
 	CAT="cat";
 	MV="mv";
 	CP="cp";
@@ -49,20 +53,45 @@ load_core_variables() {
 	CD="cd";
 	WC="wc";
 	DU="du";
+	BC="bc";
 	CHMOD="chmod";
+	CHOWN="chown";
+	CHGRP="chgrp";
+	MOUNT="mount";
+	UMOUNT="umount";
 	TOUCH="touch";
+	EXPORT="export";
+	UNSET="unset";
+	SET="set";
 	TAIL="tail";
 	HEAD="head";
 	LESS="less";
 	MORE="more";
 	FIND="find";
 	STRIP="strip";
+	TR="tr";
+	FOLD="fold";
 	MKDIR="mkdir";
+	MKNOD="mknod";
+	MKINITRAMFS="mkinitramfs";
+	FC_CACHE="fc-cache";
 	MAKE="make $GEN_MAKE_OPTS";
+	INSTALL="install";
 	CMAKE="cmake";
 	MESON="meson";
 	NINJA="ninja";
 	DATE="date";
+	TIME="time";
+	REBOOT="reboot";
+	HALT="halt";
+	SHUTDOWN="shutdown";
+	LOADKEYS="loadkeys";
+	CHROOT="chroot";
+	DEPMOD="depmod";
+	MODPROBE="modprobe";
+	INSMOD="insmod";
+	MODINFO="modinfo";
+	RMMOD="rmmod";
 	TEE="tee";
 	SED="sed";
 	TAR="tar";
@@ -78,6 +107,29 @@ load_core_variables() {
 	AUTORECONF="autoreconf";
 	SETTERM="setterm";
 	UNAME="uname";
+	WHICH="which";
+	USERADD="useradd";
+	GROUPADD="groupadd";
+	ID="id";
+	MD5SUM="md5sum";
+	SHA512SUM="sha512sum";
+	MKISOFS="mkisofs";
+	PASSWD="passwd";
+	FDISK="fdisk";
+	SFDISK="sfdisk";
+	CFDISK="cfdisk";
+	MKFS_EXT2="mkfs.ext2";
+	MKFS_EXT3="mkfs.ext3";
+	MKFS_EXT4="mkfs.ext4";
+	MKFS_XFS="mkfs.xfs";
+	MKSWAP="mkswap";
+	SWAP_ON="swapon";
+	SWAP_OFF="swapoff";
+	GRUB_INSTALL="grub-install";
+	GRUB_MKCONFIG="grub-mkconfig";
+	LSBLK="lsblk";
+	BLKID="blkid";
+	LOCALE="locale";
 	WHOAMI="whoami";
 	TRAP="trap";
 	SLEEP="sleep";
@@ -89,6 +141,8 @@ load_core_variables() {
 	GETOPTS="getopts";
 	GETTEXT="gettext";
   	XGETTEXT="xgettext";
+  	ZENITY="zenity";
+
   	if [ -f "/usr/bin/perl" ]; then
 		PERL="/usr/bin/perl";
 	else
@@ -209,10 +263,10 @@ load_terminal_color_support() {
 		# User Screen Color Messages #
 
 		# GENUINE_VERSION #
-		GENUINE_VERSION=$(cat /etc/genuine-release | awk '{print $4}' | sed 's/^G//g');
+		GENUINE_VERSION=$($CAT $GENUINE_RELEASE_FILE | $AWK '{print $4}' | $SED 's/^G//g');
 
 		# genetic version #
-		genetic_VERSION="$INFO ${color_bylw}Genetic Package Manager ${color_bblu}[${color_bwht}genetic ${color_cyn}(${color_wht}${GENUINE_VERSION}${color_cyn})${color_bblu}] ${color_reset}running on ${color_bcyn}(${color_bwht}$HOST_MACHINE${color_bcyn}) ${color_bcyn}'${color_bgrn}$HOST_OS${color_bcyn}'${color_reset}.";
+		genetic_VERSION="$INFO ${color_bylw}Genuine ${color_bcyn}'${color_bgrn}$HOST_OS${color_bcyn}' ${color_bwht}Genuine Package Manager ${color_cyn}[${color_wht}${GENUINE_VERSION}${color_cyn}] (${color_bwht}$HOST_MACHINE${color_bcyn})${color_reset}";
 
 		# genetic help #
 		HELP="$INFO ${color_bgrn}Usage:${color_reset} ${color_bwht}genetic ${color_bcyn}--option1 --option2 'args' ... ${color_bwht}--command|-c 'file'
@@ -220,19 +274,25 @@ load_terminal_color_support() {
 $INFO Commands:
 
 	${color_bwht}[-h] --help
-	${color_bwht}[-v] --version
+	${color_bwht}[-V] --version
+	${color_bwht}[-p] --print-architecture
 
 $INFO Options:
 
 	${color_bcyn}     --admindir   ${color_cyn}'directory'
 	${color_bcyn}     --color
 	${color_bcyn}     --verbose
+	${color_bcyn}     --silent
 	${color_bcyn}     --force
 	${color_bwht}[-R] --rebuildb
 
 $INFO Bootstrap Genuine System:
 
 	${color_bwht}[-B] --bootstrap
+
+$INFO Install Genuine System:
+
+	${color_bwht}[-I] --installer
 
 $INFO Source Development Commands:
 
@@ -249,10 +309,12 @@ $INFO Source Development Commands:
 	     ${color_bcyn}--disable-gen-orig
 	     ${color_bcyn}--disable-gen-source
 	     ${color_bcyn}--disable-gen-debug
-	     ${color_bcyn}--disable-gen-all
-	${color_bwht}[-b] --build      ${color_wht}'SrcInfo'
+	${color_bcyn}[-d] --disable-gen-all
+	${color_bwht}[-b] --build
 
-	${color_bwht}[-c] --clean      ${color_wht}'SrcInfo'
+	${color_bwht}[-C] --disable-clean
+	${color_bwht}[-D] --disable-distclean
+	${color_bwht}[-c] --clean
 
 $INFO Package Management Commands:
 
@@ -266,6 +328,7 @@ $INFO Package Management Commands:
 	${color_bwht}[-u] --uninstall  ${color_wht}'package.<dbg|dev>'
 
 	${color_bwht}[-l] --list       ${color_wht}'pattern'
+	${color_bwht}[-L] --listfiles  ${color_wht}'pattern'
 
 	     ${color_bcyn}--unpackdir  ${color_cyn}'directory'
 	${color_bwht}[-U] --unpack     ${color_wht}'package-version.<arch|dev|doc|dbg|src>.gen'${color_reset}
@@ -292,29 +355,38 @@ $INFO Try ${color_bwht}'${color_grn}man genetic.(1)${color_bwht}'${color_reset} 
 		FAILED="\\b\\b\\b\\b ... failed!";
 
 		# User Screen Color Messages #
+		
+		# GENUINE_VERSION #
+		GENUINE_VERSION=$($CAT $GENUINE_RELEASE_FILE | $AWK '{print $4}' | $SED 's/^G//g');
 
 		# genetic version #
-		genetic_VERSION="$INFO Genetic Package Manager [genetic (19.5.6)] running on ($HOST_MACHINE) '$HOST_OS'.";
+		genetic_VERSION="$INFO Genuine '$HOST_OS' · Genetic Package Manager [$GENUINE_VERSION] ($HOST_MACHINE)";
 
 		# genetic help #
-		  	HELP="$INFO Usage: genetic --option1 --option2 'arg' ... --command|-c 'file'
+		HELP="$INFO Usage: genetic --option1 --option2 'arg' ... --command|-c 'file'
 
 $INFO Commands:
 
 	[-h] --help
-	[-v] --version
+	[-V] --version
+	[-p] --print-architecture
 
 $INFO Options:
 
 	     --admindir   'directory'
 	     --color
 	     --verbose
+	     --silent
 	     --force
 	[-R] --rebuildb
 
 $INFO Bootstrap Genuine System:
 
 	[-B] --bootstrap
+
+$INFO Install Genuine System:
+
+	[-I] --installer
 
 $INFO Source Development Commands:
 
@@ -331,10 +403,12 @@ $INFO Source Development Commands:
 	     --disable-gen-orig
 	     --disable-gen-source
 	     --disable-gen-debug
-	     --disable-gen-all
-	[-b] --build      'SrcInfo'
+	[-d] --disable-gen-all
+	[-b] --build
 
-	[-c] --clean      'SrcInfo'
+	[-C] --disable-clean
+	[-D] --disable-distclean
+	[-c] --clean
 
 $INFO Package Management Commands:
 
@@ -348,6 +422,7 @@ $INFO Package Management Commands:
 	[-u] --uninstall  'package.<dbg|dev>'
 
 	[-l] --list       'pattern'
+	[-L] --listfiles  'pattern'
 
 	     --unpackdir  'directory'
 	[-U] --unpack     'package-version.<arch|dev|doc|dbg|src>.gen'

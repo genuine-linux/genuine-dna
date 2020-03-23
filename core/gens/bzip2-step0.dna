@@ -1,5 +1,11 @@
 #!/bin/bash
 
-make
+make -f Makefile-libbz2_so
+#make clean
 
+#make
 make PREFIX=$TOOLBOX install
+cp -v bzip2-shared $TOOLBOX/bin/bzip2
+cp -av libbz2.so* $TOOLBOX/lib
+cd $TOOLBOX/lib
+ln -sfv libbz2.so.1.0.8 libbz2.so

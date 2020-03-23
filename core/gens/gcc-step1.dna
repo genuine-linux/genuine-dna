@@ -21,7 +21,15 @@ do
   touch ${file}.orig
 done
 
-sed -i 's/if \((code.*))\)/if (\1 \&\& \!DEBUG_INSN_P (insn))/' gcc/sched-deps.c
+case $(uname -m) in
+  x86_64)
+    sed -e '/m64=/s/lib64/lib/' \
+        -i.orig gcc/config/i386/t-linux64
+  ;;
+esac
+
+sed -e '1161 s|^|//|' \
+    -i libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc
 
 mkdir -v ../gcc-build
 cd ../gcc-build

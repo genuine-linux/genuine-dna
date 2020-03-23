@@ -56,7 +56,7 @@ update_genetic_packages_db() {
 	return $true;
 }
 
-# list_installed_packages($PATTERN): Updates genetic 'Package Database Index' entries #
+# list_installed_packages($PATTERN): List installed packages #
 list_installed_packages() {
 
 	PATTERN="$1"; shift;
@@ -71,11 +71,34 @@ list_installed_packages() {
 	# List packages matching $PATTERN #
 	echolog_debug "$DEBUG Listing installed packages found in database index '$GENETIC_PACKAGES_DB' matching '$PATTERN' ...";
 	case "$PATTERN" in
-		"all"|"All"|"ALL") $GREP ^name $GENETIC_PACKAGES_DB | $SED -e 's/name=//g';
+		"all"|"All"|"ALL") $GREP ^name $GENETIC_PACKAGES_DB | $SED 's/name=//g';
 		;;
-		*) $GREP ^name $GENETIC_PACKAGES_DB | $SED -e 's/name=//g' | $GREP $PATTERN;
+		*) $GREP ^name $GENETIC_PACKAGES_DB | $SED 's/name=//g' | $GREP $PATTERN;
 		;;
 	esac;
 
 	return $true;
 }
+
+# list_installed_files($PATTERN): List installed files #
+list_installed_files() {
+
+	PATTERN="$1"; shift;
+
+	echolog_debug "$DEBUG ================== %%% genetic %%% ==================";
+	echolog_debug "$DEBUG Starting 'list_installed_files($PATTERN)'!";
+	echolog_debug "$DEBUG =====================================================";
+
+	# Find installed packages files and links #
+	echolog_debug "$DEBUG Listing installed files found in database index '$GENETIC_PACKAGES_DB' matching '$PATTERN' ...";
+	for result in $($GREP ${PATTERN} $CACHEDIR/*/*.{files,links}); do
+		FOUND_PACKAGE="$($ECHO "$result" | $AWK -F':' '{print $1}' | $AWK -F'/' '{print $NF}' | $SED 's/\.files//g' | $SED 's/\.links//g')";
+		FOUND_FILE="$($ECHO "$result" | $AWK -F: '{print $2}')";
+		if [ -f "$FOUND_FILE" ]; then
+			$ECHO "$INFO $FOUND_PACKAGE -> $FOUND_FILE";
+		fi;
+	done;
+
+	return $true;
+}
+

@@ -39,7 +39,7 @@ package_check() {
 	fi;
 
 	# If package does not exist then exit #
-	check_file "$package" || errorcheck $? "package_check: 'Requested file <$package> was not found'";
+	check_file "$package" || errorcheck $? "package_check: 'Requested file $package was not found'";
 
 	echolog_debug_verbose "$DEBUG Loaded package file '$package'.";
 
@@ -210,18 +210,21 @@ update_info_dir() {
 	echolog_debug "$DEBUG =====================================================";
 
 	if test -d "/usr/share/info"; then
-		echologn_debug "$DEBUG Updating system 'info' index '/usr/share/info/dir'...";
-		pushd /usr/share/info &>/dev/null
-		if test -f "dir"; then rm dir &>/dev/null; fi
-		for f in *; do
+		$GREP "/usr/share/info" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			echologn_debug "$DEBUG Updating system 'info' index '/usr/share/info/dir'...";
+			pushd /usr/share/info &>/dev/null
+			if test -f "dir"; then rm dir &>/dev/null; fi
+			for f in *; do
 			install-info $f dir &>/dev/null
-		done
-		popd &>/dev/null
-		# Old Method
-		#for info_file in $($FIND /usr/share/info -type f -iname "*.info*"); do
-		#	install-info --dir-file=/usr/share/info/dir $info_file &>/dev/null;
-		#done;
-		echolog_debug_nodate "$FINISHED";
+			done
+			popd &>/dev/null
+			# Old Method
+			#for info_file in $($FIND /usr/share/info -type f -iname "*.info*"); do
+			#	install-info --dir-file=/usr/share/info/dir $info_file &>/dev/null;
+			#done;
+			echolog_debug_nodate "$FINISHED";
+		fi;
 	fi;
 
 	return $true;
@@ -235,9 +238,12 @@ update_perllocal_pod() {
 	echolog_debug "$DEBUG =====================================================";
 
 	if test -d "/usr/lib/perl5"; then
-		echologn_debug "$DEBUG Updating system 'perllocal.pod' index ...";
+		$GREP "/usr/lib/perl5" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			echologn_debug "$DEBUG Updating system 'perllocal.pod' index ...";
 
-		echolog_debug_nodate "$FINISHED";
+			echolog_debug_nodate "$FINISHED";
+		fi
 	else
 		echolog_debug "$WARNING Warning! Can't update system 'perllocal.pod' index!";
 		echolog_debug "$WARNING Warning! Directory '/usr/lib/perl5' does not exist! Skipping update!";
@@ -254,7 +260,10 @@ update_glib_schemas() {
         echolog_debug "$DEBUG =====================================================";
 
 	if test -d "/usr/share/glib-2.0/schemas"; then
-		glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null;
+		$GREP "/usr/share/glib-2.0/schemas" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null;
+		fi;
 	fi;
 }
 
@@ -269,13 +278,19 @@ update_desktop_database() {
 		install -dm755 /usr/share/applications &>/dev/null;
 	fi;
 	if test -f "/usr/bin/update-desktop-database"; then
-		update-desktop-database /usr/share/applications &>/dev/null;
-		update-desktop-database -q
+		$GREP "/usr/share/applications" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			update-desktop-database /usr/share/applications &>/dev/null;
+			update-desktop-database -q
+		fi
 	fi;
-	if echo $package | grep icon; then
-		for d in $(find /usr/share/icons -maxdepth 1 -type d); do
-			gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
-		done
+	if test -f "/usr/share/icons"; then
+		$GREP "/usr/share/icons" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			for d in $($FIND /usr/share/icons -maxdepth 1 -type d); do
+				gtk-update-icon-cache -tf --include-image-data $d &>/dev/null;
+			done
+		fi
 	fi
 }
 
@@ -287,7 +302,10 @@ update_mime_database() {
         echolog_debug "$DEBUG =====================================================";
 
 	if test -d "/usr/share/mime"; then
-		update-mime-database /usr/share/mime &>/dev/null;
+		$GREP "/usr/share/mime" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			update-mime-database /usr/share/mime &>/dev/null;
+		fi
 	fi;
 }
 
@@ -299,7 +317,10 @@ update_fc_cache() {
         echolog_debug "$DEBUG =====================================================";
 
 	if test -f "/usr/bin/fc-cache"; then
-		fc-cache &>/dev/null;
+		$GREP "/usr/share/fonts" $CACHEDIR/$package/*.files &>/dev/null;
+		if test $? -eq $true; then
+			/usr/bin/fc-cache &>/dev/null;
+		fi
 	fi;
 }
 
@@ -310,14 +331,17 @@ package_libtool_finish() {
         echolog_debug "$DEBUG Starting 'package_libtool_finish()'!";
         echolog_debug "$DEBUG =====================================================";
 
-        echolog_debug "$DEBUG Executing $LIBTOOL --finish /lib";
-	$LIBTOOL --finish /lib &>/dev/null
-        echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/lib";
-	$LIBTOOL --finish /usr/lib &>/dev/null
-        echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/local/lib";
-	$LIBTOOL --finish /usr/local/lib &>/dev/null
-        echolog_debug "$DEBUG Executing $LIBTOOL --finish /opt/lib";
-	$LIBTOOL --finish /opt/lib &>/dev/null
+	$GREP "/lib/" $CACHEDIR/$package/*.files &>/dev/null;
+	if test $? -eq $true; then
+       		echolog_debug "$DEBUG Executing $LIBTOOL --finish /lib";
+		$LIBTOOL --finish /lib &>/dev/null
+        	echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/lib";
+		$LIBTOOL --finish /usr/lib &>/dev/null
+        	echolog_debug "$DEBUG Executing $LIBTOOL --finish /usr/local/lib";
+		$LIBTOOL --finish /usr/local/lib &>/dev/null
+        	echolog_debug "$DEBUG Executing $LIBTOOL --finish /opt/lib";
+		$LIBTOOL --finish /opt/lib &>/dev/null
+	fi;
 
 	return $true;
 }
