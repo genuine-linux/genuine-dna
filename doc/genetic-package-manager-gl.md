@@ -213,3 +213,125 @@ genetic -i /var/cache/PackagePool/linux-{PKG-VER}~genuine~{BUILD-REV}.{ARCH}.gen
 - - -
 
 > Written by lolo while being instructed by acaogon @ Dom Feb 23 09:25:33 CET 2020
+<<<<<<< HEAD
+=======
+>
+
+* * *
+
+
+Recompilar o kernel para outra arquitectura (p.ex. Atom)
+--------------------------------------------------------
+
+O primeiro é localizar o source do kernel linux no SourcePool da cache de genetic.
+O paquete terá un nome parecido a `linux-{PKG-VER}.src.gen`. Outra opción é descargar.
+
+```shell
+cd /var/cache/genetic/SourcePool
+ls -l | grep linux
+# alternativamente wget example.com/linux-*.src.gen
+```
+
+Unha vez obtido o source, instalamol, e linkamolo no lugar onde debe estar.
+
+
+```shell
+genetic -i  /var/cache/genetic/SourcePool/linux-4.20.12
+cd /var/tmp/genetic/linux-4.20.12
+cd /usr/src
+ln -sf /var/tmp/genetic/linux-4.20.12/linux-4.20.12 linux
+```
+
+Agora importamos a configuración de /boot, e imos ao menu de configuración
+para seleccionar a familia do procesador.
+
+```shell
+cd /var/tmp/genetic/linux-4.20.12/linux-4.20.12
+cp /boot/config-4.20.12-genuine-x86_64 .config
+make menuconfig
+# alternativamente, make gconfig
+```
+
+Unha vez no menú de configuración:
+
+```
+> Menú principal
+> > Processor type and features  --->
+> > > Processor family (Generic-x86-64)  --->
+> > > > (x) Intel Atom
+> Menu principal
+> Gardar en .config
+> Saír
+```
+
+```shell
+cp .config ../linux/files/usr/share/linux/conf/linux-config-atom
+make mrproper # limpar toda a cacola
+```
+
+>
+> **Pro tip**: lee a documentación de gentoo para coñecer máis da configuración
+> do kernel.
+>
+> [Guía instructiva da wiki de gentoo](gentoo) sobre as opcións mínimas precisas
+> para compilar un kernel que funcione.
+
+[gentoo]: https://wiki.gentoo.org/wiki/Kernel/Gentoo_Kernel_Configuration_Guide
+
+### Opcionalmente ###
+
+Neste caso imos a crear un paquete novo que chamaremos `linux-atom`,
+que desdenderá do paquete antergo `linux`.
+
+```shell
+cd /var/tmp/genetic/linux-4.20.12
+cp -a linux linux-atom
+
+vim SrcInfo
+# engadimos "package=linux-atom" ao final
+
+cd linux-atom/
+
+vim Info
+# cambiamos o nome do paquete a "name=linux-atom"
+# "original_name=linux" permanece como estaba, como é lóxico
+
+vim Rules
+# cambiamos - GENETIC_KERNEL_VERSION="$version-genuine-$GENETIC_ARCH"
+#       por + GENETIC_KERNEL_VERSION="$version-genuine-atom-$GENETIC_ARCH"
+# cambiamos - cp -a ../$name/files/usr/share/linux/conf/linux-config .config
+#       por + cp -a ../$name/files/usr/share/linux/conf/linux-config-atom .config
+```
+
+E finalmente construímos o novo paquete
+
+```shell
+cd ..
+genetic -b
+```
+
+Dado que o paquete `linux` pode construír varios paquetes diferentes
+(`linux-headers`, `linux`, e agora tamén `linux-atom`) debemos escoller cal
+deles desexamos construír unha vez que genetic remata de xerar o source.
+
+> **PRO TIP**
+>
+> `tailwait /var/tmp/genetic/linux-4.20.12/linux-atom/linux-atom-build.log`
+>
+> Agarda a que genetic cree o log de construción e unha vez empeza a construír
+> escupe na saída o log. Así non hai que agardar a que cree o ficheiro para
+> executar un `tail -f`
+
+* * *
+
+>
+> Written by lolo while being instructed (again) by acaogon @ Sáb Mar 7 04:36:22 CET 2020
+>
+> Lol, I am compiling a kernel *_*
+> L.
+>
+
+PD: Compilou!
+
+* * *
+>>>>>>> 49b7f3cceded5efe89cac1c85c148115b1e76b5d
