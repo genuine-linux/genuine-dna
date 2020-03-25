@@ -4,8 +4,6 @@ linux:linux-headers
 man-pages:man-pages
 glibc:glibc
 zlib:zlib
-bzip2:bzip2
-xz:xz
 file:file
 readline:readline
 help2man:help2man
@@ -15,12 +13,13 @@ binutils:binutils
 gmp:gmp
 mpfr:mpfr
 mpc:mpc
-attr:attr
-acl:acl
 cracklib:cracklib
 gcc:gcc
+bzip2:bzip2
 pkg-config:pkg-config
 ncurses:ncurses
+attr:attr
+acl:acl
 libcap:libcap
 sed:sed
 psmisc:psmisc
@@ -39,20 +38,19 @@ perl:perl
 XML-Parser:XML-Parser
 intltool:intltool
 autoconf:autoconf
-autoconf-archive:autoconf-archive
 automake:automake
 xz:xz
 gettext:gettext
 elfutils:elfutils
 libffi:libffi
 openssl:openssl
+ca-certificates:ca-certificates
 # PYTHON 3 #
 Python:Python
-##setuptools:setuptools
+setuptools:setuptools
 python3-distutils-extra:python3-distutils-extra
 python3-distro:python3-distro
 python3-psutil:python3-psutil
-ca-certificates:ca-certificates
 python3-setproctitle:python3-setproctitle
 # PYTHON 2 #
 Python2:Python2
@@ -71,7 +69,6 @@ python3-docutils:python3-docutils
 python2-docutils:python2-docutils
 python-defaults:python-defaults
 python2-defaults:python2-defaults
-Cython:Cython
 numpy-python3:numpy-python3
 numpy-python2:numpy-python2
 kmod:kmod
@@ -85,15 +82,14 @@ automake15:automake15
 gawk:gawk
 findutils:findutils
 groff:groff
-unifont:unifont
-libpng:libpng
 which:which
+libpng:libpng
 freetype:freetype
+unifont:unifont
 dejavu-fonts-ttf:dejavu-fonts-ttf
 grub:grub
 less:less
 gzip:gzip
-zstd:zstd
 sharutils:sharutils
 libmnl:libmnl
 libnftnl:libnftnl
@@ -124,15 +120,13 @@ procps-ng:procps-ng
 sysklogd:sysklogd
 sysvinit:sysvinit
 libcap-ng:libcap-ng
-tcp-wrappers:tcp-wrappers
-pcre:pcre
-pcre2:pcre2
-swig:swig
 audit-userspace:audit-userspace
 eudev:eudev
 openrc:openrc
 netifrc:netifrc
 opentmpfiles:opentmpfiles
+pcre:pcre
+pcre2:pcre2
 gcovr:gcovr
 lcov:lcov
 libaio:libaio
@@ -140,7 +134,7 @@ mdadm:mdadm
 reiserfsprogs:reiserfsprogs
 xfsprogs:xfsprogs
 sqlite:sqlite
-icu4c:icu4c
+icu4c:icu4g
 libevent:libevent
 openmpi:openmpi
 boost:boost
@@ -180,7 +174,6 @@ guile:guile
 libarchive:libarchive
 libuv:libuv
 net-tools:net-tools
-bridge-utils:bridge-utils
 autogen:autogen
 gnutls:gnutls
 libpsl:libpsl
@@ -206,6 +199,7 @@ gpgme:gpgme
 tmux:tmux
 wget:wget
 openssh:openssh
+libssh:libssh
 libssh2:libssh2
 psutils:psutils
 keyutils:keyutils
@@ -250,7 +244,7 @@ logrotate:logrotate
 shared-mime-info:shared-mime-info
 time:time
 dialog:dialog
-## LINUX KERNEL #
+# LINUX KERNEL #
 linux:linux
 linux-firmware:linux-firmware
 kexec-tools:kexec-tools
@@ -258,38 +252,49 @@ fbset:fbset
 busybox:busybox
 mkinitramfs:mkinitramfs
 debianutils:debianutils
+rrdtool:rrdtool
 lm-sensors:lm-sensors
 dkms:dkms
 cpufrequtils:cpufrequtils
+dracut:dracut
 mtools:mtools
 dosfstools:dosfstools
 Crypt-PasswdMD5:Crypt-PasswdMD5
 syslinux:syslinux
-## FS #
+osinfo-db-tools:osinfo-db-tools
+osinfo-db:osinfo-db
+libosinfo:libosinfo
+ipset:ipset
+firewalld:firewalld
+# FS #
+fuse:fuse
 tree:tree
 sshfs:sshfs
-## NFS#
+# NFS#
+tcp-wrappers:tcp-wrappers
 libgssglue:libgssglue
-##librpcsecgss
+#librpcsecgss
 libnfsidmap:libnfsidmap
-##nfs-utils
-## DEVEL #
+#nfs-utils
+# DEVEL #
 dejagnu:dejagnu
 gdb:gdb
 indent:indent
 strace:strace
 lsof:lsof
 ccache:ccache
-##genkernel:genkernel
-### NET
+###genkernel:genkernel
+# NET
 liblinear:liblinear
 libnl:libnl
 wireless-tools:wireless-tools
 iw:iw
+iwd:iwd
 ethtool:ethtool
 pm-utils:pm-utils
 traceroute:traceroute
-## XORG - Libraries #
+# XORG - Libraries #
+libart-lgpl:libart-lgpl
 desktop-file-utils:desktop-file-utils
 jpeg:jpeg
 giflib:giflib
@@ -336,14 +341,14 @@ libdmx:libdmx
 libpciaccess:libpciaccess
 libxkbfile:libxkbfile
 libxshmfence:libxshmfence
-### XORG - XCB #
+# XORG - XCB #
 xcb-util:xcb-util
 xcb-util-image:xcb-util-image
 xcb-util-keysyms:xcb-util-keysyms
 xcb-util-renderutil:xcb-util-renderutil
 xcb-util-wm:xcb-util-wm
 xcb-util-cursor:xcb-util-cursor
-### XORG - VIDEO ACCEL #
+# XORG - VIDEO ACCEL #
 libdrm:libdrm
 wayland:wayland
 wayland-protocols:wayland-protocols
@@ -365,9 +370,8 @@ freeglut:freeglut
 glew:glew
 mesa-demos:mesa-demos
 tiff:tiff
-xkeyboard-config:xkeyboard-config
 libxkbcommon:libxkbcommon
-### XORG - APPS #
+# XORG - APPS #
 xbitmaps:xbitmaps
 iceauth:iceauth
 luit:luit
@@ -407,10 +411,10 @@ xvinfo:xvinfo
 xwd:xwd
 xwininfo:xwininfo
 xwud:xwud
-## XORG BASE #
+# XORG BASE #
 xcursor-themes:xcursor-themes
 hicolor-icon-theme:hicolor-icon-theme
-## XORG FONTS #
+# XORG FONTS #
 encodings:encodings
 bdftopcf:bdftopcf
 font-alias:font-alias
@@ -424,15 +428,15 @@ cantarell-fonts:cantarell-fonts
 opendesktop-fonts:opendesktop-fonts
 fonttools:fonttools
 wheel:wheel
-##afdko:afdko
-##source-code-pro-variable-fonts:source-code-pro-variable-fonts
-## XORG FONTS LEGACY #
+#afdko:afdko
+#source-code-pro-variable-fonts:source-code-pro-variable-fonts
+# XORG FONTS LEGACY #
 font-adobe-100dpi:font-adobe-100dpi
 font-adobe-75dpi:font-adobe-75dpi
 font-jis-misc:font-jis-misc
 font-daewoo-misc:font-daewoo-misc
 font-isas-misc:font-isas-misc
-## DBUS #
+# DBUS #
 autoconf213:autoconf213
 mozjs:mozjs
 lxml:lxml
@@ -450,13 +454,14 @@ ConsoleKit2:ConsoleKit2
 libdaemon:libdaemon
 openrc-settingsd:openrc-settingsd
 htop:htop
-iwd:iwd
-## XORG XSERVER #
+# XORG KEYBOARD #
+xkeyboard-config:xkeyboard-config
+# XORG XSERVER #
 pixman:pixman
 xorg-sgml-doctools:xorg-sgml-doctools
 libepoxy:libepoxy
 xorg-server:xorg-server
-### XORG DRIVERS #
+# XORG DRIVERS #
 libevdev:libevdev
 mtdev:mtdev
 xf86-input-evdev:xf86-input-evdev
@@ -466,7 +471,7 @@ libinput:libinput
 xf86-input-libinput:xf86-input-libinput
 xf86-input-synaptics:xf86-input-synaptics
 xf86-input-wacom:xf86-input-wacom
-##xf86-video-modesetting:xf86-video-modesetting
+#xf86-video-modesetting:xf86-video-modesetting
 xf86-video-amdgpu:xf86-video-amdgpu
 xf86-video-ati:xf86-video-ati
 xf86-video-fbdev:xf86-video-fbdev
@@ -474,7 +479,7 @@ xf86-video-intel:xf86-video-intel
 xf86-video-nouveau:xf86-video-nouveau
 xf86-video-vmware:xf86-video-vmware
 xf86-video-vboxvideo:xf86-video-vboxvideo
-### XORG APPS 2 #
+# XORG APPS 2 #
 libxdg-basedir:libxdg-basedir
 xdg-utils:xdg-utils
 xdg-user-dirs:xdg-user-dirs
@@ -487,10 +492,10 @@ xdm:xdm
 xcompmgr:xcompmgr
 tcl:tcl
 tk:tk
-## DIRECTFB #
+# DIRECTFB #
 flux:flux
 DirectFB:DirectFB
-### GTK #
+# GTK #
 iso-codes:iso-codes
 adwaita-icon-theme:adwaita-icon-theme
 apr:apr
@@ -523,8 +528,6 @@ fribidi:fribidi
 pango:pango
 slang:slang
 aalib:aalib
-taglib:taglib
-alsa-lib:alsa-lib
 SDL:SDL
 SDL2:SDL2
 cogl:cogl
@@ -534,13 +537,10 @@ gtk-engines:gtk-engines
 libglade:libglade
 pycairo-python2:pycairo-python2
 pycairo-python3:pycairo-python3
-###pygobject:pygobject
-pygobject-python2:pygobject-python2
-pygobject-python3:pygobject-python3
+#pygobject:pygobject
 pygobject3-python2:pygobject3-python2
 pygobject3-python3:pygobject3-python3
 pygtk:pygtk
-rrdtool:rrdtool
 gsettings-desktop-schemas:gsettings-desktop-schemas
 pyatspi:pyatspi
 graphviz:graphviz
@@ -548,6 +548,8 @@ vala:vala
 libgusb:libgusb
 libndp:libndp
 upower:upower
+qt5:qt5
+pinentry:pinentry
 nmap:nmap
 dnsmasq:dnsmasq
 jansson:jansson
@@ -568,15 +570,11 @@ libpaper:libpaper
 colord:colord
 cups:cups
 gtk3+:gtk3+
-xapian-core:xapian-core
-doxygen:doxygen
-jasper:jasper
 rustc:rustc
 cbindgen:cbindgen
 librsvg:librsvg
-##openssh:gnome-openssh-askpass
-### THEMES & BG & ICONS & SCREENSAVERS #
-gsound:gsound
+#openssh:gnome-openssh-askpass
+# THEMES & BG & ICONS & SCREENSAVERS #
 XML-Simple:XML-Simple
 icon-naming-utils:icon-naming-utils
 gnome-icon-theme:gnome-icon-theme
@@ -591,7 +589,7 @@ powerline-fonts:powerline-fonts
 powerline-gitstatus:powerline-gitstatus
 plymouth:plymouth
 plymouth-openrc-plugin:plymouth-openrc-plugin
-## MORE 
+# MORE 
 GConf:GConf
 avahi:avahi
 mupdf:mupdf
@@ -599,6 +597,8 @@ ghostscript:ghostscript
 ghostscript-fonts-std:ghostscript-fonts-std
 gnu-gs-fonts-other:gnu-gs-fonts-other
 texlive:texlive
+xapian-core:xapian-core
+doxygen:doxygen
 glibmm:glibmm
 atkmm:atkmm
 cairomm:cairomm
@@ -611,7 +611,9 @@ qpdf:qpdf
 cups-filters:cups-filters
 enscript:enscript
 libmicrohttpd:libmicrohttpd
-## SOUND #
+# SOUND #
+taglib:taglib
+alsa-lib:alsa-lib
 libogg:libogg
 flac:flac
 libvorbis:libvorbis
@@ -641,7 +643,7 @@ audiofile:audiofile
 libao:libao
 vorbis-tools:vorbis-tools
 sound-theme-freedesktop:sound-theme-freedesktop
-### MULTIMEDIA #
+# MULTIMEDIA #
 babl:babl
 exiv2:exiv2
 gexiv2:gexiv2
@@ -681,6 +683,7 @@ faad2:faad2
 libmpeg2:libmpeg2
 a52dec:a52dec
 gst-plugins-ugly:gst-plugins-ugly
+jasper:jasper
 xvidcore:xvidcore
 ffmpeg:ffmpeg
 libmad:libmad
@@ -697,9 +700,6 @@ notification-daemon:notification-daemon
 libnotify:libnotify
 LibRaw:LibRaw
 bullet3:bullet3
-qt5:qt5
-###qt5webengine:qt5webengine
-pinentry:pinentry
 vlc:vlc
 gegl:gegl
 glm:glm
@@ -711,14 +711,14 @@ audacious:audacious
 audacious-plugins:audacious-plugins
 MPlayer:MPlayer
 xine-ui:xine-ui
-###gimp-help:gimp-help
+#gimp-help:gimp-help
 gutenprint:gutenprint
 transcode:transcode
 rxvt-unicode:rxvt-unicode
-### WEBKIT #
-## webkitgtk:webkitgtk # Does not build yet
-## LOGIN MANAGER #
-## LIGHTDM #
+# WEBKIT #
+# webkitgtk:webkitgtk # Does not build yet
+# LOGIN MANAGER #
+# LIGHTDM #
 libxfce4util:libxfce4util
 xfconf:xfconf
 startup-notification:startup-notification
@@ -729,14 +729,9 @@ libxklavier:libxklavier
 lightdm:lightdm
 lightdm-gtk-greeter:lightdm-gtk-greeter
 lightdm-gtk-greeter-settings:lightdm-gtk-greeter-settings
-##### entrance ??? #
-### MAIN WINDOW MANAGER (ENLIGHTENMENT) #
-dconf:dconf
+# entrance ??? #
+# MAIN WINDOW MANAGER (ENLIGHTENMENT) #
 connman:connman
-emoji:emoji
-cldr-emoji-anotation:cldr-emoji-anotation
-ucd:ucd
-ibus:ibus
 efl:efl
 python-efl:python-efl
 enlightenment:enlightenment
@@ -744,19 +739,19 @@ terminology:terminology
 rage:rage
 econnman:econnman
 ephoto:ephoto
-###epour:epour
+#epour:epour
 evisum:evisum
 extra:extra
-###enventor:enventor
-###eflete:eflete
-###edi:edi
+#enventor:enventor
+#eflete:eflete
+#edi:edi
 E17gtk:E17gtk
-## MORE EDITORS #
+# EDITORS #
 nano:nano
 vim:gvim
 cream:cream
 emacs:emacs
-### WWW #
+# WWW #
 openjdk:openjdk
 firefox:firefox
 transmission:transmission
@@ -764,25 +759,28 @@ protobuf:protobuf
 protobuf-c:protobuf-c
 kismet:kismet
 aircrack-ng:aircrack-ng
-### DISKS #
+# DISKS #
 xarchiver:xarchiver
 ranger:ranger
-### EYE CANDY #
+# EYE CANDY #
 LuaBitOp:LuaBitOp
 conky:conky
-### OLD WINDOW MANAGERS #
+# OLD WINDOW MANAGERS #
 e16:e16
 fluxbox:fluxbox
 WindowMaker:WindowMaker
-### OTHER WM #
+# OTHER WM #
 xcb-util-xrm:xcb-util-xrm
+awesome:awesome
 libev:libev
-yajl:yajl
+yajl;yajl
 confuse:confuse
 i3-gaps:i3-gaps
 i3status:i3status
 i3lock:i3lock
-### MATE DESKTOP #
+# MATE DESKTOP #
+autoconf-archive:autoconf-archive
+dconf:dconf
 dconf-editor:dconf-editor
 zenity:zenity
 libwnck:libwnck
@@ -791,10 +789,8 @@ gtksourceview3:gtksourceview3
 dbus-test-runner:dbus-test-runner
 libfakekey:libfakekey
 gcr:gcr
-gnome-common:gnome-common
 gnome-menus:gnome-menus
 libgee:libgee
-libgtop:libgtop
 bamf:bamf
 libdbusmenu:libdbusmenu
 libsecret:libsecret
@@ -820,10 +816,10 @@ mate-panel:mate-panel
 mate-applets:mate-applets
 mate-control-center:mate-control-center
 ayatana-indicator-messages:ayatana-indicator-messages
-googletest:googletest
 ayatana-indicator-notifications:ayatana-indicator-notifications
 ayatana-indicator-power:ayatana-indicator-power
 ayatana-indicator-printers:ayatana-indicator-printers
+googletest:googletest
 ayatana-indicator-session:ayatana-indicator-session
 ayatana-indicator-application:ayatana-indicator-application
 network-manager-applet:network-manager-applet
@@ -835,6 +831,7 @@ mate-menu:mate-menu
 vte:vte
 mate-terminal:mate-terminal
 mate-screensaver:mate-screensaver
+libgtop:libgtop
 mate-system-monitor:mate-system-monitor
 mate-sensors-applet:mate-sensors-applet
 mate-user-guide:mate-user-guide
@@ -842,7 +839,7 @@ libatasmart:libatasmart
 volume-key:volume-key
 libbytesize:libbytesize
 ndctl:ndctl
-##dmraid:dmraid
+#dmraid:dmraid
 libblockdev:libblockdev
 udisks:udisks
 gvfs:gvfs
@@ -857,18 +854,19 @@ mozo:mozo
 mate-calc:mate-calc
 eom:eom
 engrampa:engrampa
+texlive:texlive
 atril:atril
 mate-tweak:mate-tweak
 system-tools-backends:system-tools-backends
 liboobs:liboobs
 gnome-system-tools:gnome-system-tools
 mate-power-manager:mate-power-manager
-topmenu-gtk:topmenu-gtk
+topmenu-gtk3:topmenu-gtk3
 appmenu-gtk-module:appmenu-gtk-module
 vala-panel-appmenu:vala-panel-appmenu
-##mate-user-share:mate-user-share
-##caja-dropbox:caja-drop-box
-### DESKTOP EFFECTS #
+#caja-dropbox:caja-drop-box
+# DESKTOP EFFECTS #
+Cython:Cython
 metacity:metacity
 metacity-themes:metacity-themes
 compiz:compiz
@@ -876,14 +874,14 @@ emerald:emerald
 emerald-themes:emerald-themes
 compiz-manager:compiz-manager
 plank:plank
-### DESKTOP APPS #
+# DESKTOP APPS #
 dmenu:dmenu
 arandr:arandr
-### FILEZILLA #
+# FILEZILLA #
 wxWidgets:wxWidgets
 libfilezilla:libfilezilla
 filezilla:filezilla
-### INKSCAPE #
+# INKSCAPE #
 gdl:gdl
 six-python2:six-python2
 six-python3:six-python3
@@ -903,59 +901,75 @@ XML-XQL:XML-XQL
 ImageMagick6:ImageMagick6
 ImageMagick:ImageMagick
 inkscape:inkscape
-### WM ####
-awesome:awesome
-### PAINT #
+# PAINT #
 mypaint:mypaint
-### 3D MODELING #
+# 3D MODELING #
 ilmbase:ilmbase
 openexr:openexr
 openexr-viewers:openexr-viewers
 oiio:oiio
-oneTBB:oneTBB
+tbb:tbb
 blender:blender
-#### SOCIAL #
+# SOCIAL #
 libnet:libnet
 GeoIP:GeoIP
 gtkspell3:gtkspell3
 irssi:irssi
 irssi-scripts:irssi-scripts
-##hexchat:hexchat
+hexchat:hexchat
 libnice:libnice
 farstream:farstream
-###meanwhile:meanwhile
+#meanwhile:meanwhile
 pidgin:pidgin
-#### DEVEL #
+# DEVEL #
 faber:faber
 geany:geany
 geany-plugins:geany-plugins
-#### CONTAINERS #
+# CONTAINERS #
 docker:docker
-#### AUTOMATION #
+# AUTOMATION #
 argcomplete:argcomplete
 Jinja2:Jinja2
 PyYAML:PyYAML
 cryptography:cryptography
 ansible:ansible
-##### NET #
+#### NET #
 vsftpd:vsftpd
 ettercap:ettercap
 wireshark:wireshark
-### VIRTUALIZATION #
-###python-tk:python-tk
-###PIL:PIL
-uniconvertor:uniconvertor
-###libvirt:libvirt
-###libvirt-glib:libvirt-glib
-###libvirt-dbus:libvirtu-dbus
+openldap:openldap
+samba:samba
+####mate-user-share:mate-user-share
+#### VIRTUALIZATION #
 qemu:qemu
+python2-imaging:python2-imaging
+python2-reportlab:python2-reportlab
+python3-reportlab:python3-reportlab
+uniconvertor:uniconvertor
+libvirt:libvirt
+libvirt-glib:libvirt-glib
+libvirt-dbus:libvirtu-dbus
+libvirt-python:libvirt-python
+python2-requests:python2-requests
+python3-requests:python3-requests
+python2-urllib3:python2-urllib3
+python3-urllib3:python3-urllib3
+python2-chardet:python2-chardet
+python3-chardet:python3-chardet
+python2-certifi:python2-certifi
+python3-certifi:python3-certifi
+python2-idna:python2-idna
+python3-idna:python3-idna
 virt-manager:virt-manager
-### GAMES #
+#### COCKPIT #
+pcp:pcp
+cockpit:cockpit
+#### GAMES #
 dosbox:dosbox
 scummvm:scummvm
 RetroArch:RetroArch
-s2tc:s2tc
-steam:steam
-#########
-### END #
-#########
+### s2tc:s2tc
+### steam:steam # 32bit only
+#######
+# END #
+######

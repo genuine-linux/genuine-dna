@@ -4,11 +4,9 @@ BST="[<^>]";
 
 echo "$BST BootStrap Genuine Release";
 
-BUILD_ORDER_DB="/etc/genetic/bootstrap/build_order.db";
-
 # Build packages
-PKG_BUILD_ORDER=$(grep -v "^#" $BUILD_ORDER_DB);
-TOTAL_PKGS=$(grep -v "^#" $BUILD_ORDER_DB | cat -n | awk '{print $1}' | tail -1);
+PKG_BUILD_ORDER=$(grep -v "^#" BUILD_ORDER);
+TOTAL_PKGS=$(grep -v "^#" BUILD_ORDER | cat -n | awk '{print $1}' | tail -1);
 BUILT_PKGS=0;
 
 echo "$BST Need to build $TOTAL_PKGS Genuine packages!";

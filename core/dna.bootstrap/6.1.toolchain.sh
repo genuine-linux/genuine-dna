@@ -12,7 +12,7 @@
 
 cd /dnatools/bin
 echo -n "Adjust GNU Autotools </bin/perl> to </usr/bin/perl>:"
-for file in autoreconf autoscan automake automake-1.16 autoconf autoheader autom4te autoupdate; do
+for file in autoreconf automake autoconf autoheader autom4te autoupdate; do
 	sed 's/\/bin\/perl/\/usr\/bin\/perl/g' $file > ${file}.new
 	mv $file ${file}.old
 	mv ${file}.new $file
