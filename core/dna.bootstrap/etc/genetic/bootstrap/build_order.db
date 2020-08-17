@@ -47,7 +47,7 @@ openssl:openssl
 ca-certificates:ca-certificates
 # PYTHON 3 #
 Python:Python
-setuptools:setuptools
+##setuptools:setuptools
 python3-distutils-extra:python3-distutils-extra
 python3-distro:python3-distro
 python3-psutil:python3-psutil
@@ -265,7 +265,6 @@ osinfo-db-tools:osinfo-db-tools
 osinfo-db:osinfo-db
 libosinfo:libosinfo
 ipset:ipset
-firewalld:firewalld
 # FS #
 fuse:fuse
 tree:tree
@@ -492,6 +491,10 @@ xdm:xdm
 xcompmgr:xcompmgr
 tcl:tcl
 tk:tk
+Python:Python
+Python2:Python2
+python-slip:python-slip
+firewalld:firewalld
 # DIRECTFB #
 flux:flux
 DirectFB:DirectFB
@@ -963,11 +966,54 @@ python3-idna:python3-idna
 virt-manager:virt-manager
 #### COCKPIT #
 pcp:pcp
-cockpit:cockpit
+### cockpit:cockpit # require systemd
 #### GAMES #
 dosbox:dosbox
 scummvm:scummvm
 RetroArch:RetroArch
+### JUPYTER ###
+pyparsing:pyparsing
+cycler:cycler
+python-dateutil:python-dateutil
+kiwisolver:kiwisolver
+matplotlib:matplotlib
+NeuroTools:NeuroTools
+prometheus-client:prometheus-client
+terminado:terminado
+Send2Trash:Send2Trash
+ipython:ipython
+traitlets:traitlets
+ipython-genutils:ipython-genutils
+decorator:decorator
+pyflakes:pyflakes
+Pygments:Pygments
+pexpect:pexpect
+ptyprocess:ptyprocess
+pickleshare:pickleshare
+prompt-toolkit:prompt-toolkit
+wcwidth:wcwidth
+jupyter-client:jupyter-client
+pyzmq:pyzmq
+jupyter-core:jupyter-core
+ipykernel:ipykernel
+nbconvert:nbconvert
+nbformat:nbformat
+tornado:tornado
+defusedxml:defusedxml
+testpath:testpath
+pandocfilters:pandocfilters
+bleach:bleach
+entrypoints:entrypoints
+mistune:mistune
+attrs:attrs
+pyrsistent:pyrsistent
+jsonschema:jsonschema
+notebook:notebook
+jupyter:jupyter
+metakernel:metakernel
+metakernel-bash:metakernel-bash
+markdown-kernel:markdown-kernel
+SLIP:SLIP
 ### s2tc:s2tc
 ### steam:steam # 32bit only
 #######
